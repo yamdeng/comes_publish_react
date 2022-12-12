@@ -1,0 +1,24 @@
+{
+  "extends": ["react-app", "plugin:prettier/recommended"],
+  "rules": {
+    "no-alert": "off",
+    "no-console": "warn",
+    "no-restricted-globals": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "no-script-url": "off",
+    "no-useless-escape": "off",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "import/no-anonymous-default-export": "off"
+  },
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jquery": true
+  }
+}

@@ -1,0 +1,12 @@
+.publish_tb {
+  width: 100%;
+}
+
+.publish_tb tr,
+.publish_tb td {
+  font-size: 14px;
+}
+
+.search_test {
+  background: url(../images/search_test.png) no-repeat left center;
+}
