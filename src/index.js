@@ -30,13 +30,20 @@ if (isError) {
   rootStore.appStore.changeIsError(true);
 }
 
-Api.get('newoffice/profile.do').then((response) => {
-  const profile = response.data;
-  rootStore.appStore.setLoginInfo(profile, '');
-  ReactDOM.render(
-    <Provider {...rootStore}>
-      <App />
-    </Provider>,
-    document.getElementById('root')
-  );
-});
+ReactDOM.render(
+  <Provider {...rootStore}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+
+// Api.get('newoffice/profile.do').then((response) => {
+//   const profile = response.data;
+//   rootStore.appStore.setLoginInfo(profile, '');
+//   ReactDOM.render(
+//     <Provider {...rootStore}>
+//       <App />
+//     </Provider>,
+//     document.getElementById('root')
+//   );
+// });
