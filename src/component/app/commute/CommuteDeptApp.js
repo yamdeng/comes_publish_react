@@ -3,7 +3,7 @@ import 'devextreme/data/odata/store';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
-import DateBox from 'devextreme-react/date-box';
+import DatePicker from 'react-datepicker';
 
 const store = new CustomStore({
   key: 'OrderNumber',
@@ -22,22 +22,28 @@ const store = new CustomStore({
 class CommuteDeptApp extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { isOpen: false, startDate: '' };
     this.dateBoxRef = React.createRef();
 
     this.openTest = this.openTest.bind(this);
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   openTest() {
-    debugger;
-    this.dateBoxRef.current.instance.open();
+    this.setState({ isOpen: true });
+  }
+
+  handleChange() {
+    this.setState({ isOpen: false });
   }
 
   render() {
+    let { isOpen, startDate } = this.state;
     return (
       <div id="contents_sub" class="">
         <div class="sub_lnb">
-          <h3 onClick={this.openTest}>출퇴근</h3>
+          <h3>출퇴근</h3>
           <ul class="sub_menu">
             <li class="on">
               <a href="javascript:void(0);">개인출퇴근</a>
@@ -69,7 +75,7 @@ class CommuteDeptApp extends Component {
             <a href="javascript:void(0);">개인출퇴근</a>
           </div>
 
-          <div class="sub_top">
+          <div class="sub_top" style={{ overflow: 'visible' }}>
             <div class="grp_sel_option">
               <label for="sel_option" class="blind">
                 실 선택
@@ -108,7 +114,10 @@ class CommuteDeptApp extends Component {
                 </li>
               </ul>
             </div>
-            <div class="sel_month calelist_month cale_option1 on">
+            <div
+              class="sel_month calelist_month cale_option1 on"
+              style={{ zIndex: 9999 }}
+            >
               <a href="#" class="prev">
                 이전 일
               </a>
@@ -118,19 +127,24 @@ class CommuteDeptApp extends Component {
               <a href="#" class="next">
                 다음 일
               </a>
-              <a href="#" class="month">
+
+              <a href="#" class="month" onClick={() => console.log('ssss')}>
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
+                  onClick={this.openTest}
                 />
               </a>
-              <span style={{ visibility: 'hidden' }}>
-                <DateBox
-                  applyValueMode="useButtons"
-                  opened={false}
-                  ref={this.dateBoxRef}
+              {isOpen && (
+                <DatePicker
+                  selected={startDate}
+                  onChange={this.handleChange}
+                  showYearDropdown={true}
+                  showMonthDropdown={true}
+                  dropdownMode="select"
+                  inline
                 />
-              </span>
+              )}
             </div>
             <div class="sel_month calelist_month cale_option2">
               <a href="#" class="prev">
@@ -178,7 +192,7 @@ class CommuteDeptApp extends Component {
           <div class="sub_serch_result">
             <ul class="flex_ul_box flex_sb">
               <li class="flex_center">
-                <div onclick={() => console.log('aaa')}>
+                <div>
                   <span>업무 중2</span>
                   <b>6</b>
                 </div>
