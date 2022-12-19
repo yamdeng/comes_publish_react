@@ -2,8 +2,8 @@
 
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
 import ErrorBoundary from 'component/layout/ErrorBoundary';
+import Api from 'util/Api';
 import AppHistory from 'util/AppHistory';
 import Helper from 'util/Helper';
 import Logger from 'util/Logger';
@@ -103,7 +103,6 @@ const getAppComponent = function () {
   return null;
 };
 
-@withRouter
 @inject('appStore', 'uiStore')
 @observer
 class App extends Component {
@@ -148,7 +147,7 @@ class App extends Component {
 
   render() {
     const { appStore } = this.props;
-    const { profile, isError } = appStore;
+    const { profile } = appStore;
     let mainComponent = getAppComponent();
     return (
       <ErrorBoundary>

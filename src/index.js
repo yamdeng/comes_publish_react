@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router } from 'react-router';
 import moment from 'moment';
 import 'moment/locale/ko';
 import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
 import rootStore from 'store/RootStore';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
+
+import Api from 'util/Api';
 
 import App from './App';
 import AppHistory from 'util/AppHistory';
@@ -29,11 +30,13 @@ if (isError) {
   rootStore.appStore.changeIsError(true);
 }
 
-ReactDOM.render(
-  <Provider {...rootStore}>
-    <Router history={AppHistory}>
+Api.get('newoffice/profile.do').then((response) => {
+  const profile = response.data;
+  rootStore.appStore.setLoginInfo(profile, '');
+  ReactDOM.render(
+    <Provider {...rootStore}>
       <App />
-    </Router>
-  </Provider>,
-  document.getElementById('root')
-);
+    </Provider>,
+    document.getElementById('root')
+  );
+});
