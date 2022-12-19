@@ -1,24 +1,14 @@
 import React, { Component } from 'react';
+import { observer, inject } from 'mobx-react';
 import Api from 'util/Api';
 import 'devextreme/data/odata/store';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
+import Helper from 'util/Helper';
 
-const store = new CustomStore({
-  key: 'OrderNumber',
-  load(loadOptions) {
-    let params = {};
-    return ApiService.get('commutes/list.do', params).then((response) => {
-      const data = response.data;
-      return {
-        data: data.list,
-        totalCount: data.totalCount
-      };
-    });
-  }
-});
-
+@inject('appStore', 'uiStore', 'commutePrivateStore')
+@observer
 class CommutePrivateApp extends Component {
   constructor(props) {
     super(props);
@@ -31,19 +21,22 @@ class CommutePrivateApp extends Component {
         <div class="sub_lnb">
           <h3>출퇴근</h3>
           <ul class="sub_menu">
-            <li class="on">
+            <li
+              class="on"
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
               <a href="javascript:void(0);">개인출퇴근</a>
             </li>
-            <li>
+            <li onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}>
               <a href="javascript:void(0);">팀원출퇴근</a>
             </li>
-            <li>
+            <li onClick={() => Helper.goUrl('newoffice/view/commute-head.do')}>
               <a href="javascript:void(0);">실원출퇴근</a>
             </li>
-            <li>
+            <li onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
               <a href="javascript:void(0);">전체출퇴근관리</a>
             </li>
-            <li>
+            <li onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
               <a href="javascript:void(0);">전체출퇴근통계</a>
             </li>
           </ul>
@@ -54,6 +47,7 @@ class CommutePrivateApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
             &gt;<a href="javascript:void(0);">출퇴근</a>&gt;

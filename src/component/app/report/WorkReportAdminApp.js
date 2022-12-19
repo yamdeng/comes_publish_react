@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import { observer, inject } from 'mobx-react';
 import Api from 'util/Api';
 
+@inject('appStore', 'uiStore')
+@observer
 class WorkReportAdminApp extends Component {
   constructor(props) {
     super(props);

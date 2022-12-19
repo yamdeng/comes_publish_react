@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { observer, inject } from 'mobx-react';
 import 'devextreme/data/odata/store';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
@@ -19,6 +20,8 @@ const store = new CustomStore({
   }
 });
 
+@inject('appStore', 'uiStore')
+@observer
 class VacationManageApp extends Component {
   constructor(props) {
     super(props);

@@ -457,6 +457,10 @@ const getQueryStringValue = function (queryString, paramKey) {
   return query.get(paramKey);
 };
 
+const goUrl = function (url) {
+  location.href = '/office6/' + url;
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -490,5 +494,6 @@ export default {
   getAppLink,
   validteRangeDate,
   getDefaultInputData,
-  getQueryStringValue
+  getQueryStringValue,
+  goUrl
 };

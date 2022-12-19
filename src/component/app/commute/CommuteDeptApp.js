@@ -1,37 +1,62 @@
 import React, { Component } from 'react';
+import { observer, inject } from 'mobx-react';
 import 'devextreme/data/odata/store';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
+import DataStore from 'devextreme/data/data_source';
 import ApiService from 'service/ApiService';
 import DatePicker from 'react-datepicker';
 import ReportModal from 'component/modal/ReportModal';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-const store = new CustomStore({
-  key: 'OrderNumber',
-  load(loadOptions) {
-    let params = {};
-    return ApiService.get('commutes/list.do', params).then((response) => {
-      const data = response.data;
-      return {
-        data: data.list,
-        totalCount: data.totalCount
-      };
-    });
-  }
-});
+// const store = new CustomStore({
+//   load(loadOptions) {
+//     let params = {};
+//
+//     return ApiService.get('commutes/list.do', params).then((response) => {
+//       const data = response.data;
+//       return {
+//         data: data.list,
+//         totalCount: data.totalCount
+//       };
+//     });
+//   }
+// });
 
+function isNotEmpty(value) {
+  return value !== undefined && value !== null && value !== '';
+}
+
+const allowedPageSizes = [8, 12, 20];
+
+@inject('appStore', 'uiStore')
+@observer
 class CommuteDeptApp extends Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, startDate: '' };
+    this.state = {
+      isOpen: false,
+      startDate: '',
+      store: null,
+      searchParam: { aaa: 'aaa' }
+    };
     this.dateBoxRef = React.createRef();
+
+    this.datagridRef = React.createRef();
 
     this.openTest = this.openTest.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
 
     this.openModal = this.openModal.bind(this);
+
+    this.changeParam = this.changeParam.bind(this);
+  }
+
+  changeParam() {
+    let { searchParam } = this.state;
+    let result = searchParam.aaa + 's';
+    this.setState({ searchParam: { aaa: result } });
   }
 
   openTest() {
@@ -43,12 +68,130 @@ class CommuteDeptApp extends Component {
   }
 
   openModal() {
-    debugger;
-    $('#report').modal('show');
+    // let { store } = this.state;
+
+    const store = new CustomStore({
+      key: 'OrderNumber',
+      load(loadOptions) {
+        let params = '?';
+        [
+          'skip',
+          'take',
+          'requireTotalCount',
+          'requireGroupCount',
+          'sort',
+          'filter',
+          'totalSummary',
+          'group',
+          'groupSummary'
+        ].forEach((i) => {
+          if (i in loadOptions && isNotEmpty(loadOptions[i])) {
+            params += `${i}=${JSON.stringify(loadOptions[i])}&`;
+          }
+        });
+
+        params = params.slice(0, -1);
+
+        return fetch(
+          `https://js.devexpress.com/Demos/WidgetsGalleryDataService/api/orders${params}`
+        )
+          .then((response) => response.json())
+          .then((data) => ({
+            data: data.data,
+            totalCount: data.totalCount,
+            summary: data.summary,
+            groupCount: data.groupCount
+          }))
+          .catch(() => {
+            throw new Error('Data Loading Error');
+          });
+      }
+    });
+
+    this.setState({ store: store });
+
+    // let test = this.datagridRef.current;
+
+    // test.instance.filter(['searchMonth', '=', 'aaaa']);
+    // test.instance.refresh();
+
+    // store.filter(['searchMonth', '=', 'aaaa']);
+
+    // store.load().then((response) => {
+    //
+    // });
+    // ApiService.get('commutes/list.do', {}).then((response) => {
+    //   const data = response.data;
+    //   store.load().then((response) => {
+    //
+    //   });
+    // });
+    // $('#report').modal('show');
+  }
+
+  componentDidMount() {
+    console.log('store : ' + store);
+
+    // store.load();
+    // store.load(loadOptions).
+    //   let params = {};
+    //
+    //   return ApiService.get('commutes/list.do', params).then((response) => {
+    //     const data = response.data;
+    //     return {
+    //       data: data.list,
+    //       totalCount: data.totalCount
+    //     };
+    //   });
+    // }
+
+    const state = this.state;
+
+    const store = new CustomStore({
+      key: 'OrderNumber',
+      load(loadOptions) {
+        let params = '?';
+        [
+          'skip',
+          'take',
+          'requireTotalCount',
+          'requireGroupCount',
+          'sort',
+          'filter',
+          'totalSummary',
+          'group',
+          'groupSummary'
+        ].forEach((i) => {
+          if (i in loadOptions && isNotEmpty(loadOptions[i])) {
+            params += `${i}=${JSON.stringify(loadOptions[i])}&`;
+          }
+        });
+
+        const { searchParam } = state;
+        params = params.slice(0, -1);
+        console.log('searchParam.aaa : ' + searchParam.aaa);
+
+        return fetch(
+          `https://js.devexpress.com/Demos/WidgetsGalleryDataService/api/orders${params}`
+        )
+          .then((response) => response.json())
+          .then((data) => ({
+            data: data.data,
+            totalCount: data.totalCount,
+            summary: data.summary,
+            groupCount: data.groupCount
+          }))
+          .catch(() => {
+            throw new Error('Data Loading Error');
+          });
+      }
+    });
+
+    this.setState({ store: store });
   }
 
   render() {
-    let { isOpen, startDate } = this.state;
+    let { isOpen, startDate, store } = this.state;
     return (
       <div id="contents_sub" class="">
         <div class="sub_lnb">
@@ -205,7 +348,7 @@ class CommuteDeptApp extends Component {
           <div class="sub_serch_result">
             <ul class="flex_ul_box flex_sb">
               <li class="flex_center">
-                <div>
+                <div onClick={this.changeParam}>
                   <span>업무 중2</span>
                   <b>6</b>
                 </div>
@@ -269,6 +412,18 @@ class CommuteDeptApp extends Component {
               </a>
               <div class="flex_ul_box_container">
                 <ul class="flex_ul_box flex_sb">
+                  <li class="flex_center">
+                    <div>
+                      <span>김소영 대리</span>
+                      <b>7 / 0 / 0</b>
+                    </div>
+                  </li>
+                  <li class="flex_center">
+                    <div>
+                      <span>김소영 대리</span>
+                      <b>7 / 0 / 0</b>
+                    </div>
+                  </li>
                   <li class="flex_center">
                     <div>
                       <span>김소영 대리</span>
@@ -477,31 +632,26 @@ class CommuteDeptApp extends Component {
             <div class="mgtop10">
               <p
                 style={{
-                  border: '1px solid #d6d6d6',
                   height: 700,
                   fontSize: 15,
-                  lineHeight: 300,
-                  textAlign: 'center'
+                  // lineHeight: 300,
+                  textAlign: 'center',
+                  maxWidth: 1600
                 }}
               >
-                {/* <DataGrid
+                <DataGrid
+                  width={'100%'}
                   dataSource={store}
                   showBorders={true}
                   remoteOperations={true}
+                  ref={this.datagridRef}
                 >
                   <Column dataField="OrderNumber" dataType="number" />
                   <Column dataField="OrderDate" dataType="date" />
                   <Column dataField="StoreCity" dataType="string" />
-                  <Column dataField="StoreState" dataType="string" />
-                  <Column dataField="Employee" dataType="string" />
-                  <Column
-                    dataField="SaleAmount"
-                    dataType="number"
-                    format="currency"
-                  />
-                  <Paging defaultPageSize={12} />
+                  <Paging defaultPageSize={10} />
                   <Pager showPageSizeSelector={true} />
-                </DataGrid> */}
+                </DataGrid>
               </p>
             </div>
           </div>

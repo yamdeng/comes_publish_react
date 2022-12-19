@@ -8,6 +8,7 @@ import TestStore from 'store/test/TestStore';
 import GuideListStore from 'store/test/GuideListStore.js';
 import GuideFormStore from 'store/test/GuideFormStore.js';
 import OrgSelectModalStore from 'store/modal/OrgSelectModalStore';
+import CommutePrivateStore from './commute/CommutePrivateStore';
 
 /*
 
@@ -41,6 +42,8 @@ class RootStore {
     this.testStore = new TestStore(this);
     this.guideListStore = new GuideListStore(this);
     this.guideFormStore = new GuideFormStore(this);
+
+    this.commutePrivateStore = new CommutePrivateStore(this);
   }
 }
 

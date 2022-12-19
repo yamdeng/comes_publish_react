@@ -13,38 +13,18 @@ class AppStore {
   @observable
   profile = null;
 
-  // 서버 인증 토큰
+  // 사용자유형
   @observable
-  token = '';
-
-  // 에러
-  @observable
-  isError = false;
+  userType = '';
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    // this.profile = Helper.getByLocalStorage('profile') || null;
-    // this.token = Helper.getByLocalStorage('token') || '';
-    this.profile = { name: '이홍석', deptName: '개발팀', positionName: '과장' };
-    this.token = 'test-token';
-  }
-
-  // 프로필 정보 가져오기
-  @action
-  getProfile() {
-    // ApiService.get('auth/profile').then(({ data }) => {
-    //   this.setLoginInfo(data);
-    // });
   }
 
   // 로그인 회원 정보 / 서버 인증 토큰 최신화
   @action
   setLoginInfo(profile, token) {
     this.profile = profile;
-    if (token) {
-      this.token = token;
-      Helper.saveInfoToLocalStorage('token', token);
-    }
     Helper.saveInfoToLocalStorage('profile', profile);
   }
 
@@ -54,7 +34,6 @@ class AppStore {
     this.profile = null;
     this.token = '';
     Helper.removeInfoToLocalStorage('profile');
-    Helper.removeInfoToLocalStorage('token');
     const { uiStore } = this.rootStore;
     uiStore.goPage('/');
   }
@@ -111,9 +90,12 @@ class AppStore {
     Logger.error(serverErrorMessage, response.status);
   }
 
-  // 웹뷰 reload
-  reloadApp() {
-    document.location.href = '/' + process.env.PUBLIC_URL;
+  getUserType() {
+    let userType = '';
+    if (this.profile) {
+      return this.profile.userType;
+    }
+    return userType;
   }
 
   // 관리자인 경우
@@ -122,7 +104,7 @@ class AppStore {
     let success = false;
     let profile = this.profile;
     if (profile) {
-      if (profile.isAdmin) {
+      if (profile.userType === 'ADMIN') {
         success = true;
       }
     }
@@ -130,15 +112,8 @@ class AppStore {
   }
 
   @action
-  changeIsError(isError) {
-    this.isError = isError;
-  }
-
-  @action
   clear() {
     this.profile = null;
-    this.token = '';
-    this.isError = false;
   }
 }
 
