@@ -10,14 +10,17 @@ import rootStore from 'store/RootStore';
 */
 
 const Api = axios.create({
-  baseURL: `${process.env.API_URL}/`,
+  baseURL: `/office6/`,
   timeout: Config.apiTimeout,
   headers: { 'Content-Type': 'application/json' },
   disableLoadingBar: false
 });
 
 Api.defaults.timeout = Config.apiTimeout;
-Api.defaults.headers.post['Content-Type'] = 'application/json';
+// Api.defaults.headers['Content-Type'] = 'application/json';
+// Api.defaults.headers['Access-Control-Allow-Origin'] = '*';
+// Api.defaults.headers['Access-Control-Allow-Credentials'] = 'true';
+Api.defaults.withCredentials = true;
 
 // 요청 인터셉터
 Api.interceptors.request.use(

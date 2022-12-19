@@ -19,7 +19,7 @@ import App from './App';
 import AppHistory from 'util/AppHistory';
 import Helper from 'util/Helper';
 import ko from 'date-fns/locale/ko';
-import 'resources/css/import.scss';
+// import 'resources/css/import.scss';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import 'AppEditor.css';

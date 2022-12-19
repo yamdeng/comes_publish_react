@@ -46,6 +46,7 @@ import TableTopLayout2 from 'component/test/guide/TableTopLayout2';
 import EditTable from 'component/test/guide/EditTable';
 
 import ServerError from 'component/error/ServerError';
+import Api from 'util/Api';
 
 // 개발 가이드
 
@@ -55,6 +56,12 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    debugger;
+    Api.get('commutes/detail.do?baseDateStr=20221203&userId=yamdeng');
+    // Api.post('boview/searchViewInfo.xx');
   }
 
   render() {

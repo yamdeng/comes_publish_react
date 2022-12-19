@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 
-import logo from 'resources/images/ktLogo.png';
-import PROFILE from 'resources/images/profile.jpeg';
+// import logo from 'resources/images/ktLogo.png';
+// import PROFILE from 'resources/images/profile.jpeg';
 
 /*
 
@@ -65,14 +65,14 @@ class SideBar extends Component {
             <i class="fas fa-bars"></i>
           </button>
           <h1 className="">
-            <img src={logo} alt="" />
+            <img src={''} alt="" />
             <span>SAFETY-DOC</span>
           </h1>
           <div className="mode_change">
             <div className="profile">
               <span className="img">
                 <i class="fas fa-user-circle" style={{ display: 'none' }}></i>
-                <img src={PROFILE} alt="" />
+                <img src={''} alt="" />
               </span>
               <span className="txt">안용성님 환영합니다</span>
             </div>

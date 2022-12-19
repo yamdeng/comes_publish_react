@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import Api from 'util/Api';
 import HOC from 'util/HOC';
-import SAMPLE from '../resources/images/sample.png';
-import SAFEINDEX_GAUGE from '../resources/images/safe-index-gauge.png';
-import ICON_MORE from '../resources/images/ic_plus.png';
+// import SAMPLE from '../resources/images/sample.png';
+// import SAFEINDEX_GAUGE from '../resources/images/safe-index-gauge.png';
+// import ICON_MORE from '../resources/images/ic_plus.png';
 
 /*
 
@@ -22,7 +23,10 @@ class Home extends Component {
     this.state = {};
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    debugger;
+    Api.get('commutes/detail.do?baseDateStr=20221203&userId=yamdeng');
+  }
 
   render() {
     return (
@@ -83,7 +87,7 @@ class Home extends Component {
                 <p className="home_title h2 relative">
                   공지사항{' '}
                   <span className="icon_more abrc">
-                    <img src={ICON_MORE} alt="" />
+                    <img src={''} alt="" />
                   </span>
                 </p>
                 <ul className="notice_list">
@@ -129,7 +133,7 @@ class Home extends Component {
               <ul className="img_list">
                 <li>
                   <p className="img">
-                    <img src={SAMPLE} alt="" />
+                    <img src={''} alt="" />
                   </p>
                   <p className="txt">
                     이번달<span>7.5(월)</span>
@@ -139,7 +143,7 @@ class Home extends Component {
                 </li>
                 <li>
                   <p className="img">
-                    <img src={SAMPLE} alt="" />
+                    <img src={''} alt="" />
                   </p>
                   <p className="txt">
                     이번달<span>7.5(월)</span>
@@ -194,7 +198,7 @@ class Home extends Component {
               <p className="home_title h8">안전지수</p>
               <p className=" indices_txt col_red">
                 <img
-                  src={SAFEINDEX_GAUGE}
+                  src={''}
                   style={{
                     width: '100%',
                     maxWidth: '80%',
