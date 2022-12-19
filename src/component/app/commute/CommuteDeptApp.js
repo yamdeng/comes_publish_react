@@ -4,6 +4,8 @@ import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import DatePicker from 'react-datepicker';
+import ReportModal from 'component/modal/ReportModal';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const store = new CustomStore({
   key: 'OrderNumber',
@@ -28,6 +30,8 @@ class CommuteDeptApp extends Component {
     this.openTest = this.openTest.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
+
+    this.openModal = this.openModal.bind(this);
   }
 
   openTest() {
@@ -36,6 +40,11 @@ class CommuteDeptApp extends Component {
 
   handleChange() {
     this.setState({ isOpen: false });
+  }
+
+  openModal() {
+    debugger;
+    $('#report').modal('show');
   }
 
   render() {
@@ -116,7 +125,7 @@ class CommuteDeptApp extends Component {
             </div>
             <div
               class="sel_month calelist_month cale_option1 on"
-              style={{ zIndex: 9999 }}
+              style={{ zIndex: 1 }}
             >
               <a href="#" class="prev">
                 이전 일
@@ -184,7 +193,11 @@ class CommuteDeptApp extends Component {
                 다음 달
               </a>
             </div>
-            <a href="javascript:void(0);" class="btn_right btn_search_big">
+            <a
+              href="javascript:void(0);"
+              class="btn_right btn_search_big"
+              onClick={this.openModal}
+            >
               조회
             </a>
           </div>
@@ -471,7 +484,7 @@ class CommuteDeptApp extends Component {
                   textAlign: 'center'
                 }}
               >
-                <DataGrid
+                {/* <DataGrid
                   dataSource={store}
                   showBorders={true}
                   remoteOperations={true}
@@ -488,11 +501,133 @@ class CommuteDeptApp extends Component {
                   />
                   <Paging defaultPageSize={12} />
                   <Pager showPageSizeSelector={true} />
-                </DataGrid>
+                </DataGrid> */}
               </p>
             </div>
           </div>
         </div>
+
+        {/* sd */}
+
+        <Modal isOpen={false} className={'modal_box_850 modal_box'}>
+          <div class="modal-header popup_head ">
+            <h5 class="modal-title">컴즈 의견수렴</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="pd20">
+              <div class="flex_sb">
+                <p class="con_title">제목</p>
+                <div class="con_box">
+                  <input
+                    type="text"
+                    class="w100p"
+                    placeholder="제목을 입력해주세요."
+                  />
+                </div>
+              </div>
+              <div class="flex_sb mgtop10">
+                <p class="con_title">내용</p>
+                <div class="con_box">
+                  <textarea
+                    maxlength="100"
+                    placeholder="컴즈의 발전을 위한 여러분의 의견을 남겨주세요.&#13;&#10;어떠한 의견이라도 환영합니다."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="">
+              취소
+            </button>
+            <button type="button" class="btn btn-primary" onclick="">
+              보내기
+            </button>
+          </div>
+        </Modal>
+
+        <Modal isOpen={true} className={'modal_box_850 modal_box'}>
+          <div class="modal-content">
+            <div class="modal-header popup_head">
+              <h5 class="modal-title">팀원 출퇴근 수정</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="pd20">
+                <div class="sel_month">
+                  <a href="#" class="prev">
+                    이전
+                  </a>
+                  <span class="txt_month">6월 7일(화)</span>
+                  <a href="#" class="next">
+                    다음
+                  </a>
+                  <a href="#" class="month">
+                    <img src="images/btn_modify_month.png" alt="월 선택하기" />
+                  </a>
+                </div>
+
+                <div>
+                  <div class="grid_top">
+                    <a href="javascript:void(0);" class="btn_right btn_ico">
+                      <i class="ico_refresh"></i>새로고침
+                    </a>
+                  </div>
+                  <div class="mgtop10">
+                    <p
+                      style={{
+                        border: '1px solid #d6d6d6',
+                        height: 300,
+                        fontSize: 15,
+                        lineHeight: 300,
+                        textAlign: 'center'
+                      }}
+                    >
+                      그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
+                    </p>
+                  </div>
+
+                  <div class="mgtop10">
+                    <p
+                      style={{
+                        height: 50,
+                        fontSize: 15,
+                        lineHeight: 50,
+                        textAlign: 'center'
+                      }}
+                    >
+                      페이징 영역 표시 임으로 삭제하고 넣으시면 됩니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="closePopup('modal2')"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
     );
   }

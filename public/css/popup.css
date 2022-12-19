@@ -15,7 +15,7 @@
 
 .modal_box .modal-content { border-radius: 0; border: none;}
 .modal_box .popup_head { padding:0 15px 0 0; border-radius: 0; }    
-.modal_box .close { color:#fff; text-shadow: none; opacity: 1; font-size:3rem; font-weight: 200; }
+.modal_box .close { color:#fff; text-shadow: none; opacity: 1; font-size:3rem; font-weight: 200; background: none; border: none;}
 .modal_box .modal-body .con_title { font-size: 18px; width:100px; color:#4a80ff; font-weight: 500; }
 .modal_box .modal-body .con_title2 { font-size: 15px; line-height:30px; width:100px; font-weight: 500; }
 .modal_box .modal-body .con_box, 
@@ -83,7 +83,7 @@
 .pop_notice_400 div.paging .page a { border:1px solid #dae1e6; text-align: center; width:27px; height:27px; vertical-align:2px; display:inline-block;  padding:0px; line-height:27px; box-sizing: border-box; background-color:#fff;}
 .pop_notice_400 div.paging .page a:first-of-type {border-right: 0;}
 
-.modal_box_850 { max-width:850px; }
-.modal_box_450 { max-width:450px; }
+.modal_box_850 { max-width:850px !important;  }
+.modal_box_450 { max-width:450px !important; }
 
 

@@ -28,6 +28,17 @@ $('.tips:nth-child(10)').addClass('bbNone');
 
 
 style=" border:1px solid #d6d6d6; height:700px; font-size:15px; line-height:300px; text-align: center;"
+style=" border:1px solid #d6d6d6; height:300px; font-size:15px; line-height:300px; text-align: center;"
+style=" height:50px; font-size:15px; line-height:50px; text-align: center;"
+
+style={{
+    height: 50,
+    fontSize: 15,
+    lineHeight: 50,
+    textAlign: 'center'
+  }}
+
+
 
 style={{
     border: '1px solid #d6d6d6',
@@ -54,7 +65,13 @@ src="../images ---> src={`${process.env.PUBLIC_URL}/images
 
 
 
-  style=" border:1px solid #d6d6d6; height:300px; font-size:15px; line-height:300px; text-align: center;"
+  style={{
+    border: '1px solid #d6d6d6',
+    height: 300,
+    fontSize: 15,
+    lineHeight: 300,
+    textAlign: 'center'
+  }}
 
   style={{
     border: '1px solid #d6d6d6',
