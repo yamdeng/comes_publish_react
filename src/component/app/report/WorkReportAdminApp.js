@@ -34,7 +34,10 @@ class WorkReportAdminApp extends Component {
         <div class="sub_con">
           <div class="site_location">
             <a href="javascript:void(0);">
-              <img src={`${process.env.PUBLIC_URL}/images/ico_location.png`} alt="홈으로 가기" />
+              <img
+                src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
+                alt="홈으로 가기"
+              />
             </a>
             &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
             <a href="javascript:void(0);">개인출퇴근</a>
@@ -88,7 +91,10 @@ class WorkReportAdminApp extends Component {
                 다음 일
               </a>
               <a href="#" class="month">
-                <img src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`} alt="월 선택하기" />
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
+                  alt="월 선택하기"
+                />
               </a>
             </div>
             <div class="sel_month calelist_month cale_option2">
@@ -100,7 +106,10 @@ class WorkReportAdminApp extends Component {
                 다음 달
               </a>
               <a href="#" class="month">
-                <img src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`} alt="월 선택하기" />
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
+                  alt="월 선택하기"
+                />
               </a>
             </div>
             <div class="sel_month calelist_month cale_option3">
@@ -109,12 +118,18 @@ class WorkReportAdminApp extends Component {
               </a>
               <span class="txt_month2">2022-06-01</span>
               <a href="#" class="month">
-                <img src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`} alt="월 선택하기" />
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
+                  alt="월 선택하기"
+                />
               </a>
               <span>~</span>
               <span class="txt_month2">2022-06-15</span>
               <a href="#" class="month">
-                <img src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`} alt="월 선택하기" />
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
+                  alt="월 선택하기"
+                />
               </a>
               <a href="#" class="next">
                 다음 달
