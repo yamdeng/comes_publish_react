@@ -143,3 +143,6 @@ table.board-list td.search { padding:0 3px; display:table-cell;}
 table.board-list td.search input { width:calc(100% - 1px); margin:4px 2px; height:38px; border-radius: 4px;}
 
 
+*, *::before, *::after {
+    box-sizing: initial;
+}

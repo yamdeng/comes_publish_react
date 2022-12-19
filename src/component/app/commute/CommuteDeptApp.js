@@ -554,7 +554,7 @@ class CommuteDeptApp extends Component {
           </div>
         </Modal>
 
-        <Modal isOpen={true} className={'modal_box_850 modal_box'}>
+        <Modal isOpen={false} className={'modal_box_850 modal_box'}>
           <div class="modal-content">
             <div class="modal-header popup_head">
               <h5 class="modal-title">팀원 출퇴근 수정</h5>
