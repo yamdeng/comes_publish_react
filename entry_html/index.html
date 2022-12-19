@@ -7,7 +7,8 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="PATH 채팅상담 시스템" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="preload" href="%PUBLIC_URL%/fonts/woff2/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin> 
+    <link rel="preload" href="%PUBLIC_URL%/fonts/woff2/Pretendard-Regular.woff2" as="font" type="font/woff2"> 
+    <!-- <link rel="stylesheet" href="%PUBLIC_URL%/css/common.css"/> -->
     <!-- <link rel="stylesheet" href="%PUBLIC_URL%/css/common.css"/> -->
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -25,17 +26,17 @@
     -->
     <script src="%PUBLIC_URL%/jquery-3.5.1.min.js"></script>
     <script>
-      var pageType = 'CommuteDeptApp';
+      var pageType = 'CommutePrivateApp';
     </script>
     <title>KT SAFETY-DOC</title>
   </head>
-  <body class="dx-viewport">
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
     <header>
         <div id="header">
             <h1 class="logo_xd">
-                <img src="images/logo_comes.png" alt="COMES INTRANET" />
+                <img src="/images/logo_comes.png" alt="COMES INTRANET" />
             </h1>
             <nav>
                 <div id="nav">
@@ -72,6 +73,16 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <link rel="stylesheet" href="%PUBLIC_URL%/css/common.css"/>
+
+    <footer>
+        <!-- 하단 copyright 영역 -->
+        <div id="footer">
+            <div>
+                <a href="javascript:void(0);" class="btn_footer">컴즈 의견수렴</a>
+                <div class="copy">© COMES CORP. <span>ALL RIGHTS RESERVED</span></div>
+            </div>
+        </div>
+      </footer>
+      <link rel="stylesheet" href="%PUBLIC_URL%/css/common.css"/>
   </body>
 </html>
