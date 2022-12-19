@@ -8,31 +8,29 @@ import Api from 'util/Api';
 
 */
 
-const apiPrefixUri = '/api/v1';
-
 class ApiService {
   // http get method 요청
   get(apiUrl, params, config) {
     config = config || {};
     config.params = params;
-    return Api.get(apiPrefixUri + '/' + apiUrl, config);
+    return Api.get(apiUrl, config);
   }
 
   // http post method 요청
   post(apiUrl, body, config) {
     body = body || {};
-    return Api.post(apiPrefixUri + '/' + apiUrl, body, config);
+    return Api.post(apiUrl, body, config);
   }
 
   // http put method 요청
   put(apiUrl, body, config) {
     body = body || {};
-    return Api.put(apiPrefixUri + '/' + apiUrl, body, config);
+    return Api.put(apiUrl, body, config);
   }
 
   // http delete method 요청
   delete(apiUrl, config) {
-    return Api.delete(apiPrefixUri + '/' + apiUrl, config);
+    return Api.delete(apiUrl, config);
   }
 }
 

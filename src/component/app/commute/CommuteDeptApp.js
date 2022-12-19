@@ -1,17 +1,43 @@
 import React, { Component } from 'react';
-import Api from 'util/Api';
+import 'devextreme/data/odata/store';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import CustomStore from 'devextreme/data/custom_store';
+import ApiService from 'service/ApiService';
+import DateBox from 'devextreme-react/date-box';
+
+const store = new CustomStore({
+  key: 'OrderNumber',
+  load(loadOptions) {
+    let params = {};
+    return ApiService.get('commutes/list.do', params).then((response) => {
+      const data = response.data;
+      return {
+        data: data.list,
+        totalCount: data.totalCount
+      };
+    });
+  }
+});
 
 class CommuteDeptApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dateBoxRef = React.createRef();
+
+    this.openTest = this.openTest.bind(this);
+  }
+
+  openTest() {
+    debugger;
+    this.dateBoxRef.current.instance.open();
   }
 
   render() {
     return (
       <div id="contents_sub" class="">
         <div class="sub_lnb">
-          <h3>출퇴근</h3>
+          <h3 onClick={this.openTest}>출퇴근</h3>
           <ul class="sub_menu">
             <li class="on">
               <a href="javascript:void(0);">개인출퇴근</a>
@@ -86,7 +112,9 @@ class CommuteDeptApp extends Component {
               <a href="#" class="prev">
                 이전 일
               </a>
-              <span class="txt_month">6월 15일(수)</span>
+              <span class="txt_month" onClick={() => console.log('aaa')}>
+                6월 15일(수2)
+              </span>
               <a href="#" class="next">
                 다음 일
               </a>
@@ -96,6 +124,13 @@ class CommuteDeptApp extends Component {
                   alt="월 선택하기"
                 />
               </a>
+              <span style={{ visibility: 'hidden' }}>
+                <DateBox
+                  applyValueMode="useButtons"
+                  opened={false}
+                  ref={this.dateBoxRef}
+                />
+              </span>
             </div>
             <div class="sel_month calelist_month cale_option2">
               <a href="#" class="prev">
@@ -143,8 +178,8 @@ class CommuteDeptApp extends Component {
           <div class="sub_serch_result">
             <ul class="flex_ul_box flex_sb">
               <li class="flex_center">
-                <div>
-                  <span>업무 중</span>
+                <div onclick={() => console.log('aaa')}>
+                  <span>업무 중2</span>
                   <b>6</b>
                 </div>
               </li>
@@ -422,7 +457,24 @@ class CommuteDeptApp extends Component {
                   textAlign: 'center'
                 }}
               >
-                그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
+                <DataGrid
+                  dataSource={store}
+                  showBorders={true}
+                  remoteOperations={true}
+                >
+                  <Column dataField="OrderNumber" dataType="number" />
+                  <Column dataField="OrderDate" dataType="date" />
+                  <Column dataField="StoreCity" dataType="string" />
+                  <Column dataField="StoreState" dataType="string" />
+                  <Column dataField="Employee" dataType="string" />
+                  <Column
+                    dataField="SaleAmount"
+                    dataType="number"
+                    format="currency"
+                  />
+                  <Paging defaultPageSize={12} />
+                  <Pager showPageSizeSelector={true} />
+                </DataGrid>
               </p>
             </div>
           </div>

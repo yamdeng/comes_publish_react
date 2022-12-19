@@ -42,6 +42,18 @@ style={{
   style={{ display: 'none' }}
 
 
+  src={`${process.env.PUBLIC_URL}/images/btn_calen_prev.png`}
+
+
+src="../images/ico_location.png"
+
+src="../images ---> src={`${process.env.PUBLIC_URL}/images
+
+
+" alt= ---> `} alt=
+
+
+
   style=" border:1px solid #d6d6d6; height:300px; font-size:15px; line-height:300px; text-align: center;"
 
   style={{

@@ -1,5 +1,23 @@
 import React, { Component } from 'react';
-import Api from 'util/Api';
+import 'devextreme/data/odata/store';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import CustomStore from 'devextreme/data/custom_store';
+import ApiService from 'service/ApiService';
+
+const store = new CustomStore({
+  key: 'OrderNumber',
+  load(loadOptions) {
+    let params = {};
+    debugger;
+    return ApiService.get('commutes/list.do', params).then((response) => {
+      const data = response.data;
+      return {
+        data: data.list,
+        totalCount: data.totalCount
+      };
+    });
+  }
+});
 
 class VacationManageApp extends Component {
   constructor(props) {
@@ -126,19 +144,35 @@ class VacationManageApp extends Component {
                       </a>
                     </div>
                   </div>
-                  <div class="mgtop10">
-                    <p
-                      style={{
-                        border: '1px solid #d6d6d6',
-                        height: 300,
-                        fontSize: 15,
-                        lineHeight: 300,
-                        textAlign: 'center'
-                      }}
+                  <p
+                    style={{
+                      border: '1px solid #d6d6d6',
+                      height: 300,
+                      fontSize: 15,
+                      lineHeight: 300,
+                      textAlign: 'center',
+                      maxWidth: 1600
+                    }}
+                  >
+                    <DataGrid
+                      dataSource={store}
+                      showBorders={true}
+                      remoteOperations={true}
                     >
-                      그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
-                    </p>
-                  </div>
+                      <Column dataField="OrderNumber" dataType="number" />
+                      <Column dataField="OrderDate" dataType="date" />
+                      <Column dataField="StoreCity" dataType="string" />
+                      <Column dataField="StoreState" dataType="string" />
+                      <Column dataField="Employee" dataType="string" />
+                      <Column
+                        dataField="SaleAmount"
+                        dataType="number"
+                        format="currency"
+                      />
+                      <Paging defaultPageSize={12} />
+                      <Pager showPageSizeSelector={true} />
+                    </DataGrid>
+                  </p>
                 </div>
                 <div class="btn_area relative mgtop10">
                   <div class="btn_right">

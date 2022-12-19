@@ -1,5 +1,23 @@
 import React, { Component } from 'react';
 import Api from 'util/Api';
+import 'devextreme/data/odata/store';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import CustomStore from 'devextreme/data/custom_store';
+import ApiService from 'service/ApiService';
+
+const store = new CustomStore({
+  key: 'OrderNumber',
+  load(loadOptions) {
+    let params = {};
+    return ApiService.get('commutes/list.do', params).then((response) => {
+      const data = response.data;
+      return {
+        data: data.list,
+        totalCount: data.totalCount
+      };
+    });
+  }
+});
 
 class CommutePrivateApp extends Component {
   constructor(props) {

@@ -6,8 +6,10 @@ import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
 import rootStore from 'store/RootStore';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
+import 'devextreme/dist/css/dx.light.css';
 
 import Api from 'util/Api';
+import ApiService from 'service/ApiService';
 
 import App from './App';
 import AppHistory from 'util/AppHistory';
@@ -30,20 +32,20 @@ if (isError) {
   rootStore.appStore.changeIsError(true);
 }
 
-ReactDOM.render(
-  <Provider {...rootStore}>
-    <App />
-  </Provider>,
-  document.getElementById('root')
-);
+// ReactDOM.render(
+//   <Provider {...rootStore}>
+//     <App />
+//   </Provider>,
+//   document.getElementById('root')
+// );
 
-// Api.get('newoffice/profile.do').then((response) => {
-//   const profile = response.data;
-//   rootStore.appStore.setLoginInfo(profile, '');
-//   ReactDOM.render(
-//     <Provider {...rootStore}>
-//       <App />
-//     </Provider>,
-//     document.getElementById('root')
-//   );
-// });
+ApiService.get('newoffice/profile.do').then((response) => {
+  const profile = response.data;
+  rootStore.appStore.setLoginInfo(profile, '');
+  ReactDOM.render(
+    <Provider {...rootStore}>
+      <App />
+    </Provider>,
+    document.getElementById('root')
+  );
+});
