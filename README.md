@@ -23,3 +23,31 @@ $('.tips:nth-child(3n + 1)').addClass('blShow'); $('.tips:nth-child(2n +
 $('.tips:nth-child(8)').addClass('bbShow');
 $('.tips:nth-child(9)').addClass('bbNone');
 $('.tips:nth-child(10)').addClass('bbNone');
+
+
+
+
+style=" border:1px solid #d6d6d6; height:700px; font-size:15px; line-height:300px; text-align: center;"
+
+style={{
+    border: '1px solid #d6d6d6',
+    height: 700,
+    fontSize: 15,
+    lineHeight: 300,
+    textAlign: 'center'
+  }}
+
+  style="display:none"
+
+  style={{ display: 'none' }}
+
+
+  style=" border:1px solid #d6d6d6; height:300px; font-size:15px; line-height:300px; text-align: center;"
+
+  style={{
+    border: '1px solid #d6d6d6',
+    height: 300,
+    fontSize: 15,
+    lineHeight: 300,
+    textAlign: 'center'
+  }}

@@ -71,7 +71,9 @@ class PortalAdminApp extends Component {
             <div class="tab">
               <ul class="tabnav">
                 <li>
-                  <a href="#tab01">전체</a>
+                  <a href="#tab01" class="active">
+                    전체
+                  </a>
                 </li>
                 <li>
                   <a href="#tab02">출퇴근 제출</a>
@@ -125,7 +127,7 @@ class PortalAdminApp extends Component {
                   <div class="date">
                     <a href="javascript:void(0);" class="left">
                       <img
-                        src={`${process.env.PUBLIC_URL}images/btn_calen_prev.png`}
+                        src={`${process.env.PUBLIC_URL}/images/btn_calen_prev.png`}
                         alt="이전 달"
                       />
                     </a>
