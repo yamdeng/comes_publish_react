@@ -1,0 +1,96 @@
+@charset "utf-8";
+
+@import url('reset.css'); /* 기본설정 */
+
+
+/* main contents */
+
+
+/* main contents layout */
+.mf_to_row1 .row_item {width: calc(100% / 3); margin-right:40px; flex-grow: 1; box-sizing: border-box;}
+.mf_to_row1 .row_item:last-of-type {margin-right:0px; }
+.mf_to_row1 .row_item h3 {position:relative; display: flex; font-size:18px; height:45px; line-height: 37px; font-weight:600;}
+.mf_to_row1 .row_item h3 i {display:inline-block; background:url('../images/main_ico_sprite.png') no-repeat; background-size:102px 34px; width:34px; height:45px; margin-right:5px; }
+.mf_to_row1 .row_item h3 i.ico1 {background-position: 0 0;}
+.mf_to_row1 .row_item h3 i.ico2 {background-position: -34px 0;}
+.mf_to_row1 .row_item h3 i.ico3 {background-position: -68px 0;}
+.mf_to_row1 .row_item h3 span {position:absolute; right:0; bottom:2px; font-size:14px; font-weight: 400; }
+.mf_to_row1 .grid3 > div {height:400px; box-sizing: border-box;}
+.mf_to_row1 .grid2 > div {height:280px; box-sizing: border-box;}
+
+
+/* 휴가/휴직 현황 */
+.con_vaca .flex_center {  width: calc(100% / 3); height:398px; flex-grow: 1; box-sizing: border-box;  border-right:1px solid #e6e6e7; }
+.con_vaca .flex_center:nth-of-type(odd) {background:#f7f7f7; }
+.con_vaca .flex_center:last-of-type {border-right:0;}
+.con_vaca .flex_center > p { font-weight:500; color: #000;}
+.con_vaca .flex_center > p > span { display: block; margin-top:7px; font-size:40px; font-weight: 500;}
+.con_vaca .flex_center .btn_vaca { position:absolute; bottom:100px; display: block; font-size:14px; background:#fff; color:#4a80ff; padding:8px 28px; border:1px solid #4a80ff;}
+.con_vaca .flex_center .btn_vaca:hover { background:#4a80ff; color:#fff;}
+
+/* 근무 */
+.con_work .wo_con1 { text-align: center; width:220px; height:398px; border-right:1px solid #e6e6e7; display: flex; flex-direction: column;  align-items: center; justify-content: center; box-sizing: border-box;  }
+.con_work .wo_con1 > p.bold30 { font-size:30px; font-weight:600; line-height:40px;}
+.con_work .wo_con1 > p,
+.con_work .wo_con1 > p > span { font-size:20px; font-weight:400;}
+.con_work .wo_con1 ul { width:60%; margin:0 auto;}
+.con_work .wo_con1 ul li {width:130px; height:20px; line-height:20px;}
+
+.con_work .wo_con2 { flex-grow:1; width:100%; align-content: center; padding:0 40px; box-sizing: border-box; display: flex; flex-direction: column;  justify-content: center;}
+.con_work .wo_con2 span.user {font-size:16px; font-weight:600; line-height:30px; color:#2b2f3e;}
+.con_work .wo_con2 div ul { width:280px; display: flex;}
+.con_work .wo_con2 div ul li a {display: inline-block; color:#333333; line-height:40px; font-weight:300; width:130px; height:40px; padding:0 25px; border-radius: 20px;  box-sizing: border-box;}
+.con_work .wo_con2 div ul li a.normal { background:#fff; border:1px solid #ddd;}
+.con_work .wo_con2 div ul li a.normal span {color:#ddd;}
+.con_work .wo_con2 div ul li a.activate1 { background:#4a80ff; color:#fff;}
+.con_work .wo_con2 div ul li a.activate2 { background:#f67447;color:#fff;}
+.con_work .wo_con2 div ul li a.disabled { background:#888; color:#fff;}
+.con_work .wo_con2 div ul li a:hover {  opacity: 0.8;}
+.con_work .wo_con2 div ul li a span { padding-left:14px;}
+
+/* tab_layout */
+
+.tab{float:left; width:100%; }
+.tabnav {font-size:0; border-bottom:1px solid #e6e6e7;}
+.tabnav li {display: inline-block;  height:46px; text-align:center; /*border-top:1px solid #e6e6e7;*/}
+.tabnav li a.active{ border:1px solid #e6e6e7; border-bottom:1px solid #fff;}
+.tabnav li a{ position:relative; display:block; background: #f7f8f9; color: #444; padding:0 30px; max-width:125px; line-height:46px; text-decoration:none; font-size:17px;}
+.tabnav li a:hover { color:#4a80ff;}
+.tabnav li a.active{background:#fff; color:#4a80ff; }
+.tabcontent {padding: 20px; height:398px; border:1px solid #e6e6e7; border-top:none; overflow:hidden; box-sizing: border-box;}
+
+/* 전체 */
+.tabcontent .con_vaca .flex_center {  height:355px;}
+.tabcontent .con_vaca .flex_center > p > span {  font-size:30px; font-weight: 300; }
+
+/* 실장 화면 전체 */
+.con_vaca2 { flex-wrap: wrap;}
+.con_vaca2 .flex_center {  width: calc(100% / 3); height:calc(358px / 2); flex-grow: 1; box-sizing: border-box;  border-right:1px solid #e6e6e7; }
+.con_vaca2 .flex_center:nth-of-type(odd) {background:#f7f7f7; }
+.con_vaca2 .flex_center:nth-of-type(3) {border-right:0; }
+.con_vaca2 .flex_center:nth-of-type(4),
+.con_vaca2 .flex_center:nth-of-type(5),
+.con_vaca2 .flex_center:nth-of-type(6) {border-top:1px solid #e6e6e7; }
+.con_vaca2 .flex_center:last-of-type {border-right:0;}
+.con_vaca2 .flex_center > p { font-weight:500; color: #000;}
+.con_vaca2 .flex_center > p > span { display: block; margin-top:7px; font-size:30px; font-weight: 300;}
+.con_vaca2 .flex_center .btn_vaca { position:absolute; bottom:40px; display: block; font-size:14px; background:#fff; color:#4a80ff; padding:8px 28px; border:1px solid #4a80ff;}
+.con_vaca2 .flex_center .btn_vaca:hover { background:#4a80ff; color:#fff;}
+
+/* 회사 일정 */
+.con_calendar .cal_con1{ width:303px; height:398px; border-right:1px solid #e6e6e7; display: flex; flex-direction: column; box-sizing: border-box;  }
+.con_calendar .cal_con1 .con_calendar_xd .date { text-align:center; height:70px; font-size:18px; line-height: 70px; font-weight: 600; border-bottom:1px solid #e6e6e7;}
+.con_calendar .cal_con1 .con_calendar_xd .date a {vertical-align: 1px; padding:0 10px;}
+
+table.calendar {margin:30px auto;}
+table.calendar th, table.calendar td {font-size:16px; font-weight:400;  text-align:center; box-sizing: border-box;}
+table.calendar th {  color:#444; padding:15px 12px; }
+table.calendar td { position:relative;  color:#000; padding:10px 0; cursor: pointer; }
+table.calendar th.cal_red, table.calendar td.cal_red, table.calendar td span.cal_red  {  color:#f64e43;  }
+table.calendar th.cal_blue, table.calendar td.cal_blue {  color:#3e95c1;  }
+table.calendar td.cell_pick { padding:0; }
+table.calendar td.cell_pick span.pick {display:inline-block; top:0px; left:0px; line-height: 30px; width:100%; height:100%; box-sizing: border-box; border-radius: 5px; background: #deedff; border:1px solid #268df0;}
+
+.con_calendar .cal_con2{ flex-grow: 1; text-align: center;  }
+.con_calendar .cal_con2 p.day{ font-size:16px; margin-bottom:20px; font-weight: 500;}
+.con_calendar .cal_con2 .flex_center {flex-direction: column; width:100%; height:398px; }
