@@ -7,6 +7,7 @@ import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import DatePicker from 'react-datepicker';
+import Constant from 'config/Constant';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -22,6 +23,18 @@ class CommutePrivateApp extends Component {
     this.search = this.search.bind(this);
     this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
     this.clickOuter = this.clickOuter.bind(this);
+    this.nextMonth = this.nextMonth.bind(this);
+    this.prevMonth = this.prevMonth.bind(this);
+  }
+
+  nextMonth() {
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.nextMonth();
+  }
+
+  prevMonth() {
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.prevMonth();
   }
 
   openMonthDatepicker() {
@@ -88,6 +101,23 @@ class CommutePrivateApp extends Component {
     } = commutePrivateStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
 
+    let tardyFilterList = privateMonthStatsList.filter(
+      (info) => info.kind === 'tardy'
+    );
+    let notStartWorkFilterList = privateMonthStatsList.filter(
+      (info) => info.kind === 'not_start_work'
+    );
+    let notOutWorkFilterList = privateMonthStatsList.filter(
+      (info) => info.kind === 'not_out_work'
+    );
+    const tardyCount = tardyFilterList.length ? tardyFilterList[0].aggCount : 0;
+    const notStartWorkCount = notStartWorkFilterList.length
+      ? tardyFilterList[0].aggCount
+      : 0;
+    const notOutWorkCount = notOutWorkFilterList.length
+      ? tardyFilterList[0].aggCount
+      : 0;
+
     const {
       userId,
       startWorkDate,
@@ -144,13 +174,13 @@ class CommutePrivateApp extends Component {
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="sel_month">
-              <a href="#" class="prev">
+              <a href="#" class="prev" onClick={this.prevMonth}>
                 이전 달
               </a>
               <span class="txt_month">
                 {Helper.dateToString(searchMonth, 'YYYY년 MM월')}
               </span>
-              <a href="#" class="next">
+              <a href="#" class="next" onClick={this.prevMonth}>
                 다음 달
               </a>
               <a href="#" class="month" onClick={this.openMonthDatepicker}>
@@ -240,7 +270,7 @@ class CommutePrivateApp extends Component {
                   <p>접속 IP : (-) {Helper.convertEmptyValue(startWorkIp)} </p>
                   <div>
                     <ul class="flex_sb mgtop40">
-                      <li>
+                      <li onClick={this.startWork}>
                         <a
                           href="javascript:void(0);"
                           class={
@@ -263,7 +293,7 @@ class CommutePrivateApp extends Component {
                           </span>
                         </a>
                       </li>
-                      <li>
+                      <li onClick={this.outWork}>
                         <a
                           href="javascript:void(0);"
                           class={
@@ -315,11 +345,13 @@ class CommutePrivateApp extends Component {
                   <div class="flex_center bg">
                     <div class="result">
                       <h4>지각</h4>
-                      <p class="blue">0</p>
+                      <p class="blue">{tardyCount}</p>
                     </div>
                     <div class="result">
                       <h4>출/퇴근 미체크</h4>
-                      <p class="blue">0 / 0</p>
+                      <p class="blue">
+                        {notStartWorkCount} / {notOutWorkCount}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -343,6 +375,8 @@ class CommutePrivateApp extends Component {
                   dataSource={datagridStore}
                   showBorders={true}
                   remoteOperations={true}
+                  noDataText={Constant.GRID_NO_DATE_MESSAGE}
+                  height={500}
                 >
                   <Column
                     dataField="baseDateStr"
@@ -361,8 +395,9 @@ class CommutePrivateApp extends Component {
                   />
                   <Column
                     dataField="startWorkDate"
-                    dataType="date"
+                    dataType="datetime"
                     caption="출근시간"
+                    format="HH:mm"
                   />
                   <Column
                     dataField="outWorkIp"
@@ -371,8 +406,9 @@ class CommutePrivateApp extends Component {
                   />
                   <Column
                     dataField="outWorkDate"
-                    dataType="date"
+                    dataType="datetime"
                     caption="퇴근시간"
+                    format="HH:mm"
                   />
                   <Column
                     dataField="workStatusCodeName"

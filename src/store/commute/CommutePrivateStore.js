@@ -78,7 +78,9 @@ class CommutePrivateStore {
   @action
   getTodayCommuteDayInfo() {
     const profile = this.rootStore.appStore.profile;
-    const apiParam = {};
+    const apiParam = {
+      baseDateStr: moment().format('YYYYMMDD')
+    };
     if (profile) {
       apiParam.userId = profile.user_key;
     }
@@ -101,8 +103,15 @@ class CommutePrivateStore {
   @action
   startWork() {
     const profile = this.rootStore.appStore.profile;
+    const todayCommuteDayInfo = this.todayCommuteDayInfo;
+
+    if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
+      Helper.toastMessage('aaaa', 'bbb');
+      return;
+    }
     const apiParam = {
-      inWorkYn: this.inWorkYn
+      inWorkYn: this.inWorkYn,
+      baseDateStr: todayCommuteDayInfo.baseDateStr + '1'
     };
     if (profile) {
       apiParam.userId = profile.user_key;
@@ -119,8 +128,10 @@ class CommutePrivateStore {
   @action
   outWork() {
     const profile = this.rootStore.appStore.profile;
+    const todayCommuteDayInfo = this.todayCommuteDayInfo;
     const apiParam = {
-      inWorkYn: this.inWorkYn
+      inWorkYn: this.inWorkYn,
+      baseDateStr: todayCommuteDayInfo.baseDateStr
     };
     if (profile) {
       apiParam.userId = profile.user_key;
@@ -144,9 +155,8 @@ class CommutePrivateStore {
       apiParam.userId = profile.user_key;
     }
     ApiService.get('commutes/stats/private.do', apiParam).then((response) => {
-      const detailInfo = response.data;
       runInAction(() => {
-        this.privateMonthStatsList = detailInfo;
+        this.privateMonthStatsList = response.data || [];
       });
     });
   }
@@ -160,7 +170,6 @@ class CommutePrivateStore {
       searchMonthStr: Helper.dateToString(searchMonth, 'YYYYMM')
     };
     if (profile) {
-      debugger;
       apiParam.userId = profile.user_key;
     }
     const store = new CustomStore({
@@ -196,6 +205,16 @@ class CommutePrivateStore {
   @action
   hideVisibleGuideText() {
     this.visibleGuideText = false;
+  }
+
+  @action
+  nextMonth() {
+    this.searchMonth = moment(this.searchMonth).add(1, 'months');
+  }
+
+  @action
+  prevMonth() {
+    this.searchMonth = moment(this.searchMonth).subtract(1, 'months');
   }
 
   @action

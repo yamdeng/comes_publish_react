@@ -141,7 +141,7 @@ class UiStore {
   repeateUpdateCurrentTime() {
     this.intervalId = setInterval(() => {
       runInAction(() => {
-        this.currentTime = moment().format('hh:mm:ss');
+        this.currentTime = moment().format('HH:mm:ss');
       });
     }, 1000);
   }

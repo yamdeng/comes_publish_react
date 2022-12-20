@@ -28,4 +28,6 @@ Constant.MODAL_TYPE_FULL = 'full';
 Constant.FILE_UPLOAD_STATUS_NEW = 'new';
 Constant.FILE_UPLOAD_STATUS_ORI = 'ori';
 
+Constant.GRID_NO_DATE_MESSAGE = '데이터가 존재하지 않습니다.';
+
 export default Constant;
