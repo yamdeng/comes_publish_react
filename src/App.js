@@ -59,6 +59,7 @@ import HolidayManageApp from 'component/app/setting/HolidayManageApp';
 */
 
 const getAppComponent = function () {
+  const pageType = 'CommutePrivateApp';
   if (pageType === 'PortalPrivateApp') {
     return <PortalPrivateApp />;
   } else if (pageType === 'PortalPrivateApp') {
@@ -133,6 +134,8 @@ class App extends Component {
       uiStore.changeCurrentRouteUrl(currentRouteUrl);
       return true;
     });
+
+    uiStore.init();
   }
 
   componentDidMount() {

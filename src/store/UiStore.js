@@ -1,15 +1,26 @@
-import { observable, action, toJS } from 'mobx';
+import { observable, action, toJS, runInAction } from 'mobx';
 import AppHistory from 'util/AppHistory';
 import Menu from 'config/Menu';
 import update from 'immutability-helper';
 import DeviceUtil from 'util/DeviceUtil';
+import moment from 'moment';
 
 /*
   
   전역 ui manage store
 
 */
+
 class UiStore {
+  @observable
+  todayDayTextInfo = null;
+
+  @observable
+  todayWeekTextInfo = null;
+
+  @observable
+  currentTime = null;
+
   // 로딩바 display 여부
   @observable
   displayLoadingBar = false;
@@ -40,6 +51,13 @@ class UiStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  @action
+  init() {
+    this.todayDayTextInfo = moment().format('MM.DD');
+    this.todayWeekTextInfo = moment().format('dddd').substring(0, 1);
+    this.repeateUpdateCurrentTime();
   }
 
   // 로딩바 show
@@ -116,6 +134,23 @@ class UiStore {
   closeModal() {
     this.rootStore.modalStore.hideAllModal();
     this.rootStore.alertModalStore.hideModal();
+  }
+
+  // 현재 시간을 계속 최신화시킴
+  @action
+  repeateUpdateCurrentTime() {
+    this.intervalId = setInterval(() => {
+      runInAction(() => {
+        this.currentTime = moment().format('hh:mm:ss');
+      });
+    }, 1000);
+  }
+
+  @action
+  clear() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 }
 

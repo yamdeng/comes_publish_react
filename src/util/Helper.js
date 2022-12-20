@@ -1,3 +1,4 @@
+/* global toastr */
 import _ from 'lodash';
 import Constant from 'config/Constant';
 import Config from 'config/Config';
@@ -161,7 +162,11 @@ const stringToTime = function (timeString, format) {
 };
 
 const dateToString = function (date, format) {
-  return moment(date).format(format);
+  if (date && format) {
+    return moment(date).format(format);
+  } else {
+    return '';
+  }
 };
 
 // div id기준으로 스크롤 하단으로
@@ -461,6 +466,10 @@ const goUrl = function (url) {
   location.href = '/office6/' + url;
 };
 
+const toastMessage = function (title, message, level) {
+  toastr[level ? level : 'success'](title, message);
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -495,5 +504,6 @@ export default {
   validteRangeDate,
   getDefaultInputData,
   getQueryStringValue,
-  goUrl
+  goUrl,
+  toastMessage
 };
