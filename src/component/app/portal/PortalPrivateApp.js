@@ -2,12 +2,24 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Api from 'util/Api';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'portalStore')
 @observer
 class PortalPrivateApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.init = this.init.bind(this);
+  }
+
+  init() {
+    const { portalStore } = this.props;
+    portalStore.getTodayVacationYearInfo();
+    portalStore.getCommuteDayList();
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {

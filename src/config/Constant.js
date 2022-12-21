@@ -30,4 +30,11 @@ Constant.FILE_UPLOAD_STATUS_ORI = 'ori';
 
 Constant.GRID_NO_DATE_MESSAGE = '데이터가 존재하지 않습니다.';
 
+// 사용자 유형
+Constant.USER_TYPE_PRIVATE = 'PRIVATE';
+Constant.USER_TYPE_MANAGER = 'MANAGER';
+Constant.USER_TYPE_HEADER = 'HEADER';
+Constant.USER_TYPE_ADMIN = 'ADMIN';
+Constant.USER_TYPE_SYSTEM = 'SYSTEM';
+
 export default Constant;

@@ -10,7 +10,7 @@ const store = new CustomStore({
   load(loadOptions) {
     let params = {};
     debugger;
-    return ApiService.get('commutes/list.do', params).then((response) => {
+    return ApiService.post('commutes/list.do', params).then((response) => {
       const data = response.data;
       return {
         data: data.list,

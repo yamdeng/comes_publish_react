@@ -111,6 +111,17 @@ class AppStore {
     return success;
   }
 
+  @computed
+  get childDeptIdList() {
+    let profile = this.profile;
+    let childDeptList = profile.childDeptList;
+    let childDeptIdList = [];
+    if (childDeptList || childDeptList.length) {
+      childDeptIdList = childDeptList.map((deptInfo) => deptInfo.deptKey);
+    }
+    return childDeptIdList;
+  }
+
   @action
   clear() {
     this.profile = null;

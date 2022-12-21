@@ -9,6 +9,7 @@ import GuideListStore from 'store/test/GuideListStore.js';
 import GuideFormStore from 'store/test/GuideFormStore.js';
 import OrgSelectModalStore from 'store/modal/OrgSelectModalStore';
 import CommutePrivateStore from './commute/CommutePrivateStore';
+import PortalStore from './portal/PortalStore';
 
 /*
 
@@ -44,6 +45,7 @@ class RootStore {
     this.guideFormStore = new GuideFormStore(this);
 
     this.commutePrivateStore = new CommutePrivateStore(this);
+    this.portalStore = new PortalStore(this);
   }
 }
 

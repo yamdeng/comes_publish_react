@@ -84,7 +84,7 @@ class CommutePrivateStore {
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.get('commutes/detail.do', apiParam).then((response) => {
+    ApiService.post('commutes/detail.do', apiParam).then((response) => {
       const detailInfo = response.data;
       runInAction(() => {
         this.todayCommuteDayInfo = detailInfo;
@@ -154,7 +154,7 @@ class CommutePrivateStore {
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.get('commutes/stats/private.do', apiParam).then((response) => {
+    ApiService.post('commutes/stats/private.do', apiParam).then((response) => {
       runInAction(() => {
         this.privateMonthStatsList = response.data || [];
       });
@@ -179,15 +179,20 @@ class CommutePrivateStore {
           if (take) {
             apiParam.pageSize = take;
             apiParam.offset = skip;
+          } else {
+            apiParam.pageSize = 10;
+            apiParam.offset = 0;
           }
         }
-        return ApiService.get('commutes/list.do', apiParam).then((response) => {
-          const data = response.data;
-          return {
-            data: data.list,
-            totalCount: data.totalCount
-          };
-        });
+        return ApiService.post('commutes/list.do', apiParam).then(
+          (response) => {
+            const data = response.data;
+            return {
+              data: data.list,
+              totalCount: data.totalCount
+            };
+          }
+        );
       }
     });
     this.datagridStore = store;

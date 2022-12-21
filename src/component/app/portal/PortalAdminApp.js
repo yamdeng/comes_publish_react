@@ -1,16 +1,43 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
+import Helper from 'util/Helper';
+import classnames from 'classnames';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'portalStore')
 @observer
 class PortalAdminApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.changeSelectedShceduleDate.bind(this);
+    this.nextMonth = this.nextMonth.bind(this);
+    this.prevMonth = this.prevMonth.bind(this);
+  }
+
+  changeSelectedShceduleDate(dateStr) {
+    const { portalStore } = this.props;
+    portalStore.changeSelectedShceduleDate(dateStr);
+  }
+
+  nextMonth() {
+    const { portalStore } = this.props;
+    portalStore.nextMonth();
+  }
+
+  prevMonth() {
+    const { portalStore } = this.props;
+    portalStore.prevMonth();
+  }
+
+  componentDidMount() {
+    const { portalStore } = this.props;
+    portalStore.init();
   }
 
   render() {
+    const { portalStore } = this.props;
+    const { searchMonth, selectedShceduleDate, basicCalendarList } =
+      portalStore;
     return (
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
@@ -128,14 +155,22 @@ class PortalAdminApp extends Component {
               <div class="cal_con1 ">
                 <div class="con_calendar_xd">
                   <div class="date">
-                    <a href="javascript:void(0);" class="left">
+                    <a
+                      href="javascript:void(0);"
+                      class="left"
+                      onClick={this.prevMonth}
+                    >
                       <img
                         src={`${process.env.PUBLIC_URL}/images/btn_calen_prev.png`}
                         alt="이전 달"
                       />
                     </a>
-                    2022년 9월
-                    <a href="javascript:void(0);" class="right">
+                    {Helper.dateToString(searchMonth, 'YYYY년 MM월')}
+                    <a
+                      href="javascript:void(0);"
+                      class="right"
+                      onClick={this.nextMonth}
+                    >
                       <img
                         src={`${process.env.PUBLIC_URL}/images/btn_calen_next.png`}
                         alt="다음 달"
@@ -167,66 +202,93 @@ class PortalAdminApp extends Component {
                       </th>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td class="cal_red"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>1</td>
-                        <td>2</td>
-                        <td class="cal_blue">3</td>
-                      </tr>
-                      <tr>
-                        <td class="cal_red">4</td>
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                        <td>8</td>
-                        <td>
-                          <span class="cal_red">9</span>
-                        </td>
-                        <td class="cal_blue">
-                          <span class="cal_red">10</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="cal_red">11</td>
-                        <td>
-                          <span class="cal_red">12</span>
-                        </td>
-                        <td>13</td>
-                        <td>14</td>
-                        <td>15</td>
-                        <td class="pick_cel">16</td>
-                        <td class="cal_blue">17</td>
-                      </tr>
-                      <tr>
-                        <td class="cal_red">18</td>
-                        <td>19</td>
-                        <td>20</td>
-                        <td>21</td>
-                        <td>22</td>
-                        <td>23</td>
-                        <td class="cal_blue">24</td>
-                      </tr>
-                      <tr>
-                        <td class="cal_red">25</td>
-                        <td>26</td>
-                        <td>27</td>
-                        <td class="cell_pick">
-                          <span class="pick">28</span>
-                        </td>
-                        <td>29</td>
-                        <td>30</td>
-                        <td class="cal_blue"></td>
-                      </tr>
+                      {basicCalendarList.map((weetList) => {
+                        return (
+                          <tr>
+                            {weetList.map((weekInfo) => {
+                              let childComponent = <td></td>;
+                              if (weekInfo) {
+                                const checkSelected =
+                                  Helper.dateToString(
+                                    selectedShceduleDate,
+                                    'YYYYMMDD'
+                                  ) === weekInfo.dateStr;
+                                if (weekInfo.holiday) {
+                                  childComponent = (
+                                    <td
+                                      class={classnames('cal_red', {
+                                        cell_pick: checkSelected
+                                      })}
+                                      onClick={() =>
+                                        this.changeSelectedShceduleDate(
+                                          weekInfo.dateStr
+                                        )
+                                      }
+                                    >
+                                      {checkSelected ? (
+                                        <span class="pick">{weekInfo.day}</span>
+                                      ) : (
+                                        weekInfo.day
+                                      )}
+                                    </td>
+                                  );
+                                } else if (weekInfo.saturday) {
+                                  childComponent = (
+                                    <td
+                                      class={classnames('cal_blue', {
+                                        cell_pick: selectedShceduleDate
+                                      })}
+                                      onClick={() =>
+                                        this.changeSelectedShceduleDate(
+                                          weekInfo.dateStr
+                                        )
+                                      }
+                                    >
+                                      {checkSelected ? (
+                                        <span class="pick">{weekInfo.day}</span>
+                                      ) : (
+                                        weekInfo.day
+                                      )}
+                                    </td>
+                                  );
+                                } else {
+                                  childComponent = (
+                                    <td
+                                      class={classnames({
+                                        cell_pick: selectedShceduleDate
+                                      })}
+                                      onClick={() =>
+                                        this.changeSelectedShceduleDate(
+                                          weekInfo.dateStr
+                                        )
+                                      }
+                                    >
+                                      {checkSelected ? (
+                                        <span class="pick">{weekInfo.day}</span>
+                                      ) : (
+                                        weekInfo.day
+                                      )}
+                                    </td>
+                                  );
+                                }
+                              }
+                              return childComponent;
+                            })}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               </div>
               <div class="cal_con2 bg">
                 <div class="flex_center">
-                  <p class="day">2022년 9월 28일</p>
+                  <p class="day">
+                    {Helper.dateToString(
+                      selectedShceduleDate,
+                      'YYYY년 M월 DD일'
+                    )}
+                  </p>
                   <p>일정 없음</p>
                 </div>
               </div>
