@@ -91,13 +91,9 @@ class PortalStore {
   @observable
   basicCalendarList = [];
 
-  // 일정 목록 정보
-  @observable
-  thisMonthScheduleList = [];
-
   // 일정 상세정보 정보
   @observable
-  thisDayScheduleList = [];
+  scheduleList = [];
 
   // 일정 날짜 기준 검색 기준(월)
   @observable
@@ -124,9 +120,9 @@ class PortalStore {
   }
 
   @action
-  init() {
+  initSchedule() {
     this.searchMonth = moment().toDate();
-    this.selectedShceduleDate = moment().toDate();
+    this.changeSelectedShceduleDate(moment().format('YYYYMMDD'));
     this.getDayListByMonth();
   }
 
@@ -309,7 +305,16 @@ class PortalStore {
   @action
   changeSelectedShceduleDate(dateStr) {
     this.selectedShceduleDate = moment(dateStr).toDate();
-    // TODO : 일정 조회
+    const apiParam = {
+      startDateStr: moment(this.selectedShceduleDate).format('YYYY-MM-DD'),
+      endDateStr: moment(this.selectedShceduleDate).format('YYYY-MM-DD')
+    };
+    ApiService.post('portals/schedule.do', apiParam).then((response) => {
+      const list = response.data || [];
+      runInAction(() => {
+        this.scheduleList = list;
+      });
+    });
   }
 
   @action
@@ -339,7 +344,7 @@ class PortalStore {
       profile.userType === Constant.USER_TYPE_PRIVATE ||
       profile.userType === Constant.USER_TYPE_MANAGER
     ) {
-      apiParam.deptId = profile.dept_key;
+      apiParam.deptKey = profile.dept_key;
     } else if (profile.userType === Constant.USER_TYPE_HEADER) {
       let childDeptIdList = profile.childDeptIdList;
       apiParam.childDeptIdList = childDeptIdList;
@@ -361,6 +366,17 @@ class PortalStore {
       const data = response.data || [];
       runInAction(() => {
         this.noticeList = data;
+      });
+    });
+  }
+
+  @action
+  getApproveList() {
+    const apiParam = {};
+    ApiService.post('portals/approve.do', apiParam).then((response) => {
+      const data = response.data || [];
+      runInAction(() => {
+        this.approveList = data;
       });
     });
   }

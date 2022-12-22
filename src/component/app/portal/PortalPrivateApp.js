@@ -22,6 +22,7 @@ class PortalPrivateApp extends Component {
     portalStore.getCommuteDayList();
     portalStore.getTodayCommuteDayInfo();
     portalStore.getNoticeList();
+    portalStore.getApproveList();
   }
 
   changeInWorkYn(event) {
@@ -51,7 +52,8 @@ class PortalPrivateApp extends Component {
       todayVacationYearInfo,
       commuteDayList,
       noticeList,
-      inWorkYn
+      inWorkYn,
+      approveList
     } = portalStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
     todayVacationYearInfo = todayVacationYearInfo || {};
@@ -108,12 +110,23 @@ class PortalPrivateApp extends Component {
           article_title,
           user_name,
           reg_date,
-          article_view_count
+          article_view_count,
+          article_id
         } = noticeArticleInfo;
         return (
           <tr>
             <td>{article_num}</td>
-            <td class="subject">
+            <td
+              class="subject"
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/detail.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY +
+                    '&artice_id=' +
+                    article_id
+                )
+              }
+            >
               <a href="#">{article_title}</a>
             </td>
             <td>{user_name}</td>
@@ -127,6 +140,35 @@ class PortalPrivateApp extends Component {
         <tr>
           <td style={{ textAlign: 'center' }} colSpan={5}>
             등록된 공지사항이 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let approveListComponent = null;
+    if (approveList.length) {
+      approveListComponent = approveList.map((noticeArticleInfo) => {
+        const { fld_date, fld_title, code_name, fld_writer } =
+          noticeArticleInfo;
+        return (
+          <tr>
+            <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
+            <td>{code_name}</td>
+            <td class="subject">
+              <a href="#">{fld_title}</a>
+            </td>
+            <td>{fld_writer}</td>
+            <td>
+              <p class="red">결재요청</p>
+            </td>
+          </tr>
+        );
+      });
+    } else {
+      approveListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 결재가 존재하지 않습니다.
           </td>
         </tr>
       );
@@ -181,7 +223,10 @@ class PortalPrivateApp extends Component {
                 <p>
                   <span class="user">{user_name} </span> 님
                 </p>
-                <p>접속 IP : (P) {Helper.convertEmptyValue(startWorkIp)} </p>
+                <p>
+                  접속 IP : {startWorkDate ? '(P)' : ''}
+                  {Helper.convertEmptyValue(startWorkIp)}{' '}
+                </p>
                 <div>
                   <ul class="flex_sb mgtop40">
                     <li onClick={this.startWork}>
@@ -344,7 +389,7 @@ class PortalPrivateApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('gsign/docbox/index.do')}>
               결재 현황
               <a href="" class="btn_more">
                 더보기
@@ -364,63 +409,17 @@ class PortalPrivateApp extends Component {
                   <tr>
                     <th scope="col">기안일</th>
                     <th scope="col">결재양식</th>
-                    <th scope="col">제목</th>
+                    <th
+                      scope="col"
+                      onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+                    >
+                      제목
+                    </th>
                     <th scope="col">기안자</th>
                     <th scope="col">결재상태</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>2022.10.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>
-                      <p class="red">결재요청</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.21</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.07.01</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">
-                        휴가를 신청하오니 결재 요청드립니다. 체육대회 관련
-                        안내드립니다.
-                      </a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.06.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                </tbody>
+                <tbody>{approveListComponent}</tbody>
               </table>
             </div>
           </div>

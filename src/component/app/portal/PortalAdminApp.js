@@ -31,13 +31,23 @@ class PortalAdminApp extends Component {
 
   componentDidMount() {
     const { portalStore } = this.props;
-    portalStore.init();
+    portalStore.initSchedule();
   }
 
   render() {
     const { portalStore } = this.props;
-    const { searchMonth, selectedShceduleDate, basicCalendarList } =
-      portalStore;
+    const {
+      searchMonth,
+      selectedShceduleDate,
+      basicCalendarList,
+      scheduleList
+    } = portalStore;
+    let scheduleListComponent = <p>일정 없음</p>;
+    if (scheduleList.length) {
+      scheduleListComponent = scheduleList.map((scheduleInfo) => {
+        return <p>{scheduleInfo.title}</p>;
+      });
+    }
     return (
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
@@ -139,8 +149,8 @@ class PortalAdminApp extends Component {
                     </div>
                   </div>
                 </div>
-                <div id="tab02"> 출퇴근 제출 content</div>
-                <div id="tab03"> 업무보고 content</div>
+                {/* <div id="tab02"> 출퇴근 제출 content</div>
+                <div id="tab03"> 업무보고 content</div> */}
               </div>
             </div>
           </div>
@@ -289,7 +299,7 @@ class PortalAdminApp extends Component {
                       'YYYY년 M월 DD일'
                     )}
                   </p>
-                  <p>일정 없음</p>
+                  {scheduleListComponent}
                 </div>
               </div>
             </div>
