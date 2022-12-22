@@ -132,7 +132,8 @@ class PortalStore {
 
   // 업무 / 재텩 여부 변경
   @action
-  changeInWornYn(inWorkYn) {
+  changeInWorkYn(inWorkYn) {
+    debugger;
     this.inWorkYn = inWorkYn;
   }
 
@@ -315,7 +316,7 @@ class PortalStore {
   getTodayVacationYearInfo() {
     const profile = this.rootStore.appStore.profile;
     const apiParam = {
-      baseDateStr: moment().format('YYYYMMDD')
+      baseYear: moment().format('YYYY')
     };
     if (profile) {
       apiParam.userId = profile.user_key;
@@ -347,6 +348,19 @@ class PortalStore {
       const data = response.data;
       runInAction(() => {
         this.commuteDayList = data.list || [];
+      });
+    });
+  }
+
+  @action
+  getNoticeList() {
+    const apiParam = {
+      boardKey: Constant.NOTICE_BOARD_KEY
+    };
+    ApiService.post('portals/notice.do', apiParam).then((response) => {
+      const data = response.data || [];
+      runInAction(() => {
+        this.noticeList = data;
       });
     });
   }

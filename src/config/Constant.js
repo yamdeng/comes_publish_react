@@ -37,4 +37,7 @@ Constant.USER_TYPE_HEADER = 'HEADER';
 Constant.USER_TYPE_ADMIN = 'ADMIN';
 Constant.USER_TYPE_SYSTEM = 'SYSTEM';
 
+// 공지사항 게시판 key
+Constant.NOTICE_BOARD_KEY = 'KIBKAXFG02';
+
 export default Constant;

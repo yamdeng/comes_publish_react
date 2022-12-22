@@ -17,7 +17,7 @@ class CommutePrivateApp extends Component {
     this.state = {};
     this.openMonthDatepicker = this.openMonthDatepicker.bind(this);
     this.changeSearchMonth = this.changeSearchMonth.bind(this);
-    this.changeInWornYn = this.changeInWornYn.bind(this);
+    this.changeInWorkYn = this.changeInWorkYn.bind(this);
     this.startWork = this.startWork.bind(this);
     this.outWork = this.outWork.bind(this);
     this.search = this.search.bind(this);
@@ -48,10 +48,10 @@ class CommutePrivateApp extends Component {
     commutePrivateStore.closeMonthDatepicker();
   }
 
-  changeInWornYn(event) {
+  changeInWorkYn(event) {
     const value = event.target.value;
     const { commutePrivateStore } = this.props;
-    commutePrivateStore.changeInWornYn(value);
+    commutePrivateStore.changeInWorkYn(value);
   }
 
   startWork() {
@@ -244,7 +244,7 @@ class CommutePrivateApp extends Component {
                           id="work_option1"
                           name="work_option"
                           checked={inWorkYn === 'Y'}
-                          onChange={this.changeInWornYn}
+                          onChange={this.changeInWorkYn}
                           disabled={startWorkDate ? true : false}
                         />
                         <label for="work_option1">업무</label>
@@ -258,7 +258,7 @@ class CommutePrivateApp extends Component {
                           id="work_option2"
                           name="work_option"
                           checked={inWorkYn === 'N'}
-                          onChange={this.changeInWornYn}
+                          onChange={this.changeInWorkYn}
                           disabled={startWorkDate ? true : false}
                         />
                         <label for="work_option2">재택</label>

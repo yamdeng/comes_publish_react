@@ -70,7 +70,7 @@ class CommutePrivateStore {
   }
 
   @action
-  changeInWornYn(inWorkYn) {
+  changeInWorkYn(inWorkYn) {
     this.inWorkYn = inWorkYn;
   }
 
