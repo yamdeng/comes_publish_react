@@ -5,6 +5,8 @@ import ApiService from 'service/ApiService';
 import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
+import ModalService from 'service/ModalService';
+import _ from 'lodash';
 
 /*
   
@@ -115,6 +117,10 @@ class PortalStore {
   @observable
   visibleGuideText2 = false;
 
+  // 업무보고 현황 7일 기간 text
+  @observable
+  workReport7RangeText = '';
+
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -129,7 +135,6 @@ class PortalStore {
   // 업무 / 재텩 여부 변경
   @action
   changeInWorkYn(inWorkYn) {
-    debugger;
     this.inWorkYn = inWorkYn;
   }
 
@@ -163,23 +168,34 @@ class PortalStore {
   startWork() {
     const profile = this.rootStore.appStore.profile;
     const todayCommuteDayInfo = this.todayCommuteDayInfo;
-
-    if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
-      Helper.toastMessage('aaaa', 'bbb');
-      return;
-    }
     const apiParam = {
       inWorkYn: this.inWorkYn,
-      baseDateStr: todayCommuteDayInfo.baseDateStr + '1'
+      baseDateStr: todayCommuteDayInfo.baseDateStr
     };
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.put('commutes/startWork.do', apiParam).then((response) => {
-      const detailInfo = response.data;
-      runInAction(() => {
-        this.todayCommuteDayInfo = detailInfo;
-      });
+
+    if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
+      Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
+      return;
+    }
+
+    let confirmMessage =
+      '출근 체크를 하시겠습니까?' +
+      (this.inWorkYn === 'Y' ? '(업무)' : '(재택)');
+
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('commutes/startWork.do', apiParam).then((response) => {
+          const detailInfo = response.data;
+          Helper.toastMessage('출근 체크를 완료하였습니다.');
+          runInAction(() => {
+            this.todayCommuteDayInfo = detailInfo;
+          });
+        });
+      }
     });
   }
 
@@ -195,11 +211,23 @@ class PortalStore {
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.put('commutes/outWork.do', apiParam).then((response) => {
-      const detailInfo = response.data;
-      runInAction(() => {
-        this.todayCommuteDayInfo = detailInfo;
-      });
+
+    if (todayCommuteDayInfo && todayCommuteDayInfo.outWorkDate) {
+      Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
+      return;
+    }
+    let confirmMessage = '퇴근 체크를 하시겠습니까?';
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('commutes/outWork.do', apiParam).then((response) => {
+          const detailInfo = response.data;
+          Helper.toastMessage('퇴근 체크를 완료하였습니다.');
+          runInAction(() => {
+            this.todayCommuteDayInfo = detailInfo;
+          });
+        });
+      }
     });
   }
 
@@ -379,6 +407,39 @@ class PortalStore {
         this.approveList = data;
       });
     });
+  }
+
+  @action
+  getWorkReportList() {
+    const apiParam = {};
+    const profile = this.rootStore.appStore.profile;
+    apiParam.startDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+    apiParam.endDateStr = moment().format('YYYYMMDD');
+    apiParam.deptId = profile.dept_key;
+    ApiService.post('work-reports/recent7day-list.do', apiParam).then(
+      (response) => {
+        const data = response.data.list || [];
+        runInAction(() => {
+          const resultList = _.orderBy(data, ['baseDateStr'], ['desc']);
+          this.workReportList = resultList;
+        });
+      }
+    );
+  }
+
+  @action
+  initWorkReport7RangeText() {
+    // 5월 30일(월) ~ 6월 5일(일)
+    this.workReport7RangeText =
+      moment().subtract(6, 'days').format('M월 DD일') +
+      '(' +
+      moment().subtract(6, 'days').format('dddd').substring(0, 1) +
+      ')' +
+      ' ~ ' +
+      moment().format('M월 DD일') +
+      '(' +
+      moment().format('dddd').substring(0, 1) +
+      ')';
   }
 
   @action

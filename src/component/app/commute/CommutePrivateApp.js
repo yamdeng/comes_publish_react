@@ -123,7 +123,8 @@ class CommutePrivateApp extends Component {
       startWorkDate,
       outWorkDate,
       startWorkIp,
-      workStatusCodeName
+      workStatusCodeName,
+      startWorkDeviceType
     } = todayCommuteDayInfo;
 
     const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;

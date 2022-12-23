@@ -1,16 +1,232 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Api from 'util/Api';
+import moment from 'moment';
+import Helper from 'util/Helper';
+import Constant from 'config/Constant';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'portalStore')
 @observer
 class PortalDeptApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.init = this.init.bind(this);
+    this.changeInWorkYn = this.changeInWorkYn.bind(this);
+    this.startWork = this.startWork.bind(this);
+    this.outWork = this.outWork.bind(this);
+  }
+
+  init() {
+    const { portalStore } = this.props;
+    portalStore.getTodayVacationYearInfo();
+    portalStore.getCommuteDayList();
+    portalStore.getTodayCommuteDayInfo();
+    portalStore.getNoticeList();
+    portalStore.getApproveList();
+    portalStore.getWorkReportList();
+    portalStore.initWorkReport7RangeText();
+  }
+
+  changeInWorkYn(event) {
+    const value = event.target.value;
+    const { portalStore } = this.props;
+    portalStore.changeInWorkYn(value);
+  }
+
+  startWork() {
+    const { portalStore } = this.props;
+    portalStore.startWork();
+  }
+
+  outWork() {
+    const { portalStore } = this.props;
+    portalStore.outWork();
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {
+    const { portalStore, uiStore, appStore } = this.props;
+    let {
+      todayCommuteDayInfo,
+      todayVacationYearInfo,
+      commuteDayList,
+      noticeList,
+      inWorkYn,
+      approveList,
+      workReportList,
+      workReport7RangeText
+    } = portalStore;
+    todayCommuteDayInfo = todayCommuteDayInfo || {};
+    todayVacationYearInfo = todayVacationYearInfo || {};
+    const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;
+    const {
+      userId,
+      startWorkDate,
+      outWorkDate,
+      startWorkIp,
+      workStatusCodeName,
+      startWorkDeviceType
+    } = todayCommuteDayInfo;
+
+    let startWorkDeviceTypeText = '';
+    if (startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
+    }
+
+    const { annualCount, useableCount, plusVacationCount, usedCount } =
+      todayVacationYearInfo;
+
+    const { profile } = appStore;
+    const { dept_name, user_name } = profile;
+
+    let commuteDayListComponent = null;
+    if (commuteDayList.length) {
+      commuteDayListComponent = commuteDayList.map((info) => {
+        const {
+          dutyTitle,
+          positionTitle,
+          baseDateStr,
+          deptName,
+          userName,
+          workStatusCodeName,
+          startWorkDate,
+          outWorkDate
+        } = info;
+        return (
+          <tr>
+            <td>{userName}</td>
+            <td>{positionTitle}</td>
+            <td>{workStatusCodeName}</td>
+            <td>
+              {Helper.convertDate(startWorkDate, 'YYYY-MM-DD HH:mm:ss', 'H:mm')}
+            </td>
+            <td>
+              {Helper.convertDate(outWorkDate, 'YYYY-MM-DD HH:mm:ss', 'H:mm')}
+            </td>
+          </tr>
+        );
+      });
+    } else {
+      commuteDayListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            팀원 출퇴근 정보가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let noticeListComponent = null;
+    if (noticeList.length) {
+      noticeListComponent = noticeList.map((noticeArticleInfo) => {
+        const {
+          article_num,
+          article_title,
+          user_name,
+          reg_date,
+          article_view_count,
+          article_id
+        } = noticeArticleInfo;
+        return (
+          <tr>
+            <td>{article_num}</td>
+            <td
+              class="subject"
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/detail.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY +
+                    '&artice_id=' +
+                    article_id
+                )
+              }
+            >
+              <a href="#">{article_title}</a>
+            </td>
+            <td>{user_name}</td>
+            <td>{reg_date}</td>
+            <td>{article_view_count}</td>
+          </tr>
+        );
+      });
+    } else {
+      noticeListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 공지사항이 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let approveListComponent = null;
+    if (approveList.length) {
+      approveListComponent = approveList.map((approveInfo) => {
+        const { fld_date, fld_title, code_name, fld_writer } = approveInfo;
+        return (
+          <tr>
+            <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
+            <td>{code_name}</td>
+            <td
+              class="subject"
+              onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+            >
+              <a href="#">{fld_title}</a>
+            </td>
+            <td>{fld_writer}</td>
+            <td>
+              <p class="red">결재요청</p>
+            </td>
+          </tr>
+        );
+      });
+    } else {
+      approveListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 결재가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let workReportListComponent = null;
+    if (workReportList.length) {
+      workReportListComponent = workReportList.map((workReportInfo) => {
+        const { baseDateStr, reportDate, commentCount, holiday } =
+          workReportInfo;
+        console.log('baseDateStr : ' + baseDateStr);
+        return (
+          <tr>
+            <td style={{ color: holiday ? '#ed4747' : '' }}>
+              {Helper.convertDate(baseDateStr, 'YYYYMMDD', 'YYYY-MM-DD(ddd)')}
+            </td>
+            <td>
+              {Helper.convertDate(
+                reportDate,
+                'YYYY-MM-DD HH:mm:ss',
+                'YYYY-MM-DD'
+              )}
+            </td>
+            <td>{commentCount ? 'Y' : 'N'}</td>
+          </tr>
+        );
+      });
+    } else {
+      workReportListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={3}>
+            업무보고가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
     return (
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
@@ -21,9 +237,10 @@ class PortalDeptApp extends Component {
             <div class="con_work border_box flex_sb">
               <div class="wo_con1 bg">
                 <p class="bold30">
-                  09.28<span> (수)</span>
+                  {todayDayTextInfo}
+                  <span>({todayWeekTextInfo})</span>
                 </p>
-                <p>08:55:21</p>
+                <p>{currentTime}</p>
                 <ul class="flex_sb mgtop40">
                   <li>
                     <div class="radio">
@@ -31,7 +248,10 @@ class PortalDeptApp extends Component {
                         type="radio"
                         id="work_option1"
                         name="work_option"
-                        checked
+                        value="Y"
+                        checked={inWorkYn === 'Y'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option1">업무</label>
                     </div>
@@ -42,6 +262,10 @@ class PortalDeptApp extends Component {
                         type="radio"
                         id="work_option2"
                         name="work_option"
+                        value="N"
+                        checked={inWorkYn === 'N'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option2">재택</label>
                     </div>
@@ -50,19 +274,50 @@ class PortalDeptApp extends Component {
               </div>
               <div class="wo_con2">
                 <p>
-                  <span class="user">조강래 </span> 님
+                  <span class="user">{user_name} </span> 님
                 </p>
-                <p>접속 IP : (P) 61.75.21.224 </p>
+                <p>
+                  접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
+                  {Helper.convertEmptyValue(startWorkIp)}{' '}
+                </p>
                 <div>
                   <ul class="flex_sb mgtop40">
-                    <li>
-                      <a href="javascript:void(0);" class="activate1">
-                        출근 <span>08:55</span>
+                    <li onClick={this.startWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          startWorkDate ? 'activate1' : userId ? 'disabled' : ''
+                        }
+                      >
+                        출근{' '}
+                        <span>
+                          {startWorkDate
+                            ? Helper.convertDate(
+                                startWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>
                     </li>
-                    <li>
-                      <a href="javascript:void(0);" class="disabled">
-                        퇴근 <span>미체크</span>
+                    <li onClick={this.outWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          outWorkDate ? 'activate2' : userId ? 'disabled' : ''
+                        }
+                      >
+                        퇴근{' '}
+                        <span>
+                          {outWorkDate
+                            ? Helper.convertDate(
+                                outWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>{' '}
                     </li>
                   </ul>
@@ -71,7 +326,9 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3>
+            <h3
+              onClick={() => Helper.goUrl('newoffice/view/vacation-private.do')}
+            >
               <i class="ico2"></i>휴가/휴직 현황
               <a href="" class="btn_more">
                 더보기
@@ -81,19 +338,36 @@ class PortalDeptApp extends Component {
               <div class="con_vaca flex_ar">
                 <div class="flex_center">
                   <p>
-                    총 연차<span>13.0</span>
+                    총 연차
+                    <span>
+                      {!todayVacationYearInfo.userId
+                        ? '-'
+                        : annualCount + plusVacationCount}
+                    </span>
                   </p>
                 </div>
                 <div class="flex_center">
                   <p>
-                    사용 연차<span>2.5</span>
+                    사용 연차
+                    <span>
+                      {!todayVacationYearInfo.userId ? '-' : usedCount}
+                    </span>
                   </p>
                 </div>
                 <div class="flex_center relative">
                   <p>
-                    잔여 연차<span class="blue">10.5</span>
+                    잔여 연차
+                    <span class="blue">
+                      {!todayVacationYearInfo.userId
+                        ? '-'
+                        : annualCount + plusVacationCount - usedCount}
+                    </span>
                   </p>
-                  <a class="btn_vaca" href="javascript:void(0);">
+                  <a
+                    class="btn_vaca"
+                    href="javascript:void(0);"
+                    onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+                  >
                     휴가 신청
                   </a>
                 </div>
@@ -101,7 +375,7 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/vacation-dept.do')}>
               <i class="ico3"></i>팀원 근무/출퇴근 현황
               <a href="" class="btn_more">
                 더보기
@@ -126,74 +400,21 @@ class PortalDeptApp extends Component {
                     <th scope="col">퇴근</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>안하름</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>오전반차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>안하름</td>
-                    <td>과장</td>
-                    <td>업무 중</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>안하름</td>
-                    <td>과장</td>
-                    <td>업무 중</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                </tbody>
+                <tbody>{commuteDayListComponent}</tbody>
               </table>
             </div>
           </div>
         </div>
         <div class="mf_to_row1 flex_sb mgtop40">
           <div class="row_item grid2">
-            <h3>
+            <h3
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/list.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY
+                )
+              }
+            >
               공지사항
               <a href="" class="btn_more">
                 더보기
@@ -218,58 +439,7 @@ class PortalDeptApp extends Component {
                     <th scope="col">조회수</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 취업규칙 변경신고 관련 안내드립니다.취업규칙
-                        변경신고 관련 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.10.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022.1Q 컴즈 뉴스레터_ #1 창간호</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.09.21</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022년도 건강검진 실시 안내</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.09.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td class="subject">
-                      <a href="#">[공지] 사내 체육대회 관련 안내드립니다.</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.07.01</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 결재 전자시스템 오류로 인한 점검 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.06.10</td>
-                    <td>176</td>
-                  </tr>
-                </tbody>
+                <tbody>{noticeListComponent}</tbody>
               </table>
             </div>
           </div>
@@ -300,58 +470,7 @@ class PortalDeptApp extends Component {
                     <th scope="col">결재상태</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>2022.10.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>
-                      <p class="red">결재요청</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.21</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.07.01</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">
-                        휴가를 신청하오니 결재 요청드립니다. 체육대회 관련
-                        안내드립니다.
-                      </a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.06.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                </tbody>
+                <tbody>{approveListComponent}</tbody>
               </table>
             </div>
           </div>
@@ -361,7 +480,7 @@ class PortalDeptApp extends Component {
               <a href="" class="btn_more">
                 더보기
               </a>
-              <span> 5월 30일(월) ~ 6월 5일(일)</span>
+              <span>{workReport7RangeText}</span>
             </h3>
             <div class="border_bottom box_fix">
               <table class="board-list">
@@ -378,33 +497,7 @@ class PortalDeptApp extends Component {
                     <th scope="col">코멘트</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>2022-05-31(화) </td>
-                    <td>2022-05-31</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>2022-05-31(화) </td>
-                    <td>2022-05-31</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>2022-05-31(화) </td>
-                    <td>2022-05-31</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>2022-05-31(화) </td>
-                    <td>2022-05-31</td>
-                    <td>Y</td>
-                  </tr>
-                  <tr>
-                    <td>2022-05-31(화) </td>
-                    <td>2022-05-31</td>
-                    <td>Y</td>
-                  </tr>
-                </tbody>
+                <tbody>{workReportListComponent}</tbody>
               </table>
             </div>
           </div>

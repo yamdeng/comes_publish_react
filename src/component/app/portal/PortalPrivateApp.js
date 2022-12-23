@@ -64,7 +64,8 @@ class PortalPrivateApp extends Component {
       startWorkDate,
       outWorkDate,
       startWorkIp,
-      workStatusCodeName
+      workStatusCodeName,
+      startWorkDeviceType
     } = todayCommuteDayInfo;
 
     const { annualCount, useableCount, plusVacationCount, usedCount } =
@@ -72,6 +73,11 @@ class PortalPrivateApp extends Component {
 
     const { profile } = appStore;
     const { dept_name, user_name } = profile;
+
+    let startWorkDeviceTypeText = '';
+    if (startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
+    }
 
     let commuteDayListComponent = null;
     if (commuteDayList.length) {
@@ -147,14 +153,16 @@ class PortalPrivateApp extends Component {
 
     let approveListComponent = null;
     if (approveList.length) {
-      approveListComponent = approveList.map((noticeArticleInfo) => {
-        const { fld_date, fld_title, code_name, fld_writer } =
-          noticeArticleInfo;
+      approveListComponent = approveList.map((approveInfo) => {
+        const { fld_date, fld_title, code_name, fld_writer } = approveInfo;
         return (
           <tr>
             <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
             <td>{code_name}</td>
-            <td class="subject">
+            <td
+              class="subject"
+              onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+            >
               <a href="#">{fld_title}</a>
             </td>
             <td>{fld_writer}</td>
@@ -224,7 +232,7 @@ class PortalPrivateApp extends Component {
                   <span class="user">{user_name} </span> 님
                 </p>
                 <p>
-                  접속 IP : {startWorkDate ? '(P)' : ''}
+                  접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
                   {Helper.convertEmptyValue(startWorkIp)}{' '}
                 </p>
                 <div>
@@ -241,8 +249,8 @@ class PortalPrivateApp extends Component {
                           {startWorkDate
                             ? Helper.convertDate(
                                 startWorkDate,
-                                'YYYY-MM-DD Hhmmss',
-                                'HH:mm'
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
                               )
                             : '미체크'}
                         </span>
@@ -257,11 +265,11 @@ class PortalPrivateApp extends Component {
                       >
                         퇴근{' '}
                         <span>
-                          {startWorkDate
+                          {outWorkDate
                             ? Helper.convertDate(
                                 outWorkDate,
-                                'YYYY-MM-DD Hhmmss',
-                                'HH:mm'
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
                               )
                             : '미체크'}
                         </span>

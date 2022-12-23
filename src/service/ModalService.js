@@ -1,5 +1,6 @@
 import rootStore from '../store/RootStore';
 import ModalType from '../config/ModalType';
+import { confirm } from 'devextreme/ui/dialog';
 
 class ModalService {
   // AlertModal 모달 오픈
@@ -9,7 +10,25 @@ class ModalService {
 
   // ConfirmModal 모달 오픈
   confirm(modalData) {
-    rootStore.alertModalStore.showModal(ModalType.CONFRIM_MODAL, modalData);
+    const { title, content, ok, cancel } = modalData;
+    // let result = confirm(title, content);
+    // result.then((dialogResult) => {
+    //   if (dialogResult) {
+    //     if (ok) {
+    //       ok();
+    //     }
+    //   } else {
+    //     if (cancel) {
+    //       cancel();
+    //     }
+    //   }
+    // });
+
+    if (window.confirm(content)) {
+      if (ok) {
+        ok();
+      }
+    }
   }
 
   // ModalContainer에 정의한 모달 오픈
