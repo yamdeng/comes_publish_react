@@ -86,14 +86,14 @@ class WorkReportAdminApp extends Component {
               </ul>
             </div>
             <div class="sel_month calelist_month cale_option1 on">
-              <a href="#" class="prev">
+              <a href="javascript:void(0);" class="prev">
                 이전 일
               </a>
               <span class="txt_month">6월 15일(수)</span>
-              <a href="#" class="next">
+              <a href="javascript:void(0);" class="next">
                 다음 일
               </a>
-              <a href="#" class="month">
+              <a href="javascript:void(0);" class="month">
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
@@ -101,14 +101,14 @@ class WorkReportAdminApp extends Component {
               </a>
             </div>
             <div class="sel_month calelist_month cale_option2">
-              <a href="#" class="prev">
+              <a href="javascript:void(0);" class="prev">
                 이전 달
               </a>
               <span class="txt_month">2022년 6월</span>
-              <a href="#" class="next">
+              <a href="javascript:void(0);" class="next">
                 다음 달
               </a>
-              <a href="#" class="month">
+              <a href="javascript:void(0);" class="month">
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
@@ -116,11 +116,11 @@ class WorkReportAdminApp extends Component {
               </a>
             </div>
             <div class="sel_month calelist_month cale_option3">
-              <a href="#" class="prev">
+              <a href="javascript:void(0);" class="prev">
                 이전 달
               </a>
               <span class="txt_month2">2022-06-01</span>
-              <a href="#" class="month">
+              <a href="javascript:void(0);" class="month">
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
@@ -128,13 +128,13 @@ class WorkReportAdminApp extends Component {
               </a>
               <span>~</span>
               <span class="txt_month2">2022-06-15</span>
-              <a href="#" class="month">
+              <a href="javascript:void(0);" class="month">
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
                 />
               </a>
-              <a href="#" class="next">
+              <a href="javascript:void(0);" class="next">
                 다음 달
               </a>
             </div>

@@ -54,14 +54,14 @@ class VacationHeadApp extends Component {
             </div>
 
             <div class="sel_month">
-              <a href="#" class="prev">
+              <a href="javascript:void(0);" class="prev">
                 이전
               </a>
               <span class="txt_month">2022년</span>
-              <a href="#" class="next">
+              <a href="javascript:void(0);" class="next">
                 다음
               </a>
-              <a href="#" class="month">
+              <a href="javascript:void(0);" class="month">
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"

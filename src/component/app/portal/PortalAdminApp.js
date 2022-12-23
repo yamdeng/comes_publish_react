@@ -152,12 +152,12 @@ class PortalAdminApp extends Component {
                 Helper.goUrl(
                   'bbs/comes/board/detail.do?boardKey=' +
                     Constant.NOTICE_BOARD_KEY +
-                    '&artice_id=' +
+                    '&article_id=' +
                     article_id
                 )
               }
             >
-              <a href="#">{article_title}</a>
+              <a href="javascript:void(0);">{article_title}</a>
             </td>
             <td>{user_name}</td>
             <td>{reg_date}</td>
@@ -236,7 +236,7 @@ class PortalAdminApp extends Component {
               onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
             >
               <i class="ico1"></i>근무
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -374,6 +374,7 @@ class PortalAdminApp extends Component {
                     <div class="con_vaca flex_ar">
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('org/center/org_main/index.do')
                         }
@@ -388,6 +389,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/commute-admin.do')
                         }
@@ -402,6 +404,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/report-admin.do')
                         }
@@ -413,6 +416,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() => Helper.goUrl('gsign/docbox/index.do')}
                       >
                         <p>
@@ -434,6 +438,7 @@ class PortalAdminApp extends Component {
                     <div class="con_vaca flex_ar">
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/commute-admin.do')
                         }
@@ -447,6 +452,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/commute-admin.do')
                         }
@@ -458,6 +464,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/commute-admin.do')
                         }
@@ -469,6 +476,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/commute-admin.do')
                         }
@@ -494,6 +502,7 @@ class PortalAdminApp extends Component {
                     <div class="con_vaca flex_ar">
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/report-admin.do')
                         }
@@ -505,6 +514,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/report-admin.do')
                         }
@@ -516,6 +526,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/report-admin.do')
                         }
@@ -527,6 +538,7 @@ class PortalAdminApp extends Component {
                       </div>
                       <div
                         class="flex_center relative"
+                        style={{ cursor: 'pointer' }}
                         onClick={() =>
                           Helper.goUrl('newoffice/view/report-admin.do')
                         }
@@ -545,7 +557,7 @@ class PortalAdminApp extends Component {
           <div class="row_item grid3">
             <h3 onClick={() => Helper.goUrl('sch/center/index.do')}>
               <i class="ico2"></i>회사 일정
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -704,7 +716,7 @@ class PortalAdminApp extends Component {
               }
             >
               공지사항
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -734,7 +746,7 @@ class PortalAdminApp extends Component {
           <div class="row_item grid2">
             <h3 onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
               전체 출퇴근 현황
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -764,7 +776,7 @@ class PortalAdminApp extends Component {
               onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
             >
               전체 연차 현황
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>

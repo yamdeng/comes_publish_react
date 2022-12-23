@@ -128,12 +128,12 @@ class PortalPrivateApp extends Component {
                 Helper.goUrl(
                   'bbs/comes/board/detail.do?boardKey=' +
                     Constant.NOTICE_BOARD_KEY +
-                    '&artice_id=' +
+                    '&article_id=' +
                     article_id
                 )
               }
             >
-              <a href="#">{article_title}</a>
+              <a href="javascript:void(0);">{article_title}</a>
             </td>
             <td>{user_name}</td>
             <td>{reg_date}</td>
@@ -163,7 +163,7 @@ class PortalPrivateApp extends Component {
               class="subject"
               onClick={() => Helper.goUrl('gsign/docbox/index.do')}
             >
-              <a href="#">{fld_title}</a>
+              <a href="javascript:void(0);">{fld_title}</a>
             </td>
             <td>{fld_writer}</td>
             <td>
@@ -190,7 +190,7 @@ class PortalPrivateApp extends Component {
               onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
             >
               <i class="ico1"></i>근무
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -294,7 +294,7 @@ class PortalPrivateApp extends Component {
               onClick={() => Helper.goUrl('newoffice/view/vacation-private.do')}
             >
               <i class="ico2"></i>휴가/휴직 현황
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -340,7 +340,7 @@ class PortalPrivateApp extends Component {
           <div class="row_item grid3">
             <h3 onClick={() => Helper.goUrl('newoffice/view/vacation-dept.do')}>
               <i class="ico3"></i>팀원 근무 현황
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -377,7 +377,7 @@ class PortalPrivateApp extends Component {
               }
             >
               공지사항
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>
@@ -407,7 +407,7 @@ class PortalPrivateApp extends Component {
           <div class="row_item grid2">
             <h3 onClick={() => Helper.goUrl('gsign/docbox/index.do')}>
               결재 현황
-              <a href="" class="btn_more">
+              <a href="javascript:void(0);" class="btn_more">
                 더보기
               </a>
             </h3>

@@ -179,7 +179,7 @@ class VacationManageApp extends Component {
                 </div>
                 <div class="btn_area relative mgtop10">
                   <div class="btn_right">
-                    <a class="btn_normal btn_blue" href="#">
+                    <a class="btn_normal btn_blue" href="javascript:void(0);">
                       휴가발생
                     </a>
                   </div>
@@ -254,7 +254,10 @@ class VacationManageApp extends Component {
                           휴가일수
                         </label>
                         <input type="text" id="vacation_option2" class="w90" />
-                        <a href="#" class="btn_normal btn_blue">
+                        <a
+                          href="javascript:void(0);"
+                          class="btn_normal btn_blue"
+                        >
                           적용
                         </a>
                       </div>

@@ -175,16 +175,28 @@ class CommutePrivateApp extends Component {
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="sel_month">
-              <a href="#" class="prev" onClick={this.prevMonth}>
+              <a
+                href="javascript:void(0);"
+                class="prev"
+                onClick={this.prevMonth}
+              >
                 이전 달
               </a>
               <span class="txt_month">
                 {Helper.dateToString(searchMonth, 'YYYY년 MM월')}
               </span>
-              <a href="#" class="next" onClick={this.prevMonth}>
+              <a
+                href="javascript:void(0);"
+                class="next"
+                onClick={this.prevMonth}
+              >
                 다음 달
               </a>
-              <a href="#" class="month" onClick={this.openMonthDatepicker}>
+              <a
+                href="javascript:void(0);"
+                class="month"
+                onClick={this.openMonthDatepicker}
+              >
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
@@ -322,7 +334,7 @@ class CommutePrivateApp extends Component {
                     <span>{Helper.dateToString(searchMonth, 'M')}</span>월
                     출퇴근 현황{' '}
                     <a
-                      href="#"
+                      href="javascript:void(0);"
                       onclick="showID('toggle_tip')"
                       class="btn_right"
                       onClick={(event) => this.toggleVisibleGuideText(event)}
