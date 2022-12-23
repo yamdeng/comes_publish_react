@@ -69,25 +69,29 @@ class PortalStore {
   @observable
   portalHeadStatsList = [];
 
-  // 포탈 관리자 통계 활성화 탭 기준
+  // 실장 통계 탭 활성화 정보 : ALL 또는 상위키
   @observable
-  activeTabIndex = 1;
+  selectedHeadStatsTab = 'ALL';
+
+  // 포탈 관리자 통계 탭 index
+  @observable
+  selectedAdminStatsTabIndex = 1;
 
   // 포탈 관리자 통계 : 전체현황
   @observable
-  portalAdminAllStatsList = [];
+  portalAdminAllStatsInfo = [];
 
   // 포탈 관리자 통계 : 출퇴근
   @observable
-  portalAdminCommuteStatsList = [];
+  portalAdminCommuteStatsInfo = [];
 
   // 포탈 관리자 통계 : 업무보고
   @observable
-  portalAdminWorkReportStatsList = [];
+  portalAdminWorkReportStatsInfo = [];
 
-  // 관리자 전체 연차 현황
+  // 관리자 전체 연차 현황(일단위 히스토리 조회)
   @observable
-  vacationDetailList = [];
+  vacationDayHistoryList = [];
 
   // 월의 기본 요일 정보
   @observable
@@ -121,10 +125,15 @@ class PortalStore {
   @observable
   workReport7RangeText = '';
 
+  // 부서_출퇴근 제출 list
+  @observable
+  commuteDeptList = [];
+
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
+  // 일정 기본 정보 초기화시키기 : 관리자만 사용
   @action
   initSchedule() {
     this.searchMonth = moment().toDate();
@@ -216,6 +225,14 @@ class PortalStore {
       Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
+    if (!todayCommuteDayInfo || !todayCommuteDayInfo.startWorkDate) {
+      Helper.toastMessage(
+        '퇴근은 체크는 출근을 먼저 체크해야합니다.',
+        '',
+        'warning'
+      );
+      return;
+    }
     let confirmMessage = '퇴근 체크를 하시겠습니까?';
     ModalService.confirm({
       content: confirmMessage,
@@ -231,57 +248,7 @@ class PortalStore {
     });
   }
 
-  // 선택한 월의 출퇴근 현황 정보 가져오기
-  @action
-  getPrivateMonthStatsList() {
-    const profile = this.rootStore.appStore.profile;
-    const apiParam = {
-      inWorkYn: this.inWorkYn
-    };
-    if (profile) {
-      apiParam.userId = profile.user_key;
-    }
-    ApiService.post('commutes/stats/private.do', apiParam).then((response) => {
-      runInAction(() => {
-        this.privateMonthStatsList = response.data || [];
-      });
-    });
-  }
-
-  // [조회]
-  @action
-  search() {
-    let searchMonth = this.searchMonth;
-    const profile = this.rootStore.appStore.profile;
-    const apiParam = {
-      searchMonthStr: Helper.dateToString(searchMonth, 'YYYYMM')
-    };
-    if (profile) {
-      apiParam.userId = profile.user_key;
-    }
-    const store = new CustomStore({
-      load(loadOptions) {
-        if (loadOptions) {
-          const { skip, take } = loadOptions;
-          if (take) {
-            apiParam.pageSize = take;
-            apiParam.offset = skip;
-          }
-        }
-        return ApiService.post('commutes/list.do', apiParam).then(
-          (response) => {
-            const data = response.data;
-            return {
-              data: data.list,
-              totalCount: data.totalCount
-            };
-          }
-        );
-      }
-    });
-    this.datagridStore = store;
-  }
-
+  // 가이드 문구 toggle (1)
   @action
   toggleVisibleGuideText() {
     if (this.visibleGuideText) {
@@ -291,11 +258,29 @@ class PortalStore {
     }
   }
 
+  // 가이드 문구 hide (1)
   @action
   hideVisibleGuideText() {
     this.visibleGuideText = false;
   }
 
+  // 가이드 문구 toggle (2)
+  @action
+  toggleVisibleGuideText2() {
+    if (this.visibleGuideText2) {
+      this.visibleGuideText2 = false;
+    } else {
+      this.visibleGuideText2 = true;
+    }
+  }
+
+  // 가이드 문구 hide (2)
+  @action
+  hideVisibleGuideText2() {
+    this.visibleGuideText2 = false;
+  }
+
+  // 다음 달로 일정 변경
   @action
   nextMonth() {
     this.searchMonth = moment(this.searchMonth).add(1, 'months');
@@ -306,6 +291,7 @@ class PortalStore {
     this.getDayListByMonth();
   }
 
+  // 이전 달로 일정 변경
   @action
   prevMonth() {
     this.searchMonth = moment(this.searchMonth).subtract(1, 'months');
@@ -316,6 +302,7 @@ class PortalStore {
     this.getDayListByMonth();
   }
 
+  // 해당 월의 기본 day 정보를 가져옴(토/일/공휴일)
   @action
   getDayListByMonth() {
     const searchMonthStr = Helper.dateToString(this.searchMonth, 'YYYYMM');
@@ -324,12 +311,12 @@ class PortalStore {
     ApiService.post('portals/basic-schedule.do', apiParam).then((response) => {
       const list = response.data;
       runInAction(() => {
-        // calendar
         this.basicCalendarList = getPortalUseBasicScheduleList(list);
       });
     });
   }
 
+  // 달력 선택시 일정 로드해옴
   @action
   changeSelectedShceduleDate(dateStr) {
     this.selectedShceduleDate = moment(dateStr).toDate();
@@ -345,6 +332,7 @@ class PortalStore {
     });
   }
 
+  // 로그인한 사용자의 올해 휴가 정보 가져옴
   @action
   getTodayVacationYearInfo() {
     const profile = this.rootStore.appStore.profile;
@@ -362,8 +350,10 @@ class PortalStore {
     });
   }
 
+  // 일일_출퇴근 목록 가져옴 : 팀원, 팀장, 실장
   @action
   getCommuteDayList() {
+    const appStore = this.rootStore.appStore;
     const profile = this.rootStore.appStore.profile;
     const apiParam = {
       baseDateStr: moment().format('YYYYMMDD')
@@ -374,8 +364,12 @@ class PortalStore {
     ) {
       apiParam.deptKey = profile.dept_key;
     } else if (profile.userType === Constant.USER_TYPE_HEADER) {
-      let childDeptIdList = profile.childDeptIdList;
-      apiParam.childDeptIdList = childDeptIdList;
+      const childDeptList = appStore.getChildDeptListByUpperKey(
+        this.selectedHeadStatsTab
+      );
+      apiParam.childDeptIdList = childDeptList.map(
+        (deptInfo) => deptInfo.deptKey
+      );
     }
     ApiService.post('commutes/list.do', apiParam).then((response) => {
       const data = response.data;
@@ -385,6 +379,7 @@ class PortalStore {
     });
   }
 
+  // 공지사항 목록 load
   @action
   getNoticeList() {
     const apiParam = {
@@ -398,6 +393,7 @@ class PortalStore {
     });
   }
 
+  // 결재 목록 load
   @action
   getApproveList() {
     const apiParam = {};
@@ -409,24 +405,38 @@ class PortalStore {
     });
   }
 
+  // 업무보고 목록 조회
   @action
   getWorkReportList() {
+    const appStore = this.rootStore.appStore;
     const apiParam = {};
     const profile = this.rootStore.appStore.profile;
-    apiParam.startDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
-    apiParam.endDateStr = moment().format('YYYYMMDD');
-    apiParam.deptId = profile.dept_key;
-    ApiService.post('work-reports/recent7day-list.do', apiParam).then(
-      (response) => {
-        const data = response.data.list || [];
-        runInAction(() => {
-          const resultList = _.orderBy(data, ['baseDateStr'], ['desc']);
-          this.workReportList = resultList;
-        });
-      }
-    );
+    if (profile.userType === Constant.USER_TYPE_MANAGER) {
+      apiParam.startDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+      apiParam.endDateStr = moment().format('YYYYMMDD');
+      apiParam.deptId = profile.dept_key;
+    } else if (profile.userType === Constant.USER_TYPE_HEADER) {
+      const childDeptList = appStore.getChildDeptListByUpperKey(
+        this.selectedHeadStatsTab
+      );
+      apiParam.childDeptIdList = childDeptList.map(
+        (deptInfo) => deptInfo.deptKey
+      );
+      // apiParam.offset = 0;
+      // apiParam.pageSize = 5;
+      apiParam.searchDateStr = moment().format('YYYYMMDD');
+    } else if (profile.userType === Constant.USER_TYPE_ADNIN) {
+    }
+    ApiService.post('work-reports/list.do', apiParam).then((response) => {
+      const data = response.data.list || [];
+      runInAction(() => {
+        const resultList = _.orderBy(data, ['baseDateStr'], ['desc']);
+        this.workReportList = resultList;
+      });
+    });
   }
 
+  // 업무보고 일주일 기간(시작 ~ 종료) label text 셋팅
   @action
   initWorkReport7RangeText() {
     // 5월 30일(월) ~ 6월 5일(일)
@@ -442,15 +452,104 @@ class PortalStore {
       ')';
   }
 
+  // 실장 통계 정보 가지고옴
   @action
-  clear() {
-    this.datagridStore = null;
-    this.searchMonth = null;
-    this.monthDatepickerOpend = false;
-    this.todayCommuteDayInfo = null;
-    this.privateMonthStatsList = [];
-    this.inWorkYn = 'Y';
+  getHeadStats() {
+    const apiParam = {};
+    const appStore = this.rootStore.appStore;
+    const selectedHeadStatsTab = this.selectedHeadStatsTab;
+    const childDeptList =
+      appStore.getChildDeptListByUpperKey(selectedHeadStatsTab);
+    apiParam.searchDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+    apiParam.childDeptIdList = childDeptList.map(
+      (deptInfo) => deptInfo.deptKey
+    );
+    ApiService.post('portals/header.do', apiParam).then((response) => {
+      const data = response.data || [];
+      runInAction(() => {
+        this.portalHeadStatsList = data;
+      });
+    });
   }
+
+  // 포탈 실장일 경우 탭 변경시
+  @action
+  changeSelectedHeadStatsTab(statsTab) {
+    this.selectedHeadStatsTab = statsTab;
+    this.getHeadStats();
+    this.getCommuteDayList();
+    this.getWorkReportList();
+  }
+
+  // 포탈 관리자일 경우 탭 변경시
+  @action
+  changeSelectedAdminStatsTabIndex(tabIndex) {
+    this.selectedAdminStatsTabIndex = tabIndex;
+    this.getAdminStats();
+  }
+
+  // 관리자 통계 조회해오기
+  @action
+  getAdminStats() {
+    let selectedAdminStatsTabIndex = this.selectedAdminStatsTabIndex;
+    let apiUrl = 'portals/admin/all.do';
+    if (selectedAdminStatsTabIndex === 1) {
+      apiUrl = 'portals/admin/all.do';
+    } else if (selectedAdminStatsTabIndex === 2) {
+      apiUrl = 'portals/admin/commute.do';
+    } else if (selectedAdminStatsTabIndex === 3) {
+      apiUrl = 'portals/admin/workreport.do';
+    }
+    const apiParam = {};
+    apiParam.searchDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+    ApiService.post(apiUrl, apiParam).then((response) => {
+      const data = response.data || [];
+      const statsSummaryInfo = Helper.convertMapToList(
+        data,
+        'kind',
+        'aggCount'
+      );
+      runInAction(() => {
+        if (selectedAdminStatsTabIndex === 1) {
+          this.portalAdminAllStatsInfo = statsSummaryInfo;
+        } else if (selectedAdminStatsTabIndex === 2) {
+          this.portalAdminCommuteStatsInfo = statsSummaryInfo;
+        } else if (selectedAdminStatsTabIndex === 3) {
+          this.portalAdminWorkReportStatsInfo = statsSummaryInfo;
+        }
+      });
+    });
+  }
+
+  // 휴가 이력 조회
+  @action
+  getVacationDayHistory() {
+    const apiParam = {};
+    apiParam.searchDateStr = moment().format('YYYYMMDD');
+    ApiService.post('vacations/history/list.do', apiParam).then((response) => {
+      const data = response.data.list || [];
+      runInAction(() => {
+        this.vacationDayHistoryList = data;
+      });
+    });
+  }
+
+  // 부서_출퇴근 제출 정보 조회
+  @action
+  getCommuteDeptList() {
+    const apiParam = {
+      searchDateStr: moment().format('YYYYMMDD')
+    };
+    ApiService.post('commute-depts/list.do', apiParam).then((response) => {
+      const data = response.data;
+      runInAction(() => {
+        this.commuteDeptList = data.list || [];
+      });
+    });
+  }
+
+  @action
+  clear() {}
 }
 
 export default PortalStore;

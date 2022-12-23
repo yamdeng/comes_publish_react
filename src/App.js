@@ -59,7 +59,7 @@ import HolidayManageApp from 'component/app/setting/HolidayManageApp';
 */
 
 const getAppComponent = function () {
-  const pageType = 'PortalDeptApp';
+  // const pageType = 'PortalAdminApp';
   if (pageType === 'PortalPrivateApp') {
     return <PortalPrivateApp />;
   } else if (pageType === 'PortalDeptApp') {

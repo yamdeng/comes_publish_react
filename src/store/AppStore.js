@@ -98,6 +98,16 @@ class AppStore {
     return userType;
   }
 
+  getChildDeptListByUpperKey(upperKey) {
+    const profile = this.profile;
+    const childDeptList = profile.childDeptList || [];
+    if (upperKey === 'ALL') {
+      return childDeptList;
+    } else {
+      return childDeptList.filter((info) => info.upperDeptKey === upperKey);
+    }
+  }
+
   // 관리자인 경우
   @computed
   get isAdmin() {

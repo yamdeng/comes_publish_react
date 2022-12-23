@@ -41,60 +41,74 @@
     <title>KT SAFETY-DOC</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-
-    <header>
-      <div id="header">
-        <h1 class="logo_xd">
-          <img src="/images/logo_comes.png" alt="COMES INTRANET" />
-        </h1>
-        <nav>
-          <div id="nav">
-            <ul class="gnb_menu">
-              <li>
-                <a href="javascript:void(0);"><i class="ico1"></i>홈</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico2"></i>구성원</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico3"></i>출퇴근</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico4"></i>휴가/휴직</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico5"></i>예약</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico6"></i>일정</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico7"></i>결재</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico8"></i>증명서</a>
-              </li>
-              <li>
-                <a href="javascript:void(0);"><i class="ico9"></i>게시판</a>
-              </li>
-            </ul>
+    <div id="wrap">
+      <header>
+        <div id="header">
+          <h1 class="logo_xd">
+            <img src="/images/logo_comes.png" alt="COMES INTRANET" />
+          </h1>
+          <nav>
+            <div id="nav">
+              <ul class="gnb_menu">
+                <li>
+                  <a href="javascript:void(0);"><i class="ico1"></i>홈</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico2"></i>구성원</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico3"></i>출퇴근</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"
+                    ><i class="ico4"></i>휴가/휴직</a
+                  >
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico5"></i>예약</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico6"></i>일정</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico7"></i>결재</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico8"></i>증명서</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0);"><i class="ico9"></i>게시판</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <div class="top_area">
+            <div class="btn_alarm">
+              <a href="javascript:void(0);">알림</a><span>2</span>
+            </div>
+            <p>
+              <span>기업부설연구소</span
+              ><a class="user" href="javascript:void(0);">조강래</a>님
+            </p>
+            <a href="javascript:void(0)" class="btn_login">로그아웃</a>
           </div>
-        </nav>
-        <div class="top_area">
-          <div class="btn_alarm">
-            <a href="javascript:void(0);">알림</a><span>2</span>
-          </div>
-          <p>
-            <span>기업부설연구소</span
-            ><a class="user" href="javascript:void(0);">조강래</a>님
-          </p>
-          <a href="javascript:void(0)" class="btn_login">로그아웃</a>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <div id="root"></div>
+      <div id="root"></div>
+
+      <footer>
+        <!-- 하단 copyright 영역 -->
+        <div id="footer">
+          <div>
+            <a href="javascript:void(0);" class="btn_footer">컴즈 의견수렴</a>
+            <div class="copy">
+              © COMES CORP. <span>ALL RIGHTS RESERVED</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -106,15 +120,6 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 
-    <footer>
-      <!-- 하단 copyright 영역 -->
-      <div id="footer">
-        <div>
-          <a href="javascript:void(0);" class="btn_footer">컴즈 의견수렴</a>
-          <div class="copy">© COMES CORP. <span>ALL RIGHTS RESERVED</span></div>
-        </div>
-      </div>
-    </footer>
     <script>
       $(document).ready(() => {
         toastr.options = {

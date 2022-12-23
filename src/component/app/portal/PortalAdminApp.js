@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Helper from 'util/Helper';
 import classnames from 'classnames';
+import Constant from 'config/Constant';
 
 @inject('appStore', 'uiStore', 'portalStore')
 @observer
@@ -9,9 +10,36 @@ class PortalAdminApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.init = this.init.bind(this);
     this.changeSelectedShceduleDate.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
     this.prevMonth = this.prevMonth.bind(this);
+    this.changeSelectedAdminStatsTabIndex =
+      this.changeSelectedAdminStatsTabIndex.bind(this);
+
+    this.changeInWorkYn = this.changeInWorkYn.bind(this);
+    this.startWork = this.startWork.bind(this);
+    this.outWork = this.outWork.bind(this);
+  }
+
+  init() {
+    /*
+
+      1.금일 일일_출퇴근 정보 조회
+      2.전체 부서_출퇴근 정보 조회
+      3.공지사항 조회
+      4.월 단위 기본 달력정보와 오늘 일정 조회
+      5.관리자용 통계 조회
+      6.전체 연차 현황 조회
+
+    */
+    const { portalStore } = this.props;
+    portalStore.getTodayCommuteDayInfo();
+    portalStore.getCommuteDeptList();
+    portalStore.getNoticeList();
+    portalStore.initSchedule();
+    portalStore.getAdminStats();
+    portalStore.getVacationDayHistory();
   }
 
   changeSelectedShceduleDate(dateStr) {
@@ -29,46 +57,210 @@ class PortalAdminApp extends Component {
     portalStore.prevMonth();
   }
 
-  componentDidMount() {
+  changeSelectedAdminStatsTabIndex(tabIndex) {
     const { portalStore } = this.props;
-    portalStore.initSchedule();
+    portalStore.changeSelectedAdminStatsTabIndex(tabIndex);
+  }
+
+  changeInWorkYn(event) {
+    const value = event.target.value;
+    const { portalStore } = this.props;
+    portalStore.changeInWorkYn(value);
+  }
+
+  startWork() {
+    const { portalStore } = this.props;
+    portalStore.startWork();
+  }
+
+  outWork() {
+    const { portalStore } = this.props;
+    portalStore.outWork();
+  }
+
+  changeSelectedHeadStatsTab(deptKey) {
+    const { portalStore } = this.props;
+    portalStore.changeSelectedHeadStatsTab(deptKey);
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {
-    const { portalStore } = this.props;
-    const {
+    const { portalStore, uiStore, appStore } = this.props;
+    const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;
+    const { profile } = appStore;
+    const { user_name } = profile;
+    let {
+      todayCommuteDayInfo,
+      commuteDeptList,
+      noticeList,
+      inWorkYn,
       searchMonth,
       selectedShceduleDate,
       basicCalendarList,
-      scheduleList
+      scheduleList,
+      portalAdminAllStatsInfo,
+      portalAdminCommuteStatsInfo,
+      portalAdminWorkReportStatsInfo,
+      selectedAdminStatsTabIndex,
+      vacationDayHistoryList
     } = portalStore;
+    todayCommuteDayInfo = todayCommuteDayInfo || {};
+    portalAdminAllStatsInfo = portalAdminAllStatsInfo || {};
+    portalAdminCommuteStatsInfo = portalAdminCommuteStatsInfo || {};
+    portalAdminWorkReportStatsInfo = portalAdminWorkReportStatsInfo || {};
+    const {
+      userId,
+      startWorkDate,
+      outWorkDate,
+      startWorkIp,
+      workStatusCodeName,
+      startWorkDeviceType
+    } = todayCommuteDayInfo;
+
+    let startWorkDeviceTypeText = '';
+    if (startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
+    }
+
     let scheduleListComponent = <p>일정 없음</p>;
     if (scheduleList.length) {
       scheduleListComponent = scheduleList.map((scheduleInfo) => {
         return <p>{scheduleInfo.title}</p>;
       });
     }
+
+    let noticeListComponent = null;
+    if (noticeList.length) {
+      noticeListComponent = noticeList.map((noticeArticleInfo) => {
+        const {
+          article_num,
+          article_title,
+          user_name,
+          reg_date,
+          article_view_count,
+          article_id
+        } = noticeArticleInfo;
+        return (
+          <tr>
+            <td>{article_num}</td>
+            <td
+              class="subject"
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/detail.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY +
+                    '&artice_id=' +
+                    article_id
+                )
+              }
+            >
+              <a href="#">{article_title}</a>
+            </td>
+            <td>{user_name}</td>
+            <td>{reg_date}</td>
+            <td>{article_view_count}</td>
+          </tr>
+        );
+      });
+    } else {
+      noticeListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 공지사항이 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let commuteDeptListComponent = null;
+    if (commuteDeptList.length) {
+      commuteDeptListComponent = commuteDeptList.map((commuteDeptInfo) => {
+        const {
+          deptName,
+          managerName,
+          managerMobileTel,
+          commuteSubmitStatusCodeName
+        } = commuteDeptInfo;
+        return (
+          <tr>
+            <td>{deptName}</td>
+            <td>{managerName}</td>
+            <td>{managerMobileTel}</td>
+            <td>{commuteSubmitStatusCodeName}</td>
+          </tr>
+        );
+      });
+    } else {
+      commuteDeptListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={4}>
+            부서 출퇴근 제출 정보가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let vacationDayHistoryListComponent = null;
+    if (vacationDayHistoryList.length) {
+      vacationDayHistoryListComponent = vacationDayHistoryList.map(
+        (vacationDetailInfo) => {
+          const { userName, vacationKindCodeName, vacationKindCode } =
+            vacationDetailInfo;
+          return (
+            <tr>
+              <td>{userName}</td>
+              <td>{vacationKindCodeName}</td>
+              <td>{'전일'}</td>
+            </tr>
+          );
+        }
+      );
+    } else {
+      vacationDayHistoryListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={3}>
+            휴가/휴직 정보가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
     return (
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
           <div class="row_item grid3">
-            <h3>
+            <h3
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
               <i class="ico1"></i>근무
+              <a href="" class="btn_more">
+                더보기
+              </a>
             </h3>
             <div class="con_work border_box flex_sb">
               <div class="wo_con1 bg">
                 <p class="bold30">
-                  09.28<span> (수)</span>
+                  {todayDayTextInfo}
+                  <span> ({todayWeekTextInfo})</span>
                 </p>
-                <p>08:55:21</p>
-                <ul class="flex_sb mgtop40">
+                <p>{currentTime}</p>
+                <ul
+                  class="flex_sb mgtop40"
+                  style={{ display: startWorkDate ? 'none' : '' }}
+                >
                   <li>
                     <div class="radio">
                       <input
                         type="radio"
                         id="work_option1"
                         name="work_option"
-                        checked
+                        value="Y"
+                        checked={inWorkYn === 'Y'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option1">업무</label>
                     </div>
@@ -79,6 +271,10 @@ class PortalAdminApp extends Component {
                         type="radio"
                         id="work_option2"
                         name="work_option"
+                        value="N"
+                        checked={inWorkYn === 'N'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option2">재택</label>
                     </div>
@@ -87,19 +283,51 @@ class PortalAdminApp extends Component {
               </div>
               <div class="wo_con2">
                 <p>
-                  <span class="user">조강래 </span> 님
+                  <span class="user">{user_name} </span> 님
+                  {workStatusCodeName ? '(' + workStatusCodeName + ')' : ''}
                 </p>
-                <p>접속 IP : (P) 61.75.21.224 </p>
+                <p>
+                  접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
+                  {Helper.convertEmptyValue(startWorkIp)}{' '}
+                </p>
                 <div>
                   <ul class="flex_sb mgtop40">
-                    <li>
-                      <a href="javascript:void(0);" class="activate1">
-                        출근 <span>08:55</span>
+                    <li onClick={this.startWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          startWorkDate ? 'activate1' : userId ? 'disabled' : ''
+                        }
+                      >
+                        출근{' '}
+                        <span>
+                          {startWorkDate
+                            ? Helper.convertDate(
+                                startWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>
                     </li>
-                    <li>
-                      <a href="javascript:void(0);" class="disabled">
-                        퇴근 <span>미체크</span>
+                    <li onClick={this.outWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          outWorkDate ? 'activate2' : userId ? 'disabled' : ''
+                        }
+                      >
+                        퇴근{' '}
+                        <span>
+                          {outWorkDate
+                            ? Helper.convertDate(
+                                outWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>{' '}
                     </li>
                   </ul>
@@ -110,52 +338,212 @@ class PortalAdminApp extends Component {
           <div class="row_item grid3">
             <div class="tab">
               <ul class="tabnav">
-                <li>
-                  <a href="#tab01" class="active">
+                <li onClick={() => this.changeSelectedAdminStatsTabIndex(1)}>
+                  <a
+                    href="#tab01"
+                    className={selectedAdminStatsTabIndex === 1 ? 'active' : ''}
+                  >
                     전체
                   </a>
                 </li>
-                <li>
-                  <a href="#tab02">출퇴근 제출</a>
+                <li onClick={() => this.changeSelectedAdminStatsTabIndex(2)}>
+                  <a
+                    href="#tab02"
+                    className={selectedAdminStatsTabIndex === 2 ? 'active' : ''}
+                  >
+                    출퇴근 제출
+                  </a>
                 </li>
-                <li>
-                  <a href="#tab03">업무보고</a>
+                <li onClick={() => this.changeSelectedAdminStatsTabIndex(3)}>
+                  <a
+                    href="#tab03"
+                    className={selectedAdminStatsTabIndex === 3 ? 'active' : ''}
+                  >
+                    업무보고
+                  </a>
                 </li>
               </ul>
               <div class="tabcontent">
-                <div id="tab01">
+                <div
+                  id="tab01"
+                  style={{
+                    display: selectedAdminStatsTabIndex === 1 ? '' : 'none'
+                  }}
+                >
                   <div class="border_box">
                     <div class="con_vaca flex_ar">
-                      <div class="flex_center">
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('org/center/org_main/index.do')
+                        }
+                      >
                         <p>
-                          구성원<span>217 / 31</span>
+                          구성원
+                          <span>
+                            {portalAdminAllStatsInfo.user} /{' '}
+                            {portalAdminAllStatsInfo.dept}
+                          </span>
                         </p>
                       </div>
-                      <div class="flex_center">
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/commute-admin.do')
+                        }
+                      >
                         <p>
-                          지각/출퇴근 미제출<span>7 / 3</span>
+                          지각/출퇴근 미제출
+                          <span>
+                            {portalAdminAllStatsInfo.tardy} /{' '}
+                            {portalAdminAllStatsInfo.dept_commute_not_submit}
+                          </span>
                         </p>
                       </div>
-                      <div class="flex_center relative">
+                      <div
+                        class="flex_center relative"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/report-admin.do')
+                        }
+                      >
                         <p>
-                          업무보고 등록<span>13</span>
+                          업무보고 등록
+                          <span>{portalAdminAllStatsInfo.report_submit}</span>
                         </p>
                       </div>
-                      <div class="flex_center relative">
+                      <div
+                        class="flex_center relative"
+                        onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+                      >
                         <p>
-                          미결재<span>3</span>
+                          미결재
+                          <span>{portalAdminAllStatsInfo.not_approve}</span>
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* <div id="tab02"> 출퇴근 제출 content</div>
-                <div id="tab03"> 업무보고 content</div> */}
+                {/* 출퇴근제출 탭 */}
+                <div
+                  id="tab02"
+                  style={{
+                    display: selectedAdminStatsTabIndex === 2 ? '' : 'none'
+                  }}
+                >
+                  <div class="border_box">
+                    <div class="con_vaca flex_ar">
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/commute-admin.do')
+                        }
+                      >
+                        <p>
+                          제출
+                          <span>
+                            {portalAdminCommuteStatsInfo.before_submit}
+                          </span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/commute-admin.do')
+                        }
+                      >
+                        <p>
+                          반려
+                          <span>{portalAdminCommuteStatsInfo.reject}</span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center relative"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/commute-admin.do')
+                        }
+                      >
+                        <p>
+                          승인전
+                          <span>{portalAdminCommuteStatsInfo.submit}</span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center relative"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/commute-admin.do')
+                        }
+                      >
+                        <p>
+                          승인완료
+                          <span>
+                            {portalAdminCommuteStatsInfo.approve_complete}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* 업무보고 탭 */}
+                <div
+                  id="tab03"
+                  style={{
+                    display: selectedAdminStatsTabIndex === 3 ? '' : 'none'
+                  }}
+                >
+                  <div class="border_box">
+                    <div class="con_vaca flex_ar">
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/report-admin.do')
+                        }
+                      >
+                        <p>
+                          등록
+                          <span>{portalAdminWorkReportStatsInfo.regist}</span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/report-admin.do')
+                        }
+                      >
+                        <p>
+                          미제출
+                          <span>{portalAdminWorkReportStatsInfo.regist}</span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center relative"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/report-admin.do')
+                        }
+                      >
+                        <p>
+                          이슈
+                          <span>{portalAdminWorkReportStatsInfo.issue}</span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex_center relative"
+                        onClick={() =>
+                          Helper.goUrl('newoffice/view/report-admin.do')
+                        }
+                      >
+                        <p>
+                          댓글
+                          <span>{portalAdminWorkReportStatsInfo.comment}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="row_item grid3">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('sch/center/index.do')}>
               <i class="ico2"></i>회사 일정
               <a href="" class="btn_more">
                 더보기
@@ -307,7 +695,14 @@ class PortalAdminApp extends Component {
         </div>
         <div class="mf_to_row1 flex_sb mgtop40">
           <div class="row_item grid2">
-            <h3>
+            <h3
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/list.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY
+                )
+              }
+            >
               공지사항
               <a href="" class="btn_more">
                 더보기
@@ -332,63 +727,12 @@ class PortalAdminApp extends Component {
                     <th scope="col">조회수</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 취업규칙 변경신고 관련 안내드립니다.취업규칙
-                        변경신고 관련 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.10.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022.1Q 컴즈 뉴스레터_ #1 창간호</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.09.21</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022년도 건강검진 실시 안내</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.09.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td class="subject">
-                      <a href="#">[공지] 사내 체육대회 관련 안내드립니다.</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.07.01</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 결재 전자시스템 오류로 인한 점검 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.06.10</td>
-                    <td>176</td>
-                  </tr>
-                </tbody>
+                <tbody>{noticeListComponent}</tbody>
               </table>
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
               전체 출퇴근 현황
               <a href="" class="btn_more">
                 더보기
@@ -411,51 +755,14 @@ class PortalAdminApp extends Component {
                     <th scope="col">상태</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>안하름</td>
-                    <td>010-1234-5678</td>
-                    <td>승인전</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>김회원</td>
-                    <td>010-1234-5678</td>
-                    <td>승인전</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>안하름</td>
-                    <td>010-1234-5678</td>
-                    <td>승인전</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>김회원</td>
-                    <td>010-1234-5678</td>
-                    <td>승인전</td>
-                  </tr>
-                </tbody>
+                <tbody>{commuteDeptListComponent}</tbody>
               </table>
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3
+              onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
+            >
               전체 연차 현황
               <a href="" class="btn_more">
                 더보기
@@ -476,33 +783,7 @@ class PortalAdminApp extends Component {
                     <th scope="col">전일/반일</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>김회원</td>
-                    <td>휴가/휴직 (연차)</td>
-                    <td>전일</td>
-                  </tr>
-                  <tr>
-                    <td>안하름</td>
-                    <td>휴가/휴직 (연차)</td>
-                    <td>오후반차</td>
-                  </tr>
-                  <tr>
-                    <td>김회원</td>
-                    <td>휴가/휴직 (연차)</td>
-                    <td>오후반차</td>
-                  </tr>
-                  <tr>
-                    <td>안하름</td>
-                    <td>휴가/휴직 (연차)</td>
-                    <td>전일</td>
-                  </tr>
-                  <tr>
-                    <td>김회원</td>
-                    <td>휴가/휴직 (연차)</td>
-                    <td>전일</td>
-                  </tr>
-                </tbody>
+                <tbody>{vacationDayHistoryListComponent}</tbody>
               </table>
             </div>
           </div>

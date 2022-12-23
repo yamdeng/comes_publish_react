@@ -470,6 +470,15 @@ const toastMessage = function (title, message, level) {
   toastr[level ? level : 'success'](title, message);
 };
 
+const convertMapToList = function (list, labelKey, valueKey) {
+  const result = {};
+  list.forEach((info) => {
+    result[info[labelKey]] = info[valueKey];
+  });
+
+  return result;
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -505,5 +514,6 @@ export default {
   getDefaultInputData,
   getQueryStringValue,
   goUrl,
-  toastMessage
+  toastMessage,
+  convertMapToList
 };

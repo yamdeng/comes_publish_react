@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
-import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 
@@ -19,10 +17,20 @@ class PortalDeptApp extends Component {
   }
 
   init() {
+    /*
+
+      1.금일 일일_출퇴근 정보 조회
+      2.올해 휴가 사용정보 조회
+      3.팀원의 일일_출퇴근 정보 조회
+      4.공지사항 조회
+      5.결재정보 조회
+      6.업무보고 조회
+
+    */
     const { portalStore } = this.props;
+    portalStore.getTodayCommuteDayInfo();
     portalStore.getTodayVacationYearInfo();
     portalStore.getCommuteDayList();
-    portalStore.getTodayCommuteDayInfo();
     portalStore.getNoticeList();
     portalStore.getApproveList();
     portalStore.getWorkReportList();
@@ -51,6 +59,8 @@ class PortalDeptApp extends Component {
 
   render() {
     const { portalStore, uiStore, appStore } = this.props;
+    const { profile } = appStore;
+    const { user_name } = profile;
     let {
       todayCommuteDayInfo,
       todayVacationYearInfo,
@@ -78,20 +88,14 @@ class PortalDeptApp extends Component {
       startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
     }
 
-    const { annualCount, useableCount, plusVacationCount, usedCount } =
-      todayVacationYearInfo;
-
-    const { profile } = appStore;
-    const { dept_name, user_name } = profile;
+    const { annualCount, plusVacationCount, usedCount } = todayVacationYearInfo;
+    const restVacationCount = annualCount + plusVacationCount - usedCount;
 
     let commuteDayListComponent = null;
     if (commuteDayList.length) {
       commuteDayListComponent = commuteDayList.map((info) => {
         const {
-          dutyTitle,
           positionTitle,
-          baseDateStr,
-          deptName,
           userName,
           workStatusCodeName,
           startWorkDate,
@@ -200,7 +204,6 @@ class PortalDeptApp extends Component {
       workReportListComponent = workReportList.map((workReportInfo) => {
         const { baseDateStr, reportDate, commentCount, holiday } =
           workReportInfo;
-        console.log('baseDateStr : ' + baseDateStr);
         return (
           <tr>
             <td style={{ color: holiday ? '#ed4747' : '' }}>
@@ -231,8 +234,13 @@ class PortalDeptApp extends Component {
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
           <div class="row_item grid3">
-            <h3>
+            <h3
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
               <i class="ico1"></i>근무
+              <a href="" class="btn_more">
+                더보기
+              </a>
             </h3>
             <div class="con_work border_box flex_sb">
               <div class="wo_con1 bg">
@@ -241,7 +249,10 @@ class PortalDeptApp extends Component {
                   <span>({todayWeekTextInfo})</span>
                 </p>
                 <p>{currentTime}</p>
-                <ul class="flex_sb mgtop40">
+                <ul
+                  class="flex_sb mgtop40"
+                  style={{ display: startWorkDate ? 'none' : '' }}
+                >
                   <li>
                     <div class="radio">
                       <input
@@ -275,6 +286,7 @@ class PortalDeptApp extends Component {
               <div class="wo_con2">
                 <p>
                   <span class="user">{user_name} </span> 님
+                  {workStatusCodeName ? '(' + workStatusCodeName + ')' : ''}
                 </p>
                 <p>
                   접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
@@ -358,15 +370,14 @@ class PortalDeptApp extends Component {
                   <p>
                     잔여 연차
                     <span class="blue">
-                      {!todayVacationYearInfo.userId
-                        ? '-'
-                        : annualCount + plusVacationCount - usedCount}
+                      {!todayVacationYearInfo.userId ? '-' : restVacationCount}
                     </span>
                   </p>
                   <a
                     class="btn_vaca"
                     href="javascript:void(0);"
                     onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+                    style={{ display: restVacationCount > 0 ? '' : 'none' }}
                   >
                     휴가 신청
                   </a>
@@ -375,7 +386,7 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3 onClick={() => Helper.goUrl('newoffice/view/vacation-dept.do')}>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}>
               <i class="ico3"></i>팀원 근무/출퇴근 현황
               <a href="" class="btn_more">
                 더보기
@@ -444,7 +455,7 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('gsign/docbox/index.do')}>
               결재 현황
               <a href="" class="btn_more">
                 더보기
@@ -475,7 +486,7 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/report-dept.do')}>
               업무 보고 현황
               <a href="" class="btn_more">
                 더보기

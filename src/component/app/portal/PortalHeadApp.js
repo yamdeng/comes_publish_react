@@ -1,37 +1,353 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
+import { toJS } from 'mobx';
+import Constant from 'config/Constant';
+import classnames from 'classnames';
+import Helper from 'util/Helper';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'portalStore')
 @observer
 class PortalHeadApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.init = this.init.bind(this);
+    this.changeSelectedHeadStatsTab =
+      this.changeSelectedHeadStatsTab.bind(this);
+    this.changeInWorkYn = this.changeInWorkYn.bind(this);
+    this.startWork = this.startWork.bind(this);
+    this.outWork = this.outWork.bind(this);
+  }
+
+  init() {
+    /*
+
+      1.금일 일일_출퇴근 정보 조회
+      2.실원의 일일_출퇴근 정보 조회
+      3.공지사항 조회
+      4.결재정보 조회
+      5.업무보고 조회
+      6.실장 전용 통계 조회
+
+    */
+    const { portalStore } = this.props;
+    portalStore.getTodayCommuteDayInfo();
+    portalStore.getCommuteDayList();
+    portalStore.getNoticeList();
+    portalStore.getApproveList();
+    portalStore.getWorkReportList();
+    portalStore.getHeadStats();
+  }
+
+  changeInWorkYn(event) {
+    const value = event.target.value;
+    const { portalStore } = this.props;
+    portalStore.changeInWorkYn(value);
+  }
+
+  startWork() {
+    const { portalStore } = this.props;
+    portalStore.startWork();
+  }
+
+  outWork() {
+    const { portalStore } = this.props;
+    portalStore.outWork();
+  }
+
+  changeSelectedHeadStatsTab(deptKey) {
+    const { portalStore } = this.props;
+    portalStore.changeSelectedHeadStatsTab(deptKey);
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {
+    const { portalStore, uiStore, appStore } = this.props;
+    const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;
+    const { profile } = appStore;
+    let { user_name, silDeptList } = profile;
+
+    let {
+      todayCommuteDayInfo,
+      commuteDayList,
+      noticeList,
+      inWorkYn,
+      approveList,
+      workReportList,
+      selectedHeadStatsTab,
+      portalHeadStatsList
+    } = portalStore;
+    todayCommuteDayInfo = todayCommuteDayInfo || {};
+    const {
+      userId,
+      startWorkDate,
+      outWorkDate,
+      startWorkIp,
+      workStatusCodeName,
+      startWorkDeviceType
+    } = todayCommuteDayInfo;
+
+    let startWorkDeviceTypeText = '';
+    if (startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
+    }
+
+    const currentChildDeptList =
+      appStore.getChildDeptListByUpperKey(selectedHeadStatsTab);
+
+    const portalHeadStatsListComponent = portalHeadStatsList.map(
+      (statsInfo) => {
+        const { kind, aggCount } = statsInfo;
+        let kindName = Constant.STATS_KIND_LABEL_MAP[kind];
+        let aggSpanClassName = classnames({
+          blue: kind === 'report_issue',
+          red: kind === 'report_not_submit'
+        });
+        let aggCountComponent = (
+          <span className={aggSpanClassName}>{aggCount}</span>
+        );
+        if (kind === 'user') {
+          aggCountComponent = (
+            <span>
+              {aggCount} / {currentChildDeptList.length}
+            </span>
+          );
+        }
+
+        // 구성원 : org/center/org_main/index.do
+        // 지각 : newoffice/view/commute-head.do
+        // 휴가/휴직 : newoffice/view/vacation-head.do
+        // 출퇴근 미제출 : newoffice/view/commute-head.do
+        // 업무보고 이슈 : newoffice/view/report-head.do
+        // 업무보고 미제출 : newoffice/view/report-head.do
+
+        let linkUrl = '';
+        if (kind === 'user') {
+          linkUrl = 'org/center/org_main/index.do';
+        } else if (kind === 'tardy') {
+          linkUrl = 'newoffice/view/commute-head.do';
+        } else if (kind === 'vacation') {
+          linkUrl = 'newoffice/view/vacation-head.do';
+        } else if (kind === 'dept_commute_not_submit') {
+          linkUrl = 'newoffice/view/commute-head.do';
+        } else if (kind === 'report_issue') {
+          linkUrl = 'newoffice/view/report-head.do';
+        } else if (kind === 'report_not_submit') {
+          linkUrl = 'newoffice/view/report-head.do';
+        }
+        return (
+          <div class="flex_center" onClick={() => Helper.goUrl(linkUrl)}>
+            <p>
+              {kindName}
+              {aggCountComponent}
+            </p>
+          </div>
+        );
+      }
+    );
+    let silDeptListComponent = null;
+    let pojoSilDeptList = toJS(silDeptList) || [];
+    let silDeptListConvert =
+      pojoSilDeptList.length > 1
+        ? [{ deptKey: 'ALL', deptName: '전체' }].concat(toJS(pojoSilDeptList))
+        : pojoSilDeptList;
+    if (pojoSilDeptList.length > 0) {
+      silDeptListComponent = silDeptListConvert.map((deptInfo) => {
+        const { deptKey, deptName } = deptInfo;
+        return (
+          <li onClick={() => this.changeSelectedHeadStatsTab(deptKey)}>
+            <a
+              href={'#' + deptKey}
+              className={classnames({
+                active: selectedHeadStatsTab === deptKey
+              })}
+            >
+              {deptName}
+            </a>
+          </li>
+        );
+      });
+    }
+
+    let commuteDayListComponent = null;
+    if (commuteDayList.length) {
+      commuteDayListComponent = commuteDayList.map((info) => {
+        const {
+          deptName,
+          userName,
+          positionTitle,
+          workStatusCodeName,
+          startWorkDate,
+          outWorkDate
+        } = info;
+        return (
+          <tr>
+            <td>{deptName}</td>
+            <td>{userName}</td>
+            <td>{positionTitle}</td>
+            <td>{workStatusCodeName}</td>
+            <td>
+              {Helper.convertDate(startWorkDate, 'YYYY-MM-DD HH:mm:ss', 'H:mm')}
+            </td>
+            <td>
+              {Helper.convertDate(outWorkDate, 'YYYY-MM-DD HH:mm:ss', 'H:mm')}
+            </td>
+          </tr>
+        );
+      });
+    } else {
+      commuteDayListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={6}>
+            실원 출퇴근 정보가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let noticeListComponent = null;
+    if (noticeList.length) {
+      noticeListComponent = noticeList.map((noticeArticleInfo) => {
+        const {
+          article_num,
+          article_title,
+          user_name,
+          reg_date,
+          article_view_count,
+          article_id
+        } = noticeArticleInfo;
+        return (
+          <tr>
+            <td>{article_num}</td>
+            <td
+              class="subject"
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/detail.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY +
+                    '&artice_id=' +
+                    article_id
+                )
+              }
+            >
+              <a href="#">{article_title}</a>
+            </td>
+            <td>{user_name}</td>
+            <td>{reg_date}</td>
+            <td>{article_view_count}</td>
+          </tr>
+        );
+      });
+    } else {
+      noticeListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 공지사항이 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let approveListComponent = null;
+    if (approveList.length) {
+      approveListComponent = approveList.map((approveInfo) => {
+        const { fld_date, fld_title, code_name, fld_writer } = approveInfo;
+        return (
+          <tr>
+            <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
+            <td>{code_name}</td>
+            <td
+              class="subject"
+              onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+            >
+              <a href="#">{fld_title}</a>
+            </td>
+            <td>{fld_writer}</td>
+            <td>
+              <p class="red">결재요청</p>
+            </td>
+          </tr>
+        );
+      });
+    } else {
+      approveListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            등록된 결재가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
+    let workReportListComponent = null;
+    if (workReportList.length) {
+      workReportListComponent = workReportList.map((workReportInfo) => {
+        const {
+          deptName,
+          baseDateStr,
+          reportDate,
+          commentCount,
+          issueYn,
+          holiday
+        } = workReportInfo;
+        return (
+          <tr>
+            <td>{deptName}</td>
+            <td style={{ color: holiday ? '#ed4747' : '' }}>
+              {Helper.convertDate(baseDateStr, 'YYYYMMDD', 'YYYY-MM-DD(ddd)')}
+            </td>
+            <td>{reportDate ? 'Y' : 'N'}</td>
+            <td>{issueYn}</td>
+            <td>{commentCount ? 'Y' : 'N'}</td>
+          </tr>
+        );
+      });
+    } else {
+      workReportListComponent = (
+        <tr>
+          <td style={{ textAlign: 'center' }} colSpan={5}>
+            업무보고가 존재하지 않습니다.
+          </td>
+        </tr>
+      );
+    }
+
     return (
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
           <div class="row_item grid3">
-            <h3>
+            <h3
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
               <i class="ico1"></i>근무
+              <a href="" class="btn_more">
+                더보기
+              </a>
             </h3>
             <div class="con_work border_box flex_sb">
               <div class="wo_con1 bg">
                 <p class="bold30">
-                  09.28<span> (수)</span>
+                  {todayDayTextInfo}
+                  <span>({todayWeekTextInfo})</span>
                 </p>
-                <p>08:55:21</p>
-                <ul class="flex_sb mgtop40">
+                <p>{currentTime}</p>
+                <ul
+                  class="flex_sb mgtop40"
+                  style={{ display: startWorkDate ? 'none' : '' }}
+                >
                   <li>
                     <div class="radio">
                       <input
                         type="radio"
                         id="work_option1"
                         name="work_option"
-                        checked
+                        value="Y"
+                        checked={inWorkYn === 'Y'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option1">업무</label>
                     </div>
@@ -42,6 +358,10 @@ class PortalHeadApp extends Component {
                         type="radio"
                         id="work_option2"
                         name="work_option"
+                        value="N"
+                        checked={inWorkYn === 'N'}
+                        onChange={this.changeInWorkYn}
+                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option2">재택</label>
                     </div>
@@ -50,19 +370,51 @@ class PortalHeadApp extends Component {
               </div>
               <div class="wo_con2">
                 <p>
-                  <span class="user">조강래 </span> 님
+                  <span class="user">{user_name} </span> 님
+                  {workStatusCodeName ? '(' + workStatusCodeName + ')' : ''}
                 </p>
-                <p>접속 IP : (P) 61.75.21.224 </p>
+                <p>
+                  접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
+                  {Helper.convertEmptyValue(startWorkIp)}{' '}
+                </p>
                 <div>
                   <ul class="flex_sb mgtop40">
-                    <li>
-                      <a href="javascript:void(0);" class="activate1">
-                        출근 <span>08:55</span>
+                    <li onClick={this.startWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          startWorkDate ? 'activate1' : userId ? 'disabled' : ''
+                        }
+                      >
+                        출근{' '}
+                        <span>
+                          {startWorkDate
+                            ? Helper.convertDate(
+                                startWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>
                     </li>
-                    <li>
-                      <a href="javascript:void(0);" class="disabled">
-                        퇴근 <span>미체크</span>
+                    <li onClick={this.outWork}>
+                      <a
+                        href="javascript:void(0);"
+                        class={
+                          outWorkDate ? 'activate2' : userId ? 'disabled' : ''
+                        }
+                      >
+                        퇴근{' '}
+                        <span>
+                          {outWorkDate
+                            ? Helper.convertDate(
+                                outWorkDate,
+                                'YYYY-MM-DD HH:mm:ss',
+                                'H:mm'
+                              )
+                            : '미체크'}
+                        </span>
                       </a>{' '}
                     </li>
                   </ul>
@@ -72,65 +424,20 @@ class PortalHeadApp extends Component {
           </div>
           <div class="row_item grid3">
             <div class="tab">
-              <ul class="tabnav">
-                <li>
-                  <a href="#tab01">전체</a>
-                </li>
-                <li>
-                  <a href="#tab02">1실</a>
-                </li>
-                <li>
-                  <a href="#tab03">2실</a>
-                </li>
-                <li>
-                  <a href="#tab04">3실</a>
-                </li>
-              </ul>
+              <ul class="tabnav">{silDeptListComponent}</ul>
               <div class="tabcontent">
                 <div id="tab01">
                   <div class="border_box">
                     <div class="con_vaca2 flex_ar">
-                      <div class="flex_center">
-                        <p>
-                          실 구성원<span>217 / 31</span>
-                        </p>
-                      </div>
-                      <div class="flex_center">
-                        <p>
-                          지각<span>7</span>
-                        </p>
-                      </div>
-                      <div class="flex_center">
-                        <p>
-                          휴가/휴직<span>13</span>
-                        </p>
-                      </div>
-                      <div class="flex_center">
-                        <p>
-                          출퇴근 미제출<span>5</span>
-                        </p>
-                      </div>
-                      <div class="flex_center">
-                        <p>
-                          업무보고 이슈<span class="blue">3</span>
-                        </p>
-                      </div>
-                      <div class="flex_center">
-                        <p>
-                          업무보고 미제출<span class="red">13</span>
-                        </p>
-                      </div>
+                      {portalHeadStatsListComponent}
                     </div>
                   </div>
                 </div>
-                <div id="tab02"> 1실 content</div>
-                <div id="tab03"> 2실 content</div>
-                <div id="tab04"> 3실 content</div>
               </div>
             </div>
           </div>
           <div class="row_item grid3">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/commute-head.do')}>
               <i class="ico2"></i>실원 근무/출퇴근 현황
               <a href="" class="btn_more">
                 더보기
@@ -157,83 +464,21 @@ class PortalHeadApp extends Component {
                     <th scope="col">퇴근</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>안하름</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>오전반차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>안하름</td>
-                    <td>과장</td>
-                    <td>업무 중</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>안하름</td>
-                    <td>과장</td>
-                    <td>업무 중</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>김회원</td>
-                    <td>대리</td>
-                    <td>연차</td>
-                    <td>09:22</td>
-                    <td></td>
-                  </tr>
-                </tbody>
+                <tbody>{commuteDayListComponent}</tbody>
               </table>
             </div>
           </div>
         </div>
         <div class="mf_to_row1 flex_sb mgtop40">
           <div class="row_item grid2">
-            <h3>
+            <h3
+              onClick={() =>
+                Helper.goUrl(
+                  'bbs/comes/board/list.do?boardKey=' +
+                    Constant.NOTICE_BOARD_KEY
+                )
+              }
+            >
               공지사항
               <a href="" class="btn_more">
                 더보기
@@ -258,63 +503,12 @@ class PortalHeadApp extends Component {
                     <th scope="col">조회수</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 취업규칙 변경신고 관련 안내드립니다.취업규칙
-                        변경신고 관련 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.10.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022.1Q 컴즈 뉴스레터_ #1 창간호</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.09.21</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td class="subject">
-                      <a href="#">[공지] 2022년도 건강검진 실시 안내</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.09.10</td>
-                    <td>176</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td class="subject">
-                      <a href="#">[공지] 사내 체육대회 관련 안내드립니다.</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>2022.07.01</td>
-                    <td>94</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td class="subject">
-                      <a href="#">
-                        [공지] 결재 전자시스템 오류로 인한 점검 안내드립니다.
-                      </a>
-                    </td>
-                    <td>김회원</td>
-                    <td>2022.06.10</td>
-                    <td>176</td>
-                  </tr>
-                </tbody>
+                <tbody>{noticeListComponent}</tbody>
               </table>
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('gsign/docbox/index.do')}>
               결재 현황
               <a href="" class="btn_more">
                 더보기
@@ -340,63 +534,12 @@ class PortalHeadApp extends Component {
                     <th scope="col">결재상태</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>2022.10.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>
-                      <p class="red">결재요청</p>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.21</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.09.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가신청서</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.07.01</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">
-                        휴가를 신청하오니 결재 요청드립니다. 체육대회 관련
-                        안내드립니다.
-                      </a>
-                    </td>
-                    <td>안하름</td>
-                    <td>결재완료</td>
-                  </tr>
-                  <tr>
-                    <td>2022.06.10</td>
-                    <td>휴가신청서</td>
-                    <td class="subject">
-                      <a href="#">휴가를 신청하오니 결재 요청드립니다.</a>
-                    </td>
-                    <td>김회원</td>
-                    <td>결재완료</td>
-                  </tr>
-                </tbody>
+                <tbody>{approveListComponent}</tbody>
               </table>
             </div>
           </div>
           <div class="row_item grid2">
-            <h3>
+            <h3 onClick={() => Helper.goUrl('newoffice/view/report-head.do')}>
               팀 업무 보고 현황
               <a href="" class="btn_more">
                 더보기
@@ -421,53 +564,7 @@ class PortalHeadApp extends Component {
                     <th scope="col">코멘트</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                    <td class="search">
-                      <input type="text" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>2022-05-31(화) </td>
-                    <td>Y</td>
-                    <td>N</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>2022-05-31(화) </td>
-                    <td>Y</td>
-                    <td>N</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>2022-05-31(화) </td>
-                    <td>Y</td>
-                    <td>N</td>
-                    <td>N</td>
-                  </tr>
-                  <tr>
-                    <td>SQ01</td>
-                    <td>2022-05-31(화) </td>
-                    <td>Y</td>
-                    <td>N</td>
-                    <td>N</td>
-                  </tr>
-                </tbody>
+                <tbody>{workReportListComponent}</tbody>
               </table>
             </div>
           </div>

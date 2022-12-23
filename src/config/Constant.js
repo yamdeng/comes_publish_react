@@ -40,4 +40,14 @@ Constant.USER_TYPE_SYSTEM = 'SYSTEM';
 // 공지사항 게시판 key
 Constant.NOTICE_BOARD_KEY = 'KIBKAXFG02';
 
+// 통계 kind 구분 map
+Constant.STATS_KIND_LABEL_MAP = {
+  user: '실 구성원',
+  tardy: '지각',
+  vacation: '휴가/휴직',
+  dept_commute_not_submit: '출퇴근 미제출',
+  report_issue: '업무보고 이슈',
+  report_not_submit: '업무보고 미제출'
+};
+
 export default Constant;

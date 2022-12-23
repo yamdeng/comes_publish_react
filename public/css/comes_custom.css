@@ -1,3 +1,7 @@
+*, *::before, *::after {
+    box-sizing: initial;
+}
+
 #header #nav .gnb_menu li a:hover {
     box-sizing: initial;
 }
@@ -78,3 +82,8 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+
+/* popup custom */
+.modal_box_850 { max-width:850px; }
+.modal_box_450 { max-width:450px; }
