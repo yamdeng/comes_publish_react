@@ -18,7 +18,7 @@ import _ from 'lodash';
 class CommutePrivateStore {
   // 개인_출퇴근 목록 grid
   @observable
-  datagridStore = '';
+  datagridStore = null;
 
   // 검색 기간 유형
   @observable
@@ -344,14 +344,14 @@ class CommutePrivateStore {
   // 다음월
   @action
   nextMonth() {
-    this.searchMonth = moment(this.searchMonth).add(1, 'months');
+    this.searchMonth = moment(this.searchMonth).add(1, 'months').toDate();
     this.search();
   }
 
   // 이전월
   @action
   prevMonth() {
-    this.searchMonth = moment(this.searchMonth).subtract(1, 'months');
+    this.searchMonth = moment(this.searchMonth).subtract(1, 'months').toDate();
     this.search();
   }
   /* 월 datepicker 처리 end */
@@ -379,14 +379,14 @@ class CommutePrivateStore {
   // 다음일
   @action
   nextDay() {
-    this.searchDate = moment(this.searchDate).add(1, 'days');
+    this.searchDate = moment(this.searchDate).add(1, 'days').toDate();
     this.search();
   }
 
   // 이전일
   @action
   prevDay() {
-    this.searchDate = moment(this.searchDate).subtract(1, 'days');
+    this.searchDate = moment(this.searchDate).subtract(1, 'days').toDate();
     this.search();
   }
   /* 일 datepicker 처리 end */

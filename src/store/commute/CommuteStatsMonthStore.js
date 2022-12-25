@@ -16,43 +16,211 @@ import _ from 'lodash';
 */
 
 class CommuteStatsMonthStore {
+  // 주간 목록 grid
+  @observable
+  weekDatagridStore = null;
+
+  // 월간(주별)
+  @observable
+  monthWorkDatagridStore = null;
+
+  // 월간(휴일)
+  @observable
+  monthHolidyDatagridStore = null;
+
   // 전체 출퇴근 통계현황 정보
   @observable
   commuteStatsSearchType = Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK;
 
+  // 주간일 경우 검색 시작 월요일 날짜
+  @observable
+  mondayStartDate = '';
+
+  // 주간 월별(주일, 평일) 검색 월
+  @observable
+  searchMonth = '';
+
+  // 월 datepicker 오픈 여부
+  @observable
+  monthDatepickerOpend = false;
+
+  // 주단위 근무시간 검색 조건
   @observable
   workWeekTimeKind = Constant.SEARCH_TIME_LESS;
+
+  // 주간 통계 상단 날짜 라벨 : 월 ~ 일 grid : label, key, header color
+  @observable
+  weekGridLabelList = [];
+
+  // 월간(휴일) 통계 상단 날짜 라벨
+  @observable
+  monthHolidayGridLabelList = [];
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
+  // datepicker 초기화
+  @action
+  initSearchDateAll() {
+    this.searchMonth = moment().toDate();
+    this.mondayStartDate = moment().startOf('isoweek').toDate();
+  }
+
+  // 통계 검색 유형 변경
+  @action
+  changeCommuteStatsSearchType(commuteStatsSearchType) {
+    this.commuteStatsSearchType = commuteStatsSearchType;
+    this.monthDatepickerOpend = false;
+    this.search();
+  }
+
+  // 주간 근무시간 검색 조건 변경
   @action
   changeWorkWeekTimeKind(workWeekTimeKind) {
     this.workWeekTimeKind = workWeekTimeKind;
   }
 
+  // 주간 통계 기준 월요일 변경
+  @action
+  changeMondayStartDate(mondayStartDate) {
+    this.mondayStartDate = mondayStartDate;
+  }
+
+  // 다음 월요일
+  @action
+  nextMondayStartDate() {
+    this.mondayStartDate = moment(this.mondayStartDate).add(7, 'days').toDate();
+    this.search();
+  }
+
+  // 이전 월요일
+  @action
+  prevMondayStartDate() {
+    this.mondayStartDate = moment(this.mondayStartDate)
+      .subtract(7, 'days')
+      .toDate();
+    this.search();
+  }
+
+  /* 월 datepicker 처리 start */
+  // 월 datepicker 오픈
+  @action
+  openMonthDatepicker() {
+    this.monthDatepickerOpend = true;
+  }
+
+  // 월 datepicker 닫기
+  @action
+  closeMonthDatepicker() {
+    this.monthDatepickerOpend = false;
+  }
+
+  // 월 datepicker 변경
+  @action
+  changeSearchMonth(searchMonth) {
+    this.searchMonth = searchMonth;
+    this.monthDatepickerOpend = false;
+  }
+
+  // 다음월
+  @action
+  nextMonth() {
+    this.searchMonth = moment(this.searchMonth).add(1, 'months').toDate();
+    this.search();
+  }
+
+  // 이전월
+  @action
+  prevMonth() {
+    this.searchMonth = moment(this.searchMonth).subtract(1, 'months').toDate();
+    this.search();
+  }
+
+  // [조회] 공통
   @action
   search() {
-    // 초기화 조회시 모든 경우에 통계 정보 재조회
-    this.getStatsSearch();
-    const searchDateType = this.searchDateType;
-    const searchDashBoardKind = this.searchDashBoardKind;
+    const commuteStatsSearchType = this.commuteStatsSearchType;
+    if (commuteStatsSearchType === Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK) {
+      this.searchWeek();
+    } else if (
+      commuteStatsSearchType ===
+      Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_WORKDAY
+    ) {
+      this.searchMonthWork();
+    } else if (
+      commuteStatsSearchType ===
+      Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_HOLIDAY
+    ) {
+      this.searchMonthHolidy();
+    }
+  }
 
+  // 주간 통계 조회
+  @action
+  searchWeek() {
+    const mondayStartDate = this.mondayStartDate;
+    const workWeekTimeKind = this.workWeekTimeKind;
     const apiParam = {};
-    apiParam.searchKind = searchDashBoardKind;
-    // TODO : all 처리를 어떻게 할지 체크
-
-    // 날짜 유형에 따른 검색 조건 처리
-    if (searchDateType === Constant.SEARCH_DATE_TYPE_DAY) {
-      apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
-    } else if (searchDateType === Constant.SEARCH_DATE_TYPE_MONTH) {
-      apiParam.searchMonthStr = Helper.dateToString(this.searchMonth, 'YYYYMM');
-    } else if (searchDateType === Constant.SEARCH_DATE_TYPE_RANGE) {
-      apiParam.startDateStr = Helper.dateToString(this.startDate, 'YYYYMMDD');
-      apiParam.endDateStr = Helper.dateToString(this.endDate, 'YYYYMMDD');
+    apiParam.mondayStartDateStr = Helper.dateToString(
+      mondayStartDate,
+      'YYYYMMDD'
+    );
+    if (workWeekTimeKind) {
+      apiParam.workWeekTimeKind = workWeekTimeKind;
     }
 
+    ApiService.post('commutes/week-list-apply-holiday.do', {
+      startDateStr: Helper.dateToString(mondayStartDate, 'YYYYMMDD'),
+      endDateStr: moment(mondayStartDate).add(6, 'days').format('YYYYMMDD')
+    }).then((response) => {
+      const weekGridLabelList = response.data || [];
+      runInAction(() => {
+        this.weekGridLabelList = weekGridLabelList;
+      });
+
+      const store = new CustomStore({
+        load(loadOptions) {
+          if (loadOptions) {
+            const { skip, take } = loadOptions;
+            if (take) {
+              apiParam.pageSize = take;
+              apiParam.offset = skip;
+            } else {
+              apiParam.pageSize = 10;
+              apiParam.offset = 0;
+            }
+          }
+          return ApiService.post('commute-stats/week.do', apiParam).then(
+            (response) => {
+              const data = response.data;
+              runInAction(() => {
+                this.totalCount = data.totalCount;
+              });
+              return {
+                data: data.list,
+                totalCount: data.totalCount
+              };
+            }
+          );
+        }
+      });
+      runInAction(() => {
+        this.weekDatagridStore = store;
+      });
+    });
+  }
+
+  // 월간(주별) 통계 조회
+  @action
+  searchMonthWork() {
+    const searchMonth = this.searchMonth;
+    const workWeekTimeKind = this.workWeekTimeKind;
+    const apiParam = {};
+    apiParam.searchMonthStr = Helper.dateToString(searchMonth, 'YYYYMM');
+    if (workWeekTimeKind) {
+      apiParam.workWeekTimeKind = workWeekTimeKind;
+    }
     const store = new CustomStore({
       load(loadOptions) {
         if (loadOptions) {
@@ -65,7 +233,7 @@ class CommuteStatsMonthStore {
             apiParam.offset = 0;
           }
         }
-        return ApiService.post('commute-depts/list.do', apiParam).then(
+        return ApiService.post('commute-stats/month.do', apiParam).then(
           (response) => {
             const data = response.data;
             runInAction(() => {
@@ -79,51 +247,59 @@ class CommuteStatsMonthStore {
         );
       }
     });
-    this.datagridStore = store;
+    this.monthWorkDatagridStore = store;
   }
 
-  // 통계현황 조회
+  // 월간(휴일) 통계 조회
   @action
-  getStatsSearch() {
-    const searchDateType = this.searchDateType;
-
+  searchMonthHolidy() {
+    const searchMonth = this.searchMonth;
+    const workWeekTimeKind = this.workWeekTimeKind;
     const apiParam = {};
-
-    // 날짜 유형에 따른 검색 조건 처리
-    if (searchDateType === Constant.SEARCH_DATE_TYPE_DAY) {
-      apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
-    } else if (searchDateType === Constant.SEARCH_DATE_TYPE_MONTH) {
-      apiParam.searchMonthStr = Helper.dateToString(this.searchMonth, 'YYYYMM');
-    } else if (searchDateType === Constant.SEARCH_DATE_TYPE_RANGE) {
-      apiParam.startDateStr = Helper.dateToString(this.startDate, 'YYYYMMDD');
-      apiParam.endDateStr = Helper.dateToString(this.endDate, 'YYYYMMDD');
+    const searchMonthStr = Helper.dateToString(searchMonth, 'YYYYMM');
+    apiParam.searchMonthStr = searchMonthStr;
+    if (workWeekTimeKind) {
+      apiParam.workWeekTimeKind = workWeekTimeKind;
     }
 
-    ApiService.post('commute-depts/stats/admin.do', apiParam).then(
-      (response) => {
-        const statsList = response.data || [];
-        runInAction(() => {
-          const allStatsInfo = {};
-          allStatsInfo.all = _.find(statsList, { kind: 'all' }).aggCount;
-          allStatsInfo.submit_and_reject = _.find(statsList, {
-            kind: 'submit_and_reject'
-          }).aggCount;
-          allStatsInfo.before_approve = _.find(statsList, {
-            kind: 'before_approve'
-          }).aggCount;
-          allStatsInfo.approve = _.find(statsList, {
-            kind: 'approve'
-          }).aggCount;
-          allStatsInfo.start_work_complete = _.find(statsList, {
-            kind: 'start_work_complete'
-          }).aggCount;
-          allStatsInfo.out_work_complete = _.find(statsList, {
-            kind: 'out_work_complete'
-          }).aggCount;
-          this.allStatsInfo = allStatsInfo;
-        });
-      }
-    );
+    ApiService.post('commutes/holiday-month.do', {
+      searchMonthStr: searchMonthStr
+    }).then((response) => {
+      const monthHolidayGridLabelList = response.data || [];
+      runInAction(() => {
+        this.monthHolidayGridLabelList = monthHolidayGridLabelList;
+      });
+
+      const store = new CustomStore({
+        load(loadOptions) {
+          if (loadOptions) {
+            const { skip, take } = loadOptions;
+            if (take) {
+              apiParam.pageSize = take;
+              apiParam.offset = skip;
+            } else {
+              apiParam.pageSize = 10;
+              apiParam.offset = 0;
+            }
+          }
+          return ApiService.post('commute-stats/holiday.do', apiParam).then(
+            (response) => {
+              const data = response.data;
+              runInAction(() => {
+                this.totalCount = data.totalCount;
+              });
+              return {
+                data: data.list,
+                totalCount: data.totalCount
+              };
+            }
+          );
+        }
+      });
+      runInAction(() => {
+        this.monthHolidyDatagridStore = store;
+      });
+    });
   }
 
   @action

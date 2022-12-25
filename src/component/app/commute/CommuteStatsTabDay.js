@@ -61,7 +61,7 @@ class CommuteStatsTabDay extends Component {
     commuteStatsDayStore.search();
   }
 
-  changeSearchDateType() {
+  changeSearchDateType(event) {
     const value = event.target.value;
     const { commuteStatsDayStore } = this.props;
     commuteStatsDayStore.changeSearchDateType(value);
