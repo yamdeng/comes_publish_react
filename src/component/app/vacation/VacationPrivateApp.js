@@ -90,18 +90,6 @@ class VacationPrivateApp extends Component {
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
-            {/* <div class="grp_sel_option">
-              <label for="sel_option" class="blind">
-                실 선택
-              </label>
-              <select id="sel_option" class="w90">
-                <option>전체</option>
-                <option>1실</option>
-                <option>2실</option>
-                <option>3실</option>
-              </select>
-            </div> */}
-
             <div class="sel_month">
               <a
                 href="javascript:void(0);"

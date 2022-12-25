@@ -143,7 +143,7 @@ class CommuteHeadApp extends Component {
   render() {
     let { commutePrivateStore, appStore } = this.props;
     let { profile } = appStore;
-    let { user_name, silDeptList } = profile;
+    let { silDeptList } = profile;
     let pojoSilDeptList = toJS(silDeptList) || [];
     let silDeptListConvert =
       pojoSilDeptList.length > 1

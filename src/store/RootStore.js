@@ -14,6 +14,7 @@ import PortalStore from './portal/PortalStore';
 import CommuteStatsDayStore from './commute/CommuteStatsDayStore';
 import CommuteStatsMonthStore from './commute/CommuteStatsMonthStore';
 import VacationStore from './vacation/VacationStore';
+import VacationStatsStore from './vacation/VacationStatsStore';
 
 /*
 
@@ -54,6 +55,7 @@ class RootStore {
     this.commuteStatsDayStore = new CommuteStatsDayStore(this);
     this.commuteStatsMonthStore = new CommuteStatsMonthStore(this);
     this.vacationStore = new VacationStore(this);
+    this.vacationStatsStore = new VacationStatsStore(this);
   }
 }
 
