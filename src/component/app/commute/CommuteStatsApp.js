@@ -1,38 +1,29 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
+import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
+import CommuteStatsTabDay from './CommuteStatsTabDay';
+import CommuteStatsTabMonth from './CommuteStatsTabMonth';
 
 @inject('appStore', 'uiStore')
 @observer
 class CommuteStatsApp extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { tabIndex: 1 };
+    this.changeTabIndex = this.changeTabIndex.bind(this);
   }
 
+  changeTabIndex(tabIndex) {
+    this.setState({ tabIndex: tabIndex });
+  }
+
+  componentDidMount() {}
+
   render() {
+    let { tabIndex } = this.state;
     return (
       <div id="contents_sub" class="">
-        <div class="sub_lnb">
-          <h3>출퇴근</h3>
-          <ul class="sub_menu">
-            <li>
-              <a href="javascript:void(0);">개인출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">팀원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">실원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체출퇴근관리</a>
-            </li>
-            <li class="on">
-              <a href="javascript:void(0);">전체출퇴근통계</a>
-            </li>
-          </ul>
-        </div>
+        <CommuteSubMenu />
 
         <div class="sub_con">
           <div class="site_location">
@@ -43,207 +34,31 @@ class CommuteStatsApp extends Component {
               />
             </a>
             &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">개인출퇴근</a>
+            <a href="javascript:void(0);">전체출퇴근통계</a>
           </div>
 
           <div class="tab_sub">
             <ul class="tab_subnav">
-              <li>
-                <a href="#tab01">일간</a>
+              <li onClick={() => this.changeTabIndex(1)}>
+                <a
+                  href="javascript:void(0);"
+                  className={tabIndex === 1 ? 'active' : ''}
+                >
+                  일간
+                </a>
               </li>
-              <li>
-                <a href="#tab02">주간/월간</a>
+              <li onClick={() => this.changeTabIndex(2)}>
+                <a
+                  href="javascript:void(0);"
+                  className={tabIndex === 2 ? 'active' : ''}
+                >
+                  주간/월간
+                </a>
               </li>
             </ul>
             <div class="tab_subcontent">
-              <div id="tab01">
-                <div class="sub_top">
-                  <div class="grp_cale_option">
-                    <ul id="calelist" class="flex_sb">
-                      <li>
-                        <div class="radio">
-                          <input
-                            type="radio"
-                            id="cale_option1"
-                            name="cale_option"
-                            checked
-                          />
-                          <label for="cale_option1">하루</label>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="radio">
-                          <input
-                            type="radio"
-                            id="cale_option2"
-                            name="cale_option"
-                          />
-                          <label for="cale_option2">기간</label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="sel_month calelist_month cale_option1 on">
-                    <a href="javascript:void(0);" class="prev">
-                      이전 일
-                    </a>
-                    <span class="txt_month">6월 15일(수)</span>
-                    <a href="javascript:void(0);" class="next">
-                      다음 일
-                    </a>
-                    <a href="javascript:void(0);" class="month">
-                      <img
-                        src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                        alt="월 선택하기"
-                      />
-                    </a>
-                  </div>
-                  <div class="sel_month calelist_month cale_option2">
-                    <a href="javascript:void(0);" class="prev">
-                      이전 달
-                    </a>
-                    <span class="txt_month2">2022-06-01</span>
-                    <span>~</span>
-                    <span class="txt_month2">2022-06-15</span>
-                    <a href="javascript:void(0);" class="next">
-                      다음 달
-                    </a>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn_right btn_search_big"
-                  >
-                    조회
-                  </a>
-                </div>
-
-                <div class="sub_serch_result half_box">
-                  <ul class="flex_ul_box flex_sb">
-                    <li class="flex_center">
-                      <div>
-                        <span>업무 중</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>재택 중</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>오전반차</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>오후반차</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>업무종료</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>지각</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>휴가/휴직</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>출근 미체크</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                    <li class="flex_center">
-                      <div>
-                        <span>퇴근 미체크</span>
-                        <b>6</b>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <div class="grid_top flex_sb mgtop20">
-                    <div>
-                      <label for="search_option" class="blind">
-                        검색조건
-                      </label>
-                      <select id="search_option" value="조건검색">
-                        <option>근무시간 8시간 미만</option>
-                        <option>근무시간 8시간 초과</option>
-                      </select>
-                    </div>
-                    <div class="search_right">
-                      <a href="javascript:void(0);" class="btn_ico">
-                        <i class="ico_download"></i>엑셀다운로드
-                      </a>
-                      <a href="javascript:void(0);" class="btn_ico">
-                        <i class="ico_refresh"></i>새로고침
-                      </a>
-                    </div>
-                  </div>
-                  <div class="mgtop10">
-                    <p
-                      style={{
-                        border: '1px solid #d6d6d6',
-                        height: 300,
-                        fontSize: 15,
-                        lineHeight: 300,
-                        textAlign: 'center'
-                      }}
-                    >
-                      그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div id="tab02">
-                <div class="sub_top">
-                  <div class="grp_sel_option">
-                    <label for="sel_option" class="blind">
-                      실 선택
-                    </label>
-                    <select id="sel_option3" class="w90">
-                      <option>주간</option>
-                      <option>월간(주별)</option>
-                      <option>월간(휴일)</option>
-                    </select>
-                  </div>
-
-                  <div class="sel_month">
-                    <a href="javascript:void(0);" class="prev">
-                      이전 달
-                    </a>
-                    <span class="txt_month2">2022-06-01</span>
-                    <span>~</span>
-                    <span class="txt_month2">2022-06-15</span>
-                    <a href="javascript:void(0);" class="next">
-                      다음 달
-                    </a>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn_right btn_search_big"
-                  >
-                    조회
-                  </a>
-                </div>
-              </div>
+              <CommuteStatsTabDay visible={tabIndex === 1 ? true : false} />
+              <CommuteStatsTabMonth visible={tabIndex === 2 ? true : false} />
             </div>
           </div>
         </div>

@@ -73,6 +73,15 @@ Constant.CODE_WORK_STATUS_VACATION_CARE = 'VACATION_CARE'; /* 육아휴직 */
 Constant.CODE_WORK_STATUS_VACATION_NORMAL = 'VACATION_NORMAL'; /* 일반휴직 */
 Constant.CODE_WORK_STATUS_VACATION_ETC = 'VACATION_ETC'; /* 기타휴가 */
 
-// 근무결과
+// 출퇴근 통계 검색 유형
+Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK = 'WEEK'; /* 주간 */
+Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_WORKDAY =
+  'MONTH_WORKDAY'; /* 월간(주별)) */
+Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_HOLIDAY =
+  'MONTH_HOLIDAY'; /* 월간(휴일)) */
+
+// LESS, GREATER
+Constant.SEARCH_TIME_LESS = 'LESS';
+Constant.SEARCH_TIME_GREATER = 'GREATER';
 
 export default Constant;

@@ -218,7 +218,7 @@ class CommuteDeptApp extends Component {
               />
             </a>
             &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">부서출퇴근</a>
+            <a href="javascript:void(0);">팀원출퇴근</a>
           </div>
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="grp_cale_option">

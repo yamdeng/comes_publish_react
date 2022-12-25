@@ -6,7 +6,7 @@ import 'devextreme/data/odata/store';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 
-@inject('appStore', 'uiStore', 'commutePrivateStore')
+@inject('appStore', 'uiStore')
 @observer
 class CommuteSubMenu extends Component {
   render() {

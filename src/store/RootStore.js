@@ -11,6 +11,8 @@ import OrgSelectModalStore from 'store/modal/OrgSelectModalStore';
 import CommutePrivateStore from './commute/CommutePrivateStore';
 import CommuteDeptStore from './commute/CommuteDeptStore';
 import PortalStore from './portal/PortalStore';
+import CommuteStatsDayStore from './commute/CommuteStatsDayStore';
+import CommuteStatsMonthStore from './commute/CommuteStatsMonthStore';
 
 /*
 
@@ -48,6 +50,8 @@ class RootStore {
     this.commutePrivateStore = new CommutePrivateStore(this);
     this.commuteDeptStore = new CommuteDeptStore(this);
     this.portalStore = new PortalStore(this);
+    this.commuteStatsDayStore = new CommuteStatsDayStore(this);
+    this.commuteStatsMonthStore = new CommuteStatsMonthStore(this);
   }
 }
 

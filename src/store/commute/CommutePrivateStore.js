@@ -102,7 +102,7 @@ class CommutePrivateStore {
 
   // 조건 검색
   @observable
-  workTimeKind = null;
+  workTimeKind = '';
 
   constructor(rootStore) {
     this.rootStore = rootStore;

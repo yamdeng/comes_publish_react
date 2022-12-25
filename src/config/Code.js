@@ -206,6 +206,54 @@ Code.yearList = [
   }
 ];
 
+// dayWorkTimeCodeList
+Code.dayWorkTimeCodeList = [
+  {
+    name: '전체',
+    value: ''
+  },
+  {
+    name: '근무시간 8시간 미만',
+    value: 'LESS'
+  },
+  {
+    name: '근무시간 8시간 초과',
+    value: 'GREATER'
+  }
+];
+
+// weekWorkTimeCodeList
+Code.weekWorkTimeCodeList = [
+  {
+    name: '전체',
+    value: ''
+  },
+  {
+    name: '근무시간 52시간 미만',
+    value: 'LESS'
+  },
+  {
+    name: '근무시간 52시간 초과',
+    value: 'GREATER'
+  }
+];
+
+// 출퇴근 통계 검색 유형
+Code.commuteStatsSearchTypeCodeList = [
+  {
+    name: '주간',
+    value: 'WEEK'
+  },
+  {
+    name: '월간(주별)',
+    value: 'MONTH_WORKDAY'
+  },
+  {
+    name: '월간(휴일)',
+    value: 'MONTH_HOLIDAY'
+  }
+];
+
 // 코드명 가져오기 : value 기준
 Code.getCodeNameByValue = function (codeCategory, codeValue) {
   let codeName = null;
