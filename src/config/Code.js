@@ -2,6 +2,146 @@ import _ from 'lodash';
 
 const Code = {};
 
+// 근무상태
+Code.workStatusCodeList = [
+  {
+    name: '업무중',
+    value: 'ING'
+  },
+  {
+    name: '재택중',
+    value: 'HOME_ING'
+  },
+  {
+    name: '업무종료',
+    value: 'END'
+  },
+  {
+    name: '연차',
+    value: 'VACATION_YEAR'
+  },
+  {
+    name: '오전반차',
+    value: 'VACATION_MORNING'
+  },
+  {
+    name: '오후반차',
+    value: 'VACATION_AFTERNOON'
+  },
+  {
+    name: '공가',
+    value: 'VACATION_NATION'
+  },
+  {
+    name: '대체휴가',
+    value: 'VACATION_REPLACE'
+  },
+  {
+    name: '경조휴가',
+    value: 'VACATION_CON'
+  },
+  {
+    name: '포상휴가',
+    value: 'VACATION_PRIZE'
+  },
+  {
+    name: '출산휴가',
+    value: 'VACATION_BABY'
+  },
+  {
+    name: '육아휴직',
+    value: 'VACATION_CATE'
+  },
+  {
+    name: '일반휴직',
+    value: 'VACATION_NORMAL'
+  },
+  {
+    name: '기타휴가',
+    value: 'VACATION_ETC'
+  }
+];
+
+// 근무결과
+Code.workResultCodeList = [
+  {
+    name: '정상출근',
+    value: 'SUCCESS_NORMAL'
+  },
+  {
+    name: '정상출근(오전반차)',
+    value: 'SUCCESS_MORNING'
+  },
+  {
+    name: '정상출근(오후반차)',
+    value: 'SUCCESS_AFTERNOON'
+  },
+  {
+    name: '정상출근(생일)',
+    value: 'SUCCESS_BIRTHDAY'
+  },
+  {
+    name: '지각',
+    value: 'TARDY'
+  },
+  {
+    name: '지각(생일)',
+    value: 'TARDY_BIRTHDAY'
+  },
+  {
+    name: '지각(오전반차)',
+    value: 'TARDY_MORNING'
+  },
+  {
+    name: '지각(오후반차)',
+    value: 'TARDY_AFTERNOON'
+  },
+  {
+    name: '연차',
+    value: 'VACATION_YEAR'
+  },
+  {
+    name: '공가',
+    value: 'VACATION_NATION'
+  },
+  {
+    name: '대체휴가',
+    value: 'VACATION_REPLACE'
+  },
+  {
+    name: '경조휴가',
+    value: 'VACATION_CON'
+  },
+  {
+    name: '포상휴가',
+    value: 'VACATION_PRIZE'
+  },
+  {
+    name: '출산휴가',
+    value: 'VACATION_BABY'
+  },
+  {
+    name: '육아휴직',
+    value: 'VACATION_CARE'
+  },
+  {
+    name: '일반휴직',
+    value: 'VACATION_NORMAL'
+  },
+  {
+    name: '기타휴가',
+    value: 'VACATION_ETC'
+  },
+  {
+    name: '결근',
+    value: 'ABSENT'
+  },
+  {
+    name: '기타',
+    value: 'ETC'
+  }
+];
+
 // 게시유형
 Code.boardType = [
   {

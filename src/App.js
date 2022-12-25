@@ -1,9 +1,8 @@
-/* global pageType */
+/* global reactPageType */
 
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import ErrorBoundary from 'component/layout/ErrorBoundary';
-import Api from 'util/Api';
 import AppHistory from 'util/AppHistory';
 import Helper from 'util/Helper';
 import Logger from 'util/Logger';
@@ -59,44 +58,43 @@ import HolidayManageApp from 'component/app/setting/HolidayManageApp';
 */
 
 const getAppComponent = function () {
-  // const pageType = 'PortalAdminApp';
-  if (pageType === 'PortalPrivateApp') {
+  if (reactPageType === 'PortalPrivateApp') {
     return <PortalPrivateApp />;
-  } else if (pageType === 'PortalDeptApp') {
+  } else if (reactPageType === 'PortalDeptApp') {
     return <PortalDeptApp />;
-  } else if (pageType === 'PortalHeadApp') {
+  } else if (reactPageType === 'PortalHeadApp') {
     return <PortalHeadApp />;
-  } else if (pageType === 'PortalAdminApp') {
+  } else if (reactPageType === 'PortalAdminApp') {
     return <PortalAdminApp />;
-  } else if (pageType === 'CommutePrivateApp') {
+  } else if (reactPageType === 'CommutePrivateApp') {
     return <CommutePrivateApp />;
-  } else if (pageType === 'CommuteDeptApp') {
+  } else if (reactPageType === 'CommuteDeptApp') {
     return <CommuteDeptApp />;
-  } else if (pageType === 'CommuteHeadApp') {
+  } else if (reactPageType === 'CommuteHeadApp') {
     return <CommuteHeadApp />;
-  } else if (pageType === 'CommuteAdminApp') {
+  } else if (reactPageType === 'CommuteAdminApp') {
     return <CommuteAdminApp />;
-  } else if (pageType === 'CommuteStatsApp') {
+  } else if (reactPageType === 'CommuteStatsApp') {
     return <CommuteStatsApp />;
-  } else if (pageType === 'VacationPrivateApp') {
+  } else if (reactPageType === 'VacationPrivateApp') {
     return <VacationPrivateApp />;
-  } else if (pageType === 'VacationDeptApp') {
+  } else if (reactPageType === 'VacationDeptApp') {
     return <VacationDeptApp />;
-  } else if (pageType === 'VacationHeadApp') {
+  } else if (reactPageType === 'VacationHeadApp') {
     return <VacationHeadApp />;
-  } else if (pageType === 'VacationAdminApp') {
+  } else if (reactPageType === 'VacationAdminApp') {
     return <VacationAdminApp />;
-  } else if (pageType === 'WorkReportDeptApp') {
+  } else if (reactPageType === 'WorkReportDeptApp') {
     return <WorkReportDeptApp />;
-  } else if (pageType === 'WorkReportHeadApp') {
+  } else if (reactPageType === 'WorkReportHeadApp') {
     return <WorkReportHeadApp />;
-  } else if (pageType === 'WorkReportAdminApp') {
+  } else if (reactPageType === 'WorkReportAdminApp') {
     return <WorkReportAdminApp />;
-  } else if (pageType === 'DeptTimeSettingApp') {
+  } else if (reactPageType === 'DeptTimeSettingApp') {
     return <DeptTimeSettingApp />;
-  } else if (pageType === 'VacationManageApp') {
+  } else if (reactPageType === 'VacationManageApp') {
     return <VacationManageApp />;
-  } else if (pageType === 'HolidayManageApp') {
+  } else if (reactPageType === 'HolidayManageApp') {
     return <HolidayManageApp />;
   }
   return null;

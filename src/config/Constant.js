@@ -50,4 +50,29 @@ Constant.STATS_KIND_LABEL_MAP = {
   report_not_submit: '업무보고 미제출'
 };
 
+// 검색 유형
+Constant.SEARCH_DATE_TYPE_DAY = 'DAY'; // 하루 단위 조회
+Constant.SEARCH_DATE_TYPE_MONTH = 'MONTH'; // 월 단위 조회
+Constant.SEARCH_DATE_TYPE_RANGE = 'RANGE'; // 기간 단위 조회
+Constant.SEARCH_DATE_TYPE_YEAR = 'YEAR'; // 년 단위 조회
+
+// 근무 상태
+Constant.CODE_WORK_STATUS_ING = 'ING'; /* 업무중 */
+Constant.CODE_WORK_STATUS_HOME_ING = 'HOME_ING'; /* 재택중 */
+Constant.CODE_WORK_STATUS_END = 'END'; /* 업무종료 */
+Constant.CODE_WORK_STATUS_VACATION_YEAR = 'VACATION_YEAR'; /* 연차 */
+Constant.CODE_WORK_STATUS_VACATION_MORNING = 'VACATION_MORNING'; /* 오전반차 */
+Constant.CODE_WORK_STATUS_VACATION_AFTERNOON =
+  'VACATION_AFTERNOON'; /* 오후반차 */
+Constant.CODE_WORK_STATUS_VACATION_NATION = 'VACATION_NATION'; /* 공가 */
+Constant.CODE_WORK_STATUS_VACATION_REPLACE = 'VACATION_REPLACE'; /* 대체휴가 */
+Constant.CODE_WORK_STATUS_VACATION_CON = 'VACATION_CON'; /* 경조휴가 */
+Constant.CODE_WORK_STATUS_VACATION_PRIZE = 'VACATION_PRIZE'; /* 포상휴가 */
+Constant.CODE_WORK_STATUS_VACATION_BABY = 'VACATION_BABY'; /* 출산휴가 */
+Constant.CODE_WORK_STATUS_VACATION_CARE = 'VACATION_CARE'; /* 육아휴직 */
+Constant.CODE_WORK_STATUS_VACATION_NORMAL = 'VACATION_NORMAL'; /* 일반휴직 */
+Constant.CODE_WORK_STATUS_VACATION_ETC = 'VACATION_ETC'; /* 기타휴가 */
+
+// 근무결과
+
 export default Constant;

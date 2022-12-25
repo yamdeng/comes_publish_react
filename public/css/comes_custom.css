@@ -87,3 +87,12 @@ table {
 /* popup custom */
 .modal_box_850 { max-width:850px; }
 .modal_box_450 { max-width:450px; }
+
+
+.scroll-minimum {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.scroll-minimum::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}

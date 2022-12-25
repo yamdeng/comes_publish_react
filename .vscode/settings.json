@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "[sql]": {
+    "editor.formatOnSave": false
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false
+  }
+}

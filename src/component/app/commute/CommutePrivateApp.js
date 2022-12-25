@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
 import 'devextreme/data/odata/store';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
-import CustomStore from 'devextreme/data/custom_store';
-import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import DatePicker from 'react-datepicker';
+import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import Constant from 'config/Constant';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
@@ -15,6 +13,7 @@ class CommutePrivateApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.init = this.init.bind(this);
     this.openMonthDatepicker = this.openMonthDatepicker.bind(this);
     this.changeSearchMonth = this.changeSearchMonth.bind(this);
     this.changeInWorkYn = this.changeInWorkYn.bind(this);
@@ -25,6 +24,14 @@ class CommutePrivateApp extends Component {
     this.clickOuter = this.clickOuter.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
     this.prevMonth = this.prevMonth.bind(this);
+  }
+
+  init() {
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.getTodayCommuteDayInfo();
+    commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
+    commutePrivateStore.initSearchDateAll();
+    commutePrivateStore.search();
   }
 
   nextMonth() {
@@ -83,9 +90,7 @@ class CommutePrivateApp extends Component {
   }
 
   componentDidMount() {
-    const { commutePrivateStore } = this.props;
-    commutePrivateStore.getTodayCommuteDayInfo();
-    commutePrivateStore.init();
+    this.init();
   }
 
   render() {
@@ -127,6 +132,11 @@ class CommutePrivateApp extends Component {
       startWorkDeviceType
     } = todayCommuteDayInfo;
 
+    let startWorkDeviceTypeText = '';
+    if (startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
+    }
+
     const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;
 
     const { profile } = appStore;
@@ -137,29 +147,7 @@ class CommutePrivateApp extends Component {
         class=""
         onClick={(event) => this.clickOuter(event)}
       >
-        <div class="sub_lnb">
-          <h3>출퇴근</h3>
-          <ul class="sub_menu">
-            <li
-              class="on"
-              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
-            >
-              <a href="javascript:void(0);">개인출퇴근</a>
-            </li>
-            <li onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}>
-              <a href="javascript:void(0);">팀원출퇴근</a>
-            </li>
-            <li onClick={() => Helper.goUrl('newoffice/view/commute-head.do')}>
-              <a href="javascript:void(0);">실원출퇴근</a>
-            </li>
-            <li onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
-              <a href="javascript:void(0);">전체출퇴근관리</a>
-            </li>
-            <li onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
-              <a href="javascript:void(0);">전체출퇴근통계</a>
-            </li>
-          </ul>
-        </div>
+        <CommuteSubMenu />
         <div class="sub_con">
           <div class="site_location">
             <a href="javascript:void(0);">
@@ -207,7 +195,6 @@ class CommutePrivateApp extends Component {
                   selected={searchMonth}
                   onChange={(date) => this.changeSearchMonth(date)}
                   dateFormat="yyyyMM"
-                  portalId="root-portal"
                   showMonthYearPicker
                   inline
                 />
@@ -341,6 +328,7 @@ class CommutePrivateApp extends Component {
                     >
                       <img
                         src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
+                        alt="가이드문구"
                       />
                     </a>
                   </h3>
@@ -373,70 +361,69 @@ class CommutePrivateApp extends Component {
           </div>
 
           <div class="">
-            <div class="mgtop10">
-              <p
-                style={{
-                  height: 700,
-                  fontSize: 15,
-                  // lineHeight: 300,
-                  textAlign: 'center',
-                  maxWidth: 1600
-                }}
+            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+              <DataGrid
+                dataSource={datagridStore}
+                showBorders={true}
+                remoteOperations={true}
+                noDataText={'출근 정보가 존재하지 않습니다.'}
+                height={450}
               >
-                <DataGrid
-                  maxWidth="100%"
-                  dataSource={datagridStore}
-                  showBorders={true}
-                  remoteOperations={true}
-                  noDataText={Constant.GRID_NO_DATE_MESSAGE}
-                  height={500}
-                >
-                  <Column
-                    dataField="baseDateStr"
-                    dataType="string"
-                    caption="날짜"
-                  />
-                  <Column
-                    dataField="deptName"
-                    dataType="string"
-                    caption="부서명"
-                  />
-                  <Column
-                    dataField="startWorkIp"
-                    dataType="string"
-                    caption="출근아이피"
-                  />
-                  <Column
-                    dataField="startWorkDate"
-                    dataType="datetime"
-                    caption="출근시간"
-                    format="HH:mm"
-                  />
-                  <Column
-                    dataField="outWorkIp"
-                    dataType="string"
-                    caption="퇴근아이피"
-                  />
-                  <Column
-                    dataField="outWorkDate"
-                    dataType="datetime"
-                    caption="퇴근시간"
-                    format="HH:mm"
-                  />
-                  <Column
-                    dataField="workStatusCodeName"
-                    dataType="date"
-                    caption="근무상태"
-                  />
-                  <Column
-                    dataField="workResultCodeName"
-                    dataType="date"
-                    caption="근무결과"
-                  />
-                  <Paging defaultPageSize={10} />
-                  <Pager showPageSizeSelector={true} />
-                </DataGrid>
-              </p>
+                <Column
+                  dataField="baseDateStr"
+                  dataType="string"
+                  caption="날짜"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.baseDateStr) {
+                      return Helper.convertDate(
+                        rowData.baseDateStr,
+                        'YYYYMMDD',
+                        'YYYY-MM-DD'
+                      );
+                    }
+                    return '';
+                  }}
+                />
+                <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="부서명"
+                />
+                <Column
+                  dataField="startWorkIp"
+                  dataType="string"
+                  caption="출근아이피"
+                />
+                <Column
+                  dataField="startWorkDate"
+                  dataType="datetime"
+                  caption="출근시간"
+                  format="HH:mm"
+                />
+                <Column
+                  dataField="outWorkIp"
+                  dataType="string"
+                  caption="퇴근아이피"
+                />
+                <Column
+                  dataField="outWorkDate"
+                  dataType="datetime"
+                  caption="퇴근시간"
+                  format="HH:mm"
+                />
+                <Column
+                  dataField="workStatusCodeName"
+                  dataType="date"
+                  caption="근무상태"
+                />
+                <Column
+                  dataField="workResultCodeName"
+                  dataType="date"
+                  caption="근무결과"
+                />
+                <Paging defaultPageSize={10} />
+                <Pager showPageSizeSelector={true} />
+              </DataGrid>
             </div>
           </div>
         </div>

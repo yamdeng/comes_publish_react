@@ -34,13 +34,6 @@ if (isError) {
   rootStore.appStore.changeIsError(true);
 }
 
-// ReactDOM.render(
-//   <Provider {...rootStore}>
-//     <App />
-//   </Provider>,
-//   document.getElementById('root')
-// );
-
 ApiService.get('newoffice/profile.do').then((response) => {
   const profile = response.data;
   rootStore.appStore.setLoginInfo(profile, '');
