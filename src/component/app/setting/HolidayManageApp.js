@@ -1,38 +1,74 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
+import 'devextreme/data/odata/store';
+import DatePicker from 'react-datepicker';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
+import Constant from 'config/Constant';
+import classnames from 'classnames';
+import Helper from 'util/Helper';
+import moment from 'moment';
+import SettingSubMenu from 'component/submenu/SettingSubMenu';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'holidayManageStore')
 @observer
 class HolidayManageApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.init = this.init.bind(this);
+    this.search = this.search.bind(this);
+    this.openYearDatepicker = this.openYearDatepicker.bind(this);
+    this.changeSearchYear = this.changeSearchYear.bind(this);
+    this.nextYear = this.nextYear.bind(this);
+    this.prevYear = this.prevYear.bind(this);
+  }
+
+  init() {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.initSearchDateAll();
+    holidayManageStore.search();
+  }
+
+  search() {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.search();
+  }
+
+  openYearDatepicker() {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.openYearDatepicker();
+  }
+
+  changeSearchYear(date) {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.changeSearchYear(date);
+  }
+
+  nextYear() {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.nextYear();
+  }
+
+  prevYear() {
+    const { holidayManageStore } = this.props;
+    holidayManageStore.prevYear();
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {
+    const { holidayManageStore } = this.props;
+    const { datagridStore, searchYear, yearDatepickerOpend, totalCount } =
+      holidayManageStore;
+    const searchYearStr = Helper.dateToString(searchYear, 'YYYY');
+    let searchYearBeforeStr = '';
     return (
       <div id="contents_sub" class="">
-        <div class="sub_lnb">
-          <h3>출퇴근</h3>
-          <ul class="sub_menu">
-            <li class="on">
-              <a href="javascript:void(0);">개인출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">팀원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">실원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체출퇴근관리</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체출퇴근통계</a>
-            </li>
-          </ul>
-        </div>
+        <SettingSubMenu />
 
         <div class="sub_con">
           <div class="site_location">
@@ -42,92 +78,55 @@ class HolidayManageApp extends Component {
                 alt="홈으로 가기"
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">개인출퇴근</a>
+            &gt;<a href="javascript:void(0);">설정</a>&gt;
+            <a href="javascript:void(0);">공휴일 관리</a>
           </div>
 
-          <div class="sub_top">
-            <div class="grp_cale_option">
-              <ul id="calelist" class="flex_sb">
-                <li>
-                  <div class="radio">
-                    <input
-                      type="radio"
-                      id="cale_option1"
-                      name="cale_option"
-                      checked
-                    />
-                    <label for="cale_option1">하루</label>
-                  </div>
-                </li>
-                <li>
-                  <div class="radio">
-                    <input type="radio" id="cale_option2" name="cale_option" />
-                    <label for="cale_option2">월간</label>
-                  </div>
-                </li>
-                <li>
-                  <div class="radio">
-                    <input type="radio" id="cale_option3" name="cale_option" />
-                    <label for="cale_option3">기간</label>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="sel_month calelist_month cale_option1 on">
-              <a href="javascript:void(0);" class="prev">
-                이전 일
+          <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
+            <div class="sel_month">
+              <a
+                href="javascript:void(0);"
+                class="prev"
+                onClick={this.prevYear}
+              >
+                이전
               </a>
-              <span class="txt_month">6월 15일(수)</span>
-              <a href="javascript:void(0);" class="next">
-                다음 일
+              <span class="txt_month">
+                {Helper.dateToString(searchYear, 'YYYY년')}
+              </span>
+              <a
+                href="javascript:void(0);"
+                class="next"
+                onClick={this.nextYear}
+              >
+                다음
               </a>
-              <a href="javascript:void(0);" class="month">
+              <a
+                href="javascript:void(0);"
+                class="month"
+                onClick={this.openYearDatepicker}
+              >
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
                   alt="월 선택하기"
                 />
               </a>
-            </div>
-            <div class="sel_month calelist_month cale_option2">
-              <a href="javascript:void(0);" class="prev">
-                이전 달
-              </a>
-              <span class="txt_month">2022년 6월</span>
-              <a href="javascript:void(0);" class="next">
-                다음 달
-              </a>
-              <a href="javascript:void(0);" class="month">
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
+              {yearDatepickerOpend && (
+                <DatePicker
+                  selected={searchYear}
+                  onChange={(date) => this.changeSearchYear(date)}
+                  showYearPicker
+                  dateFormat="yyyy"
+                  inline
                 />
-              </a>
+              )}
             </div>
-            <div class="sel_month calelist_month cale_option3">
-              <a href="javascript:void(0);" class="prev">
-                이전 달
-              </a>
-              <span class="txt_month2">2022-06-01</span>
-              <a href="javascript:void(0);" class="month">
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
-                />
-              </a>
-              <span>~</span>
-              <span class="txt_month2">2022-06-15</span>
-              <a href="javascript:void(0);" class="month">
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
-                />
-              </a>
-              <a href="javascript:void(0);" class="next">
-                다음 달
-              </a>
-            </div>
-            <a href="javascript:void(0);" class="btn_right btn_search_big">
+
+            <a
+              href="javascript:void(0);"
+              class="btn_right btn_search_big"
+              onClick={this.search}
+            >
               조회
             </a>
           </div>
@@ -136,22 +135,53 @@ class HolidayManageApp extends Component {
             <div class="grid_top flex_sb mgtop20">
               <div class="number">
                 <p>
-                  <b class="blue">6</b> 명
+                  <b class="blue">{totalCount}</b>
                 </p>
               </div>
             </div>
-            <div class="mgtop10">
-              <p
-                style={{
-                  border: '1px solid #d6d6d6',
-                  height: 700,
-                  fontSize: 15,
-                  lineHeight: 300,
-                  textAlign: 'center'
-                }}
+            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+              <DataGrid
+                dataSource={datagridStore}
+                showBorders={true}
+                remoteOperations={true}
+                noDataText={'공휴일 정보가 존재하지 않습니다.'}
+                height={650}
               >
-                그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
-              </p>
+                <Column
+                  dataField="baseDateStr"
+                  dataType="string"
+                  caption="날짜"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.baseDateStr) {
+                      return Helper.convertDate(
+                        rowData.baseDateStr,
+                        'YYYYMMDD',
+                        'YYYY-MM-DD'
+                      );
+                    }
+                    return '';
+                  }}
+                />
+                <Column dataField="deptName" dataType="string" caption="명칭" />
+                <Column
+                  dataField="weekdayCodeName"
+                  dataType="string"
+                  caption="요일 구분"
+                />
+                <Column
+                  dataField="weekendCodeName"
+                  dataType="string"
+                  caption="주중/주말 구분"
+                />
+                <Column
+                  dataField="reportDate"
+                  dataType="datetime"
+                  caption="등록일"
+                  format="YYYY-MM-DD HH:mm"
+                />
+                <Paging defaultPageSize={10} />
+                <Pager showPageSizeSelector={true} />
+              </DataGrid>
             </div>
           </div>
         </div>

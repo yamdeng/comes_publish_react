@@ -16,6 +16,9 @@ import CommuteStatsMonthStore from './commute/CommuteStatsMonthStore';
 import VacationStore from './vacation/VacationStore';
 import VacationStatsStore from './vacation/VacationStatsStore';
 import WorkReportStore from './report/WorkReportStore';
+import VacationManageStore from './setting/VacationManageStore';
+import HolidayManageStore from './setting/HolidayManageStore';
+import DeptTimeSettingStore from './setting/DeptTimeSettingStore';
 
 /*
 
@@ -58,6 +61,10 @@ class RootStore {
     this.vacationStore = new VacationStore(this);
     this.vacationStatsStore = new VacationStatsStore(this);
     this.workReportStore = new WorkReportStore(this);
+
+    this.vacationManageStore = new VacationManageStore(this);
+    this.holidayManageStore = new HolidayManageStore(this);
+    this.deptTimeSettingStore = new DeptTimeSettingStore(this);
   }
 }
 

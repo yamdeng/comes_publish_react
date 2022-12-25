@@ -27,6 +27,7 @@ import WorkReportAdminApp from 'component/app/report/WorkReportAdminApp';
 import DeptTimeSettingApp from 'component/app/setting/DeptTimeSettingApp';
 import VacationManageApp from 'component/app/setting/VacationManageApp';
 import HolidayManageApp from 'component/app/setting/HolidayManageApp';
+import ModalTest from 'component/app/ModalTest';
 
 /*
 
@@ -58,6 +59,7 @@ import HolidayManageApp from 'component/app/setting/HolidayManageApp';
 */
 
 const getAppComponent = function () {
+  // reactPageType = 'aaa';
   if (reactPageType === 'PortalPrivateApp') {
     return <PortalPrivateApp />;
   } else if (reactPageType === 'PortalDeptApp') {
@@ -97,6 +99,7 @@ const getAppComponent = function () {
   } else if (reactPageType === 'HolidayManageApp') {
     return <HolidayManageApp />;
   }
+
   return null;
 };
 
