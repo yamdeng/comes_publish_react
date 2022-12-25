@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
 import Api from 'util/Api';
+import VacationSubMenu from 'component/submenu/VacationSubMenu';
+import 'devextreme/data/odata/store';
+import DatePicker from 'react-datepicker';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
+import Constant from 'config/Constant';
+import classnames from 'classnames';
+import Helper from 'util/Helper';
 
 class VacationHeadApp extends Component {
   constructor(props) {
@@ -10,23 +18,7 @@ class VacationHeadApp extends Component {
   render() {
     return (
       <div id="contents_sub" class="">
-        <div class="sub_lnb">
-          <h3>휴가/휴직</h3>
-          <ul class="sub_menu">
-            <li class="on">
-              <a href="javascript:void(0);">개인 휴가/휴직</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">팀원 휴가/휴직</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">실원 휴가/휴직</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체 휴가관리</a>
-            </li>
-          </ul>
-        </div>
+        <VacationSubMenu />
 
         <div class="sub_con">
           <div class="site_location">
@@ -36,8 +28,8 @@ class VacationHeadApp extends Component {
                 alt="홈으로 가기"
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">개인출퇴근</a>
+            &gt;<a href="javascript:void(0);">휴가/휴직</a>&gt;
+            <a href="javascript:void(0);">실원 휴가/휴직</a>
           </div>
 
           <div class="sub_top">

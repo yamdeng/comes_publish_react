@@ -214,7 +214,6 @@ class CommutePrivateStore {
     const profile = appStore.profile;
     const searchDashBoardKind = this.searchDashBoardKind;
     const selectedSilDeptKey = this.selectedSilDeptKey;
-    const workTimeKind = this.workTimeKind;
 
     const apiParam = {};
 
