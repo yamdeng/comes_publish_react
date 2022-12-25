@@ -15,6 +15,7 @@ import CommuteStatsDayStore from './commute/CommuteStatsDayStore';
 import CommuteStatsMonthStore from './commute/CommuteStatsMonthStore';
 import VacationStore from './vacation/VacationStore';
 import VacationStatsStore from './vacation/VacationStatsStore';
+import WorkReportStore from './report/WorkReportStore';
 
 /*
 
@@ -56,6 +57,7 @@ class RootStore {
     this.commuteStatsMonthStore = new CommuteStatsMonthStore(this);
     this.vacationStore = new VacationStore(this);
     this.vacationStatsStore = new VacationStatsStore(this);
+    this.workReportStore = new WorkReportStore(this);
   }
 }
 

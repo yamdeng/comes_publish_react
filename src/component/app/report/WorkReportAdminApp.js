@@ -1,38 +1,158 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Api from 'util/Api';
+import 'devextreme/data/odata/store';
+import DatePicker from 'react-datepicker';
+import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
+import Constant from 'config/Constant';
+import classnames from 'classnames';
+import Helper from 'util/Helper';
+import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
 
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'workReportStore')
 @observer
 class WorkReportAdminApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.init = this.init.bind(this);
+    this.initSearch = this.initSearch.bind(this);
+    this.search = this.search.bind(this);
+    this.changeSearchDateType = this.changeSearchDateType.bind(this);
+
+    // 3개 종류 datepicker handler start
+    this.changeSearchDate = this.changeSearchDate.bind(this);
+    this.openDayDatepicker = this.openDayDatepicker.bind(this);
+
+    this.changeSearchMonth = this.changeSearchMonth.bind(this);
+    this.openMonthDatepicker = this.openMonthDatepicker.bind(this);
+
+    this.changeStartDate = this.changeStartDate.bind(this);
+    this.openStartDatepicker = this.openStartDatepicker.bind(this);
+
+    this.changeEndDate = this.changeEndDate.bind(this);
+    this.openEndDatepicker = this.openEndDatepicker.bind(this);
+    // 3개 종류 datepicker handler end
+
+    this.nextMonth = this.nextMonth.bind(this);
+    this.prevMonth = this.prevMonth.bind(this);
+    this.nextDay = this.nextDay.bind(this);
+    this.prevDay = this.prevDay.bind(this);
+
+    this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
+  }
+
+  init() {
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
+    workReportStore.initSearchDateAll();
+    this.search();
+  }
+
+  initSearch() {
+    const { workReportStore } = this.props;
+    workReportStore.initSearch();
+  }
+
+  search() {
+    // 초기화 조회시 모든 경우에 통계 정보 재조회
+    const { workReportStore } = this.props;
+    workReportStore.search();
+  }
+
+  changeSearchDateType() {
+    const value = event.target.value;
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchDateType(value);
+  }
+
+  changeSearchDate(date) {
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchDate(date);
+  }
+
+  openDayDatepicker() {
+    const { workReportStore } = this.props;
+    workReportStore.openDayDatepicker();
+  }
+
+  changeSearchMonth(date) {
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchMonth(date);
+  }
+
+  openMonthDatepicker() {
+    const { workReportStore } = this.props;
+    workReportStore.openMonthDatepicker();
+  }
+
+  changeStartDate(date) {
+    const { workReportStore } = this.props;
+    workReportStore.changeStartDate(date);
+  }
+
+  openStartDatepicker() {
+    const { workReportStore } = this.props;
+    workReportStore.openStartDatepicker();
+  }
+
+  changeEndDate(date) {
+    const { workReportStore } = this.props;
+    workReportStore.changeEndDate(date);
+  }
+
+  openEndDatepicker() {
+    const { workReportStore } = this.props;
+    workReportStore.openEndDatepicker();
+  }
+
+  changeSearchDashBoardKind(kind) {
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchDashBoardKind(kind);
+  }
+
+  nextMonth(kind) {
+    const { workReportStore } = this.props;
+    workReportStore.nextMonth(kind);
+  }
+  prevMonth(kind) {
+    const { workReportStore } = this.props;
+    workReportStore.prevMonth(kind);
+  }
+  nextDay(kind) {
+    const { workReportStore } = this.props;
+    workReportStore.nextDay(kind);
+  }
+  prevDay(kind) {
+    const { workReportStore } = this.props;
+    workReportStore.prevDay(kind);
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   render() {
+    let { workReportStore } = this.props;
+    let {
+      searchDateType,
+      searchDate,
+      searchMonth,
+      startDate,
+      endDate,
+      dayDatepickerOpend,
+      monthDatepickerOpend,
+      startDatepickerOpend,
+      endDatepickerOpend,
+      totalCount,
+      statsInfo,
+      datagridStore,
+      searchDashBoardKind
+    } = workReportStore;
+    statsInfo = statsInfo || {};
     return (
       <div id="contents_sub" class="">
-        <div class="sub_lnb">
-          <h3>출퇴근</h3>
-          <ul class="sub_menu">
-            <li class="on">
-              <a href="javascript:void(0);">개인출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">팀원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">실원출퇴근</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체출퇴근관리</a>
-            </li>
-            <li>
-              <a href="javascript:void(0);">전체출퇴근통계</a>
-            </li>
-          </ul>
-        </div>
+        <WorkReportSubMenu />
 
         <div class="sub_con">
           <div class="site_location">
@@ -42,22 +162,11 @@ class WorkReportAdminApp extends Component {
                 alt="홈으로 가기"
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">개인출퇴근</a>
+            &gt;<a href="javascript:void(0);">업무보고</a>&gt;
+            <a href="javascript:void(0);">전체 업무보고</a>
           </div>
 
-          <div class="sub_top">
-            <div class="grp_sel_option">
-              <label for="sel_option" class="blind">
-                실 선택
-              </label>
-              <select id="sel_option" class="w90">
-                <option>전체</option>
-                <option>1실</option>
-                <option>2실</option>
-                <option>3실</option>
-              </select>
-            </div>
+          <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="grp_cale_option">
               <ul id="calelist" class="flex_sb">
                 <li>
@@ -66,125 +175,187 @@ class WorkReportAdminApp extends Component {
                       type="radio"
                       id="cale_option1"
                       name="cale_option"
-                      checked
-                    />
+                      checked={searchDateType === Constant.SEARCH_DATE_TYPE_DAY}
+                      value={Constant.SEARCH_DATE_TYPE_DAY}
+                      onChange={this.changeSearchDateType}
+                    ></input>
+
                     <label for="cale_option1">하루</label>
                   </div>
                 </li>
                 <li>
                   <div class="radio">
-                    <input type="radio" id="cale_option2" name="cale_option" />
-                    <label for="cale_option2">월간</label>
-                  </div>
-                </li>
-                <li>
-                  <div class="radio">
-                    <input type="radio" id="cale_option3" name="cale_option" />
-                    <label for="cale_option3">기간</label>
+                    <input
+                      type="radio"
+                      id="cale_option2"
+                      name="cale_option"
+                      checked={
+                        searchDateType === Constant.SEARCH_DATE_TYPE_RANGE
+                      }
+                      value={Constant.SEARCH_DATE_TYPE_RANGE}
+                      onChange={this.changeSearchDateType}
+                    ></input>
+                    <label for="cale_option2">기간</label>
                   </div>
                 </li>
               </ul>
             </div>
-            <div class="sel_month calelist_month cale_option1 on">
-              <a href="javascript:void(0);" class="prev">
+
+            {/* 일 datepicker start */}
+            <div
+              className={classnames(
+                'sel_month',
+                'calelist_month',
+                'cale_option1',
+                {
+                  on: searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                }
+              )}
+            >
+              <a href="javascript:void(0);" class="prev" onClick={this.prevDay}>
                 이전 일
               </a>
-              <span class="txt_month">6월 15일(수)</span>
-              <a href="javascript:void(0);" class="next">
+              <span class="txt_month">
+                {Helper.dateToString(searchDate, 'M월 DD일 (ddd)')}
+              </span>
+              <a href="javascript:void(0);" class="next" onClick={this.nextDay}>
                 다음 일
               </a>
-              <a href="javascript:void(0);" class="month">
+              <a
+                href="javascript:void(0);"
+                class="month"
+                onClick={this.openDayDatepicker}
+              >
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
+                  alt="일 선택하기"
                 />
               </a>
-            </div>
-            <div class="sel_month calelist_month cale_option2">
-              <a href="javascript:void(0);" class="prev">
-                이전 달
-              </a>
-              <span class="txt_month">2022년 6월</span>
-              <a href="javascript:void(0);" class="next">
-                다음 달
-              </a>
-              <a href="javascript:void(0);" class="month">
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
+              {dayDatepickerOpend && (
+                <DatePicker
+                  selected={searchDate}
+                  onChange={(date) => this.changeSearchDate(date)}
+                  dateFormat="yyyyMMdd"
+                  inline
                 />
-              </a>
+              )}
             </div>
-            <div class="sel_month calelist_month cale_option3">
-              <a href="javascript:void(0);" class="prev">
-                이전 달
-              </a>
-              <span class="txt_month2">2022-06-01</span>
-              <a href="javascript:void(0);" class="month">
+            {/* 일 datepicker end */}
+
+            {/* 기간 datepicker start */}
+            <div
+              className={classnames(
+                'sel_month',
+                'calelist_month',
+                'cale_option2',
+                {
+                  on: searchDateType === Constant.SEARCH_DATE_TYPE_RANGE
+                }
+              )}
+            >
+              <span class="txt_month2">
+                {Helper.dateToString(startDate, 'YYYY-MM-DD')}
+              </span>
+              <a
+                href="javascript:void(0);"
+                class="month"
+                onClick={this.openStartDatepicker}
+              >
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
+                  alt="시작일 선택하기"
                 />
               </a>
               <span>~</span>
-              <span class="txt_month2">2022-06-15</span>
-              <a href="javascript:void(0);" class="month">
+              <span class="txt_month2">
+                {Helper.dateToString(endDate, 'YYYY-MM-DD')}
+              </span>
+              <a
+                href="javascript:void(0);"
+                class="month"
+                onClick={this.openEndDatepicker}
+              >
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
-                  alt="월 선택하기"
+                  alt="종료일 선택하기"
                 />
               </a>
-              <a href="javascript:void(0);" class="next">
-                다음 달
-              </a>
+              {startDatepickerOpend && (
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => this.changeStartDate(date)}
+                  dateFormat="yyyyMMdd"
+                  inline
+                />
+              )}
+              {endDatepickerOpend && (
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => this.changeEndDate(date)}
+                  dateFormat="yyyyMMdd"
+                  inline
+                />
+              )}
             </div>
-            <a href="javascript:void(0);" class="btn_right btn_search_big">
+            {/* 기간 datepicker end */}
+            <a
+              href="javascript:void(0);"
+              class="btn_right btn_search_big"
+              onClick={this.search}
+            >
               조회
             </a>
           </div>
 
-          <div class="sub_serch_result">
-            <ul class="flex_ul_box flex_sb">
-              <li class="flex_center">
-                <div>
-                  <span>업무 중</span>
-                  <b>6</b>
+          <div class="flex_ul_box_container">
+            <ul class="flex_ul_box flex_sb scroll-minimum">
+              <li
+                class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('')}
+              >
+                <div className={!searchDashBoardKind ? 'blue' : ''}>
+                  <span>업무보고</span>
+                  <b>{statsInfo.all}</b>
                 </div>
               </li>
-              <li class="flex_center">
-                <div>
-                  <span>재택 중</span>
-                  <b>6</b>
+              <li
+                class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('SUBMIT')}
+              >
+                <div className={searchDashBoardKind === 'SUBMIT' ? 'blue' : ''}>
+                  <span>제출</span>
+                  <b>{statsInfo.submit}</b>
                 </div>
               </li>
-              <li class="flex_center">
-                <div>
-                  <span>오전반차</span>
-                  <b>6</b>
+              <li
+                class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('NOT_SUBMIT')}
+              >
+                <div
+                  className={searchDashBoardKind === 'NOT_SUBMIT' ? 'blue' : ''}
+                >
+                  <span>미제출</span>
+                  <b>{statsInfo.report_not_submit}</b>
                 </div>
               </li>
-              <li class="flex_center">
-                <div>
-                  <span>오후반차</span>
-                  <b>6</b>
+              <li
+                class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('ISSUE')}
+              >
+                <div className={searchDashBoardKind === 'ISSUE' ? 'blue' : ''}>
+                  <span>이슈</span>
+                  <b>{statsInfo.report_issue}</b>
                 </div>
               </li>
-              <li class="flex_center">
-                <div>
-                  <span>업무종료</span>
-                  <b>6</b>
-                </div>
-              </li>
-              <li class="flex_center">
-                <div>
-                  <span>지각</span>
-                  <b>6</b>
-                </div>
-              </li>
-              <li class="flex_center">
-                <div>
-                  <span>휴가/휴직</span>
-                  <b>6</b>
+              <li
+                class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('COMMENT')}
+              >
+                <div
+                  className={searchDashBoardKind === 'COMMENT' ? 'blue' : ''}
+                >
+                  <span>코멘트</span>
+                  <b>{statsInfo.comment}</b>
                 </div>
               </li>
             </ul>
@@ -206,18 +377,54 @@ class WorkReportAdminApp extends Component {
                 </a>
               </div>
             </div>
-            <div class="mgtop10">
-              <p
-                style={{
-                  border: '1px solid #d6d6d6',
-                  height: 700,
-                  fontSize: 15,
-                  lineHeight: 300,
-                  textAlign: 'center'
-                }}
+            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+              <DataGrid
+                dataSource={datagridStore}
+                showBorders={true}
+                remoteOperations={true}
+                noDataText={'업무보고 정보가 존재하지 않습니다.'}
+                height={450}
               >
-                그리드 영역 표시 임으로 삭제하고 넣으시면 됩니다.
-              </p>
+                <Column
+                  dataField="baseDateStr"
+                  dataType="string"
+                  caption="날짜"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.baseDateStr) {
+                      return Helper.convertDate(
+                        rowData.baseDateStr,
+                        'YYYYMMDD',
+                        'YYYY-MM-DD'
+                      );
+                    }
+                    return '';
+                  }}
+                />
+                <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="부서명"
+                />
+                <Column
+                  dataField="reportDate"
+                  dataType="datetime"
+                  caption="작성일시"
+                  format="YYYY-MM-DD HH:mm"
+                />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="작성자"
+                />
+                <Column dataField="issueYn" dataType="string" caption="이슈" />
+                <Column
+                  dataField="commentYn"
+                  dataType="string"
+                  caption="댓글"
+                />
+                <Paging defaultPageSize={10} />
+                <Pager showPageSizeSelector={true} />
+              </DataGrid>
             </div>
           </div>
         </div>
