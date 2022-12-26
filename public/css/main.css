@@ -54,7 +54,7 @@
 .tabnav {font-size:0; border-bottom:1px solid #e6e6e7;}
 .tabnav li {display: inline-block;  height:46px; text-align:center; /*border-top:1px solid #e6e6e7;*/}
 .tabnav li a.active{ border:1px solid #e6e6e7; border-bottom:1px solid #fff;}
-.tabnav li a{ position:relative; display:block; background: #f7f8f9; color: #444; padding:0 30px; min-width:125px; line-height:46px; text-decoration:none; font-size:17px;}
+.tabnav li a{ position:relative; display:block; background: #f7f8f9; color: #444; padding:0 30px; line-height:46px; text-decoration:none; font-size:17px;}
 .tabnav li a:hover { color:#4a80ff;}
 .tabnav li a.active{background:#fff; color:#4a80ff; }
 .tabcontent {padding: 20px; height:398px; border:1px solid #e6e6e7; border-top:none; overflow:hidden; box-sizing: border-box;}

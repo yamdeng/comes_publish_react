@@ -646,7 +646,7 @@ class PortalAdminApp extends Component {
                                   childComponent = (
                                     <td
                                       class={classnames('cal_blue', {
-                                        cell_pick: selectedShceduleDate
+                                        cell_pick: checkSelected
                                       })}
                                       onClick={() =>
                                         this.changeSelectedShceduleDate(
@@ -665,7 +665,7 @@ class PortalAdminApp extends Component {
                                   childComponent = (
                                     <td
                                       class={classnames({
-                                        cell_pick: selectedShceduleDate
+                                        cell_pick: checkSelected
                                       })}
                                       onClick={() =>
                                         this.changeSelectedShceduleDate(

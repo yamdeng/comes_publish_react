@@ -344,7 +344,7 @@ class PortalPrivateApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="box_fix">
+            <div class="">
               <table class="board-list">
                 <caption>팀원 근무 현황</caption>
                 <colgroup>
@@ -381,7 +381,7 @@ class PortalPrivateApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="border_bottom">
+            <div class="">
               <table class="board-list">
                 <caption>공지사항 리스트</caption>
                 <colgroup>
@@ -411,7 +411,7 @@ class PortalPrivateApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="border_bottom box_fix">
+            <div class="">
               <table class="board-list">
                 <caption>결재 현황 리스트</caption>
                 <colgroup>

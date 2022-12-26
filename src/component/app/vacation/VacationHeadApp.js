@@ -170,7 +170,7 @@ class VacationHeadApp extends Component {
             <h3>휴가/휴직 현황</h3>
           </div>
           <div class="grid_area">
-            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+            <div class="mgtop10">
               <DataGrid
                 dataSource={yearDatagridStore}
                 showBorders={true}
@@ -214,7 +214,7 @@ class VacationHeadApp extends Component {
             <h3>휴가/휴직 신청/사용 내역</h3>
           </div>
           <div class="grid_area">
-            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+            <div class="mgtop10">
               <DataGrid
                 dataSource={detailDatagridStore}
                 showBorders={true}

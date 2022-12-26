@@ -6,7 +6,7 @@ import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
 import rootStore from 'store/RootStore';
 import 'react-datepicker/dist/react-datepicker.css';
-import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap/dist/css/bootstrap.css';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import 'devextreme/dist/css/dx.light.css';
 

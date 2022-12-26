@@ -97,6 +97,8 @@ const getAppComponent = function () {
     return <VacationManageApp />;
   } else if (reactPageType === 'HolidayManageApp') {
     return <HolidayManageApp />;
+  } else if (reactPageType === 'ModalTest') {
+    return <ModalTest />;
   }
   return null;
 };

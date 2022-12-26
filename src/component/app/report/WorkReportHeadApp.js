@@ -372,7 +372,7 @@ class WorkReportHeadApp extends Component {
             </ul>
           </div>
           <div class="grid_area">
-            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+            <div class="mgtop10">
               <DataGrid
                 dataSource={datagridStore}
                 showBorders={true}

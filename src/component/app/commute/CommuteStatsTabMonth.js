@@ -264,7 +264,6 @@ class CommuteStatsTabMonth extends Component {
           <div
             class="mgtop10"
             style={{
-              maxWidth: 1650,
               display:
                 commuteStatsSearchType ===
                 Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK
@@ -337,7 +336,6 @@ class CommuteStatsTabMonth extends Component {
           <div
             class="mgtop10"
             style={{
-              maxWidth: 1650,
               display:
                 commuteStatsSearchType ===
                 Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_WORKDAY
@@ -395,7 +393,6 @@ class CommuteStatsTabMonth extends Component {
           <div
             class="mgtop10"
             style={{
-              maxWidth: 1650,
               display:
                 commuteStatsSearchType ===
                 Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_HOLIDAY

@@ -361,7 +361,7 @@ class CommutePrivateApp extends Component {
           </div>
 
           <div class="">
-            <div class="mgtop10" style={{ maxWidth: 1650 }}>
+            <div class="mgtop10">
               <DataGrid
                 dataSource={datagridStore}
                 showBorders={true}

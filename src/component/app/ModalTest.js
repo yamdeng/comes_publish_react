@@ -65,12 +65,12 @@ class ModalTest extends Component {
         width: '100%',
         height: '700px',
         onLoad: () => {
-          alert('aaaa');
-          debugger;
+          // alert('aaaa');
+          // debugger;
         }
       });
 
-      debugger;
+      // debugger;
 
       this.xfe.render('reactEditor');
     }, 300);
@@ -86,23 +86,23 @@ class ModalTest extends Component {
 
     const basePath = '/office6/engine/we/xfree';
 
-    alert('sss');
+    // alert('sss');
 
     this.xfe = new XFE({
       basePath: basePath,
       width: '100%',
       height: '430px',
       onLoad: () => {
-        alert('aaaa');
-        debugger;
+        // alert('aaaa');
+        // debugger;
       }
     });
 
-    debugger;
+    // debugger;
 
     this.xfe.render('reactEditor');
 
-    debugger;
+    // debugger;
   }
 
   render() {
