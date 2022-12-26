@@ -49,8 +49,8 @@ div.btn_area.btn_area_right { text-align: right; }
 /* MAIN layout */
 #wrap { position:relative; margin:0 auto; width:100%; min-width:1900px; overflow: hidden;}
 #header {z-index:2; width:100%; min-width:1900px; position: relative; padding:0 40px; height:74px; border-bottom:1px solid #a0afd4; background:#3861c3; box-shadow:0 7px 7px -7px rgba(0,0,0,0.3);}
-#contents_main {padding:45px 40px; width:100%; min-width:1850px; box-sizing: border-box;}
-#footer {position:relative; width:100%; min-width:1900px; padding:30px 40px 14px 40px; box-sizing: border-box;}
+#contents_main {padding:30px 40px 10px; width:100%; min-width:1850px; box-sizing: border-box;}
+#footer {position:relative; width:100%; min-width:1900px; padding:10px 40px 14px 40px; box-sizing: border-box;}
 
 /* layer popup */
 .layerpopup_bg {position:fixed; top:0; left:0; width:100%; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; /*z-index:-1; opacity: 0;*/}
@@ -140,6 +140,6 @@ table.board-list td.subject a { position:absolute; top:16px;  color:#363636; dis
 table.board-list td.subject .ico_outer { display: inline-block; margin-right: 10px; }
 table.board-list td.subject .ico_outer .ico { display: inline-block;  width: 36px;  height: 15px; line-height: 15px;  font-size: 11px; color: #ed4747; text-align: center; font-style: normal; border:1px solid #ef6060;  background: #fff;}
 table.board-list td.search { padding:0 3px; display:table-cell;}
-table.board-list td.search input { width:calc(100% - 1px); margin:4px 2px; height:38px; border-radius: 4px;}
+table.board-list td.search input { width:calc(100% - 1px); margin:6px 2px; height:38px; border-radius: 4px;}
 
 
