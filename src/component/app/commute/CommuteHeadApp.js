@@ -674,6 +674,12 @@ class CommuteHeadApp extends Component {
                   dataType="string"
                   caption="부서명"
                 />
+                <Column dataField="userName" dataType="string" caption="이름" />
+                <Column
+                  dataField="positionTitle"
+                  dataType="string"
+                  caption="직급"
+                />
                 <Column
                   dataField="startWorkIp"
                   dataType="string"

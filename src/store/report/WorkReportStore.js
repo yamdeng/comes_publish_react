@@ -117,7 +117,7 @@ class WorkReportStore {
     // 페이지 타입에 따라 기본 파라미터값 적용
     if (reactPageType === 'WorkReportDeptApp') {
       // 팀원 출퇴근
-      apiParam.deptKey = profile.dept_key;
+      apiParam.deptId = profile.dept_key;
     } else if (reactPageType === 'WorkReportHeadApp') {
       // 실원 출퇴근
       const selectedChildDeptIdList =

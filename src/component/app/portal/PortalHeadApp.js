@@ -166,7 +166,9 @@ class PortalHeadApp extends Component {
             <a
               href={'javascript:void(0);'}
               className={classnames({
-                active: selectedHeadStatsTab === deptKey
+                active:
+                  selectedHeadStatsTab === deptKey ||
+                  pojoSilDeptList.length === 1
               })}
             >
               {deptName}

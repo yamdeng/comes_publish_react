@@ -109,7 +109,7 @@ class PortalStore {
   @observable
   selectedShceduleDate = '';
 
-  // 재택, 외근 여부 : Y / N
+  // 회사안 업무 여부 : Y / N
   @observable
   inWorkYn = 'Y';
 
@@ -162,7 +162,7 @@ class PortalStore {
       runInAction(() => {
         this.todayCommuteDayInfo = detailInfo;
         if (detailInfo) {
-          if (detailInfo.workStatusCodeName === 'ING_HOME') {
+          if (detailInfo.workStatusCode === 'ING') {
             this.inWorkYn = 'Y';
           } else {
             this.inWorkYn = 'N';
@@ -356,7 +356,7 @@ class PortalStore {
     const appStore = this.rootStore.appStore;
     const profile = this.rootStore.appStore.profile;
     const apiParam = {
-      baseDateStr: moment().format('YYYYMMDD')
+      searchDateStr: moment().format('YYYYMMDD')
     };
     if (
       profile.userType === Constant.USER_TYPE_PRIVATE ||
@@ -411,7 +411,10 @@ class PortalStore {
     const appStore = this.rootStore.appStore;
     const apiParam = {};
     const profile = this.rootStore.appStore.profile;
-    if (profile.userType === Constant.USER_TYPE_MANAGER) {
+    if (
+      profile.userType === Constant.USER_TYPE_MANAGER ||
+      profile.userType === Constant.USER_TYPE_PRIVATE
+    ) {
       apiParam.startDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
       apiParam.endDateStr = moment().format('YYYYMMDD');
       apiParam.deptId = profile.dept_key;
@@ -460,7 +463,7 @@ class PortalStore {
     const selectedHeadStatsTab = this.selectedHeadStatsTab;
     const childDeptList =
       appStore.getChildDeptListByUpperKey(selectedHeadStatsTab);
-    apiParam.searchDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+    apiParam.searchDateStr = moment().format('YYYYMMDD');
     apiParam.childDeptIdList = childDeptList.map(
       (deptInfo) => deptInfo.deptKey
     );
@@ -501,7 +504,7 @@ class PortalStore {
       apiUrl = 'portals/admin/workreport.do';
     }
     const apiParam = {};
-    apiParam.searchDateStr = moment().subtract(6, 'days').format('YYYYMMDD');
+    apiParam.searchDateStr = moment().format('YYYYMMDD');
     ApiService.post(apiUrl, apiParam).then((response) => {
       const data = response.data || [];
       const statsSummaryInfo = Helper.convertMapToList(

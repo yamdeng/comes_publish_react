@@ -9,6 +9,17 @@ import Helper from 'util/Helper';
 import Code from 'config/Code';
 import moment from 'moment';
 
+const cellRenderWeekTimeValue = function (columnInfo, v2) {
+  if (columnInfo.column) {
+    if (columnInfo.column.dataField === 'sunWorkTimeValue') {
+      return <span class="red">{columnInfo.value}</span>;
+    } else if (columnInfo.column.dataField === 'satWorkTimeValue') {
+      return <span class="blue">{columnInfo.value}</span>;
+    }
+  }
+  return columnInfo.value;
+};
+
 @inject('appStore', 'uiStore', 'commuteStatsMonthStore')
 @observer
 class CommuteStatsTabMonth extends Component {
@@ -276,18 +287,19 @@ class CommuteStatsTabMonth extends Component {
               showBorders={true}
               remoteOperations={true}
               noDataText={'통계 정보가 존재하지 않습니다.'}
-              height={450}
+              height={550}
+              scrolling={{ showScrollbar: 'never' }}
             >
               <Column dataField="deptName" dataType="string" caption="부서명" />
               <Column dataField="userName" dataType="string" caption="이름" />
               <Column
-                dataField="poisitionTitle"
+                dataField="positionTitle"
                 dataType="string"
                 caption="직급"
               />
               <Column
                 dataField="sumWorkTimeValue"
-                dataType="date"
+                dataType="number"
                 caption="누적근무시간"
               />
               {weekGridLabelList.map((weekGridLabelInfo, index) => {
@@ -302,7 +314,7 @@ class CommuteStatsTabMonth extends Component {
                 } else if (index === 3) {
                   dateField = 'thuWorkTimeValue';
                 } else if (index === 4) {
-                  dateField = 'firWorkTimeValue';
+                  dateField = 'friWorkTimeValue';
                 } else if (index === 5) {
                   dateField = 'satWorkTimeValue';
                 } else if (index === 6) {
@@ -313,6 +325,7 @@ class CommuteStatsTabMonth extends Component {
                     dataField={dateField}
                     dataType="number"
                     caption={moment(dateStr).format('D일(ddd)')}
+                    cellRender={cellRenderWeekTimeValue}
                     headerCellRender={() => {
                       return (
                         <span
@@ -348,18 +361,18 @@ class CommuteStatsTabMonth extends Component {
               showBorders={true}
               remoteOperations={true}
               noDataText={'통계 정보가 존재하지 않습니다.'}
-              height={450}
+              height={550}
             >
               <Column dataField="deptName" dataType="string" caption="부서명" />
               <Column dataField="userName" dataType="string" caption="이름" />
               <Column
-                dataField="poisitionTitle"
+                dataField="positionTitle"
                 dataType="string"
                 caption="직급"
               />
               <Column
                 dataField="sumWorkTimeValue"
-                dataType="date"
+                dataType="number"
                 caption="누적근무시간"
               />
               {[1, 2, 3, 4, 5, 6].map((weekIndex) => {
@@ -405,19 +418,20 @@ class CommuteStatsTabMonth extends Component {
               dataSource={monthHolidyDatagridStore}
               showBorders={true}
               remoteOperations={true}
+              scrolling={{ showScrollbar: 'never' }}
               noDataText={'통계 정보가 존재하지 않습니다.'}
-              height={450}
+              height={550}
             >
               <Column dataField="deptName" dataType="string" caption="부서명" />
               <Column dataField="userName" dataType="string" caption="이름" />
               <Column
-                dataField="poisitionTitle"
+                dataField="positionTitle"
                 dataType="string"
                 caption="직급"
               />
               <Column
                 dataField="sumWorkTimeValue"
-                dataType="date"
+                dataType="number"
                 caption="누적근무시간"
               />
               {monthHolidayGridLabelList.map(
@@ -430,6 +444,13 @@ class CommuteStatsTabMonth extends Component {
                       dataField={dateField}
                       dataType="number"
                       caption={moment(dateStr).format('D일(ddd)')}
+                      cellRender={(columnInfo) => {
+                        if (holiday) {
+                          return <span class="red">{columnInfo.value}</span>;
+                        } else {
+                          return <span class="blue">{columnInfo.value}</span>;
+                        }
+                      }}
                       headerCellRender={() => {
                         return (
                           <span

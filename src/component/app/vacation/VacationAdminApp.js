@@ -161,97 +161,118 @@ class VacationAdminApp extends Component {
                 showBorders={true}
                 remoteOperations={true}
                 noDataText={'통계 정보가 존재하지 않습니다.'}
+                columnResizingMode={true}
                 columnAutoWidth={true}
+                width={1650}
                 height={650}
               >
-                <Column dataField="deptName" dataType="string" caption="직급" />
+                <Column dataField="deptName" dataType="string" caption="부서" />
                 <Column
-                  dataField="startWorkIp"
+                  dataField="positionTitle"
                   dataType="string"
-                  caption="성명"
+                  caption="직급"
                 />
+                <Column dataField="userName" dataType="string" caption="성명" />
                 <Column
-                  dataField="startWorkDate"
+                  dataField="joinDate"
                   dataType="datetime"
                   caption="입사일"
-                  format="HH:mm"
+                  format="yyyy-MM-dd"
                 />
                 <Column
                   dataField="outWorkIp"
                   dataType="string"
                   caption="회계년수"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.joinDate) {
+                      return (
+                        Number(rowData.baseYear) -
+                        Number(moment(rowData.joinDate).format('YYYY')) -
+                        1
+                      );
+                    }
+                    return 0;
+                  }}
                 />
                 <Column
                   dataField="outWorkDate"
-                  dataType="datetime"
                   caption="초년월수"
-                  format="HH:mm"
+                  calculateCellValue={function (rowData) {
+                    return 0;
+                  }}
                 />
-                <Column
-                  dataField="workStatusCodeName"
-                  dataType="date"
-                  caption="발생연차"
-                />
-                <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
-                  caption="금년월차"
-                />
+                <Column dataField="annualCount" caption="발생연차" />
+                <Column dataField="monthCount" caption="금년월차" />
                 <Column caption="과년월차">
                   <Column
-                    dataField="Population_Total"
+                    dataField="monthCount"
                     caption="발생"
-                    format="fixedPoint"
+                    calculateCellValue={function (rowData) {
+                      return 0;
+                    }}
                   />
                   <Column
-                    dataField="Population_Urban"
+                    dataField="monthCount"
                     caption="사용"
-                    format="percent"
+                    calculateCellValue={function (rowData) {
+                      return 0;
+                    }}
                   />
                 </Column>
                 <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
+                  dataField="annualCount"
                   caption={searchYearStr + '년 발생일수'}
+                  calculateCellValue={function (rowData) {
+                    if (rowData) {
+                      return rowData.annualCount + rowData.plusVacationCount;
+                    }
+                    return 0;
+                  }}
                 />
                 <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
+                  dataField="usedCount"
                   caption={searchYearBeforeStr + '년 사용일수'}
                 />
                 <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
+                  dataField="usedCount"
                   caption={searchYearStr + '년 가능일수'}
+                  calculateCellValue={function (rowData) {
+                    if (rowData) {
+                      return rowData.annualCount + rowData.plusVacationCount;
+                    }
+                    return 0;
+                  }}
                 />
 
                 <Column caption={searchYearStr + '년 연차휴가 사용 일수'}>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((monthIndex) => {
                     return (
                       <Column
-                        dataField="Population_Total"
+                        dataField={'use' + monthIndex + 'monthCount'}
                         caption={monthIndex}
-                        format="fixedPoint"
                       />
                     );
                   })}
-                  <Column
-                    dataField="Population_Total"
-                    caption="합계"
-                    format="fixedPoint"
-                  />
+                  <Column dataField="sumUseMonthCount" caption="합계" />
                 </Column>
                 <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
+                  dataField="plusVacationCount"
                   caption={'창립기념 포상휴가'}
                 />
                 <Column
-                  dataField="workResultCodeName"
-                  dataType="date"
+                  dataField="useableCount"
                   caption={searchYearStr + '년 잔여일수'}
+                  calculateCellValue={function (rowData) {
+                    if (rowData) {
+                      return rowData.annualCount - rowData.usedCount;
+                    }
+                    return 0;
+                  }}
+                  cellRender={(columnInfo) => {
+                    return <span class="red">{columnInfo.value}</span>;
+                  }}
                 />
-                <Paging defaultPageSize={10} />
+                <Paging defaultPageSize={15} />
                 <Pager showPageSizeSelector={true} />
               </DataGrid>
             </div>

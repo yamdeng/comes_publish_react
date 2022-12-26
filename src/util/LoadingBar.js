@@ -8,12 +8,12 @@ import rootStore from 'store/RootStore';
 
 // 로딩바 show
 const show = () => {
-  rootStore.uiStore.showLoadingBar();
+  $('#loading-bar').show();
 };
 
 // 로딩바 hide
 const hide = () => {
-  rootStore.uiStore.hideLoadingBar();
+  $('#loading-bar').hide();
 };
 
 const LoadingBar = { show, hide };

@@ -17,9 +17,14 @@ class DeptTimeSettingApp extends Component {
     this.search = this.search.bind(this);
   }
 
-  init() {}
+  init() {
+    this.search();
+  }
 
-  search() {}
+  search() {
+    const { deptTimeSettingStore } = this.props;
+    deptTimeSettingStore.search();
+  }
 
   componentDidMount() {
     this.init();
@@ -68,47 +73,37 @@ class DeptTimeSettingApp extends Component {
                 height={450}
               >
                 <Column
-                  dataField="baseDateStr"
+                  dataField="timeName"
                   dataType="string"
                   caption="근무시간명"
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="workLocation"
                   dataType="string"
                   caption="근무지"
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="timeDescription"
                   dataType="string"
                   caption="근무시간설명"
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="workStartTime"
                   dataType="string"
                   caption="근무시간"
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="lunchEndTime"
                   dataType="string"
                   caption="점심시간"
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="applyStartDateStr"
                   dataType="string"
                   caption="적용 시작일"
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="applyStartDateStr"
                   dataType="string"
                   caption="적용 예정일"
                 />
@@ -118,10 +113,10 @@ class DeptTimeSettingApp extends Component {
                   caption="적용 부서"
                 />
                 <Column
-                  dataField="reportDate"
+                  dataField="regDate"
                   dataType="datetime"
                   caption="등록일"
-                  format="YYYY-MM-DD HH:mm"
+                  format="yyyy-MM-dd hh:mm"
                 />
                 <Paging defaultPageSize={10} />
                 <Pager showPageSizeSelector={true} />

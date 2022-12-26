@@ -109,7 +109,7 @@ class VacationStore {
     const profile = appStore.profile;
     const selectedSilDeptKey = this.selectedSilDeptKey;
     let apiParam = {};
-    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYYMMDD');
+    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
     // 페이지 타입에 따라 기본 파라미터값 적용
     if (reactPageType === 'VacationPrivateApp') {
       // 개인 출퇴근
@@ -159,7 +159,7 @@ class VacationStore {
   @action
   searchDetailList(detailUserId) {
     let apiParam = {};
-    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYYMMDD');
+    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
     apiParam.userId = detailUserId;
 
     const store = new CustomStore({

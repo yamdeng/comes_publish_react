@@ -7,6 +7,7 @@ import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'workReportStore')
 @observer
@@ -407,20 +408,29 @@ class WorkReportAdminApp extends Component {
                 />
                 <Column
                   dataField="reportDate"
-                  dataType="datetime"
                   caption="작성일시"
-                  format="YYYY-MM-DD HH:mm"
+                  calculateCellValue={function (rowData) {
+                    if (!rowData || !rowData.reportDate) {
+                      return '미제출';
+                    }
+                    return moment(rowData.reportDate).format('YYYY-MM-DD');
+                  }}
                 />
                 <Column
-                  dataField="userName"
+                  dataField="managerName"
                   dataType="string"
                   caption="작성자"
                 />
                 <Column dataField="issueYn" dataType="string" caption="이슈" />
                 <Column
-                  dataField="commentYn"
-                  dataType="string"
+                  dataField="commentCount"
                   caption="댓글"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.commentCount) {
+                      return 'Y';
+                    }
+                    return 'N';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager showPageSizeSelector={true} />

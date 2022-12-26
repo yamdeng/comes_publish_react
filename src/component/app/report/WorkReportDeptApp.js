@@ -406,15 +406,20 @@ class WorkReportDeptApp extends Component {
                   format="YYYY-MM-DD HH:mm"
                 />
                 <Column
-                  dataField="userName"
+                  dataField="managerName"
                   dataType="string"
                   caption="작성자"
                 />
                 <Column dataField="issueYn" dataType="string" caption="이슈" />
                 <Column
-                  dataField="commentYn"
-                  dataType="string"
+                  dataField="commentCount"
                   caption="댓글"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.commentCount) {
+                      return 'Y';
+                    }
+                    return 'N';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager showPageSizeSelector={true} />

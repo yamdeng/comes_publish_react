@@ -46,7 +46,7 @@ class CommuteStatsMonthStore {
 
   // 주단위 근무시간 검색 조건
   @observable
-  workWeekTimeKind = Constant.SEARCH_TIME_LESS;
+  workWeekTimeKind = '';
 
   // 주간 통계 상단 날짜 라벨 : 월 ~ 일 grid : label, key, header color
   @observable
@@ -79,6 +79,7 @@ class CommuteStatsMonthStore {
   @action
   changeWorkWeekTimeKind(workWeekTimeKind) {
     this.workWeekTimeKind = workWeekTimeKind;
+    this.search();
   }
 
   // 주간 통계 기준 월요일 변경

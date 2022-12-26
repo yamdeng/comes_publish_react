@@ -16,6 +16,10 @@ class WorkReportSubMenu extends Component {
     const pageType = reactPageType;
     let isHeadMenuVisible = false;
     let isAdminMenuVisible = false;
+    let isManagerMenuVisible = false;
+    if (userType === Constant.USER_TYPE_MANAGER) {
+      isManagerMenuVisible = true;
+    }
     if (userType === Constant.USER_TYPE_HEADER) {
       isHeadMenuVisible = true;
     }
@@ -27,6 +31,7 @@ class WorkReportSubMenu extends Component {
         <h3>업무보고</h3>
         <ul class="sub_menu">
           <li
+            style={{ display: isManagerMenuVisible ? '' : 'none' }}
             class={pageType === 'WorkReportDeptApp' ? 'on' : ''}
             onClick={() => Helper.goUrl('newoffice/view/report-dept.do')}
           >

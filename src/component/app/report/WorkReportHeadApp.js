@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import 'devextreme/data/odata/store';
 import DatePicker from 'react-datepicker';
@@ -7,6 +8,7 @@ import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'workReportStore')
 @observer
@@ -18,6 +20,7 @@ class WorkReportHeadApp extends Component {
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
     this.search = this.search.bind(this);
+    this.changeSilDept = this.changeSilDept.bind(this);
     this.changeSearchDateType = this.changeSearchDateType.bind(this);
 
     // 3개 종류 datepicker handler start
@@ -58,6 +61,12 @@ class WorkReportHeadApp extends Component {
     // 초기화 조회시 모든 경우에 통계 정보 재조회
     const { workReportStore } = this.props;
     workReportStore.search();
+  }
+
+  changeSilDept(event) {
+    const { workReportStore } = this.props;
+    const value = event.target.value;
+    workReportStore.changeSilDept(value);
   }
 
   changeSearchDateType() {
@@ -133,7 +142,7 @@ class WorkReportHeadApp extends Component {
   }
 
   render() {
-    let { workReportStore } = this.props;
+    let { workReportStore, appStore } = this.props;
     let {
       searchDateType,
       searchDate,
@@ -147,8 +156,16 @@ class WorkReportHeadApp extends Component {
       totalCount,
       statsInfo,
       datagridStore,
-      searchDashBoardKind
+      searchDashBoardKind,
+      selectedSilDeptKey
     } = workReportStore;
+    let { profile } = appStore;
+    let { silDeptList } = profile;
+    let pojoSilDeptList = toJS(silDeptList) || [];
+    let silDeptListConvert =
+      pojoSilDeptList.length > 1
+        ? [{ deptKey: 'ALL', deptName: '전체' }].concat(toJS(pojoSilDeptList))
+        : pojoSilDeptList;
     statsInfo = statsInfo || {};
 
     return (
@@ -172,11 +189,17 @@ class WorkReportHeadApp extends Component {
               <label for="sel_option" class="blind">
                 실 선택
               </label>
-              <select id="sel_option" class="w90">
-                <option>전체</option>
-                <option>1실</option>
-                <option>2실</option>
-                <option>3실</option>
+              <select
+                id="sel_option"
+                class="w90"
+                onChange={this.changeSilDept}
+                value={selectedSilDeptKey}
+              >
+                {silDeptListConvert.map((item) => (
+                  <option value={item.deptKey} key={item.deptKey}>
+                    {item.deptName}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -404,18 +427,29 @@ class WorkReportHeadApp extends Component {
                   dataField="reportDate"
                   dataType="datetime"
                   caption="작성일시"
-                  format="YYYY-MM-DD HH:mm"
+                  format="yyyy-MM-dd"
+                  calculateCellValue={function (rowData) {
+                    if (!rowData || !rowData.reportDate) {
+                      return '미제출';
+                    }
+                    return moment(rowData.reportDate).format('YYYY-MM-DD');
+                  }}
                 />
                 <Column
-                  dataField="userName"
+                  dataField="managerName"
                   dataType="string"
                   caption="작성자"
                 />
                 <Column dataField="issueYn" dataType="string" caption="이슈" />
                 <Column
-                  dataField="commentYn"
-                  dataType="string"
+                  dataField="commentCount"
                   caption="댓글"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.commentCount) {
+                      return 'Y';
+                    }
+                    return 'N';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager showPageSizeSelector={true} />

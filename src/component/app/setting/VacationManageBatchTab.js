@@ -106,7 +106,7 @@ class VacationManageBatchTab extends Component {
               fontSize: 15,
               lineHeight: 300,
               textAlign: 'center',
-              maxWidth: 1600
+              width: 1650
             }}
           ></p>
         </div>

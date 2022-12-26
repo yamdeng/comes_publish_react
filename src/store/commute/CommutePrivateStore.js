@@ -69,7 +69,7 @@ class CommutePrivateStore {
   @observable
   privateMonthStatsList = [];
 
-  // 재택, 외근 여부 : Y / N
+  // 회사안 업무 여부 : Y / N
   @observable
   inWorkYn = 'Y';
 
@@ -149,8 +149,8 @@ class CommutePrivateStore {
       const detailInfo = response.data;
       runInAction(() => {
         this.todayCommuteDayInfo = detailInfo;
-        if (detailInfo) {
-          if (detailInfo.workStatusCodeName === 'ING_HOME') {
+        if (detailInfo && detailInfo.workStatusCode) {
+          if (detailInfo.workStatusCode === 'ING') {
             this.inWorkYn = 'Y';
           } else {
             this.inWorkYn = 'N';
@@ -288,7 +288,13 @@ class CommutePrivateStore {
       }
     }
 
+    // if (this.datagridStore) {
+    //   this.datagridStore.clearRawDataCache();
+    // }
+
     const store = new CustomStore({
+      // cacheRawData: false,
+      // useDefaultSearch: true
       load(loadOptions) {
         if (loadOptions) {
           const { skip, take } = loadOptions;
@@ -368,6 +374,7 @@ class CommutePrivateStore {
   changeSearchMonth(searchMonth) {
     this.searchMonth = searchMonth;
     this.monthDatepickerOpend = false;
+    this.search();
   }
 
   // 다음월
@@ -403,6 +410,7 @@ class CommutePrivateStore {
   changeSearchDate(searchDate) {
     this.searchDate = searchDate;
     this.dayDatepickerOpend = false;
+    this.search();
   }
 
   // 다음일

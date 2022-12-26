@@ -176,7 +176,7 @@ class CommutePrivateApp extends Component {
               <a
                 href="javascript:void(0);"
                 class="next"
-                onClick={this.prevMonth}
+                onClick={this.nextMonth}
               >
                 다음 달
               </a>

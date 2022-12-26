@@ -10,6 +10,7 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'vacationStore')
 @observer
@@ -25,6 +26,7 @@ class VacationHeadApp extends Component {
     this.changeSearchYear = this.changeSearchYear.bind(this);
     this.nextYear = this.nextYear.bind(this);
     this.prevYear = this.prevYear.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
   }
 
   init() {
@@ -62,6 +64,13 @@ class VacationHeadApp extends Component {
   prevYear() {
     const { vacationStore } = this.props;
     vacationStore.prevYear();
+  }
+
+  handleRowClick(e) {
+    const { vacationStore } = this.props;
+    if (e.data) {
+      vacationStore.searchDetailList(e.data.userKey);
+    }
   }
 
   componentDidMount() {
@@ -177,6 +186,7 @@ class VacationHeadApp extends Component {
                 remoteOperations={true}
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={250}
+                onRowClick={this.handleRowClick}
               >
                 <Column dataField="userName" dataType="string" caption="이름" />
                 <Column
@@ -185,9 +195,20 @@ class VacationHeadApp extends Component {
                   caption="직급"
                 />
                 <Column
-                  dataField="basaYear"
+                  dataField="baseYear"
                   dataType="string"
                   caption="사용기간"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.baseYear) {
+                      return (
+                        rowData.baseYear +
+                        '01-01 ~ ' +
+                        rowData.baseYear +
+                        '-12-31'
+                      );
+                    }
+                    return '';
+                  }}
                 />
                 <Column
                   dataField="annualCount"
@@ -203,6 +224,12 @@ class VacationHeadApp extends Component {
                   dataField="useableCount"
                   dataType="number"
                   caption="잔여연차"
+                  calculateCellValue={function (rowData) {
+                    if (rowData) {
+                      return rowData.annualCount - rowData.usedCount;
+                    }
+                    return 0;
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager showPageSizeSelector={true} />
@@ -222,11 +249,6 @@ class VacationHeadApp extends Component {
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={350}
               >
-                <Column
-                  dataField="approveSeq"
-                  dataType="number"
-                  caption="순번"
-                />
                 <Column dataField="userName" dataType="string" caption="이름" />
                 <Column
                   dataField="positionTitle"
@@ -242,6 +264,7 @@ class VacationHeadApp extends Component {
                   dataField="submitDate"
                   dataType="datetime"
                   caption="신청일"
+                  format="yyyy-MM-dd"
                 />
                 <Column
                   dataField="vacationKindCodeName"
@@ -253,6 +276,18 @@ class VacationHeadApp extends Component {
                   dataType="datetime"
                   caption="휴가/휴직 기간"
                   format="YYYY-MM-DD"
+                  calculateCellValue={function (rowData) {
+                    if (rowData) {
+                      return (
+                        moment(rowData.vacationStartDateStr).format(
+                          'YYYY-MM-DD'
+                        ) +
+                        '~' +
+                        moment(rowData.vacationEndDateStr).format('YYYY-MM-DD')
+                      );
+                    }
+                    return '';
+                  }}
                 />
                 <Column
                   dataField="useCount"

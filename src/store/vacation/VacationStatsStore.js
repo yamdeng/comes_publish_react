@@ -77,7 +77,7 @@ class VacationStatsStore {
   @action
   search() {
     let apiParam = {};
-    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYYMMDD');
+    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
 
     const store = new CustomStore({
       load(loadOptions) {

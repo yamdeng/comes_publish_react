@@ -613,11 +613,7 @@ class CommuteDeptApp extends Component {
                     return '';
                   }}
                 />
-                <Column
-                  dataField="deptName"
-                  dataType="string"
-                  caption="부서명"
-                />
+                <Column dataField="userName" dataType="string" caption="이름" />
                 <Column
                   dataField="startWorkIp"
                   dataType="string"
