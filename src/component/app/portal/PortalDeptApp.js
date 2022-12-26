@@ -251,7 +251,7 @@ class PortalDeptApp extends Component {
                 <p>{currentTime}</p>
                 <ul
                   class="flex_sb mgtop40"
-                  style={{ display: startWorkDate ? 'none' : '' }}
+                  style={{ visibility: startWorkDate ? 'hidden' : 'visible' }}
                 >
                   <li>
                     <div class="radio">

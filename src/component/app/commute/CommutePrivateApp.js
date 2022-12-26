@@ -29,7 +29,7 @@ class CommutePrivateApp extends Component {
   init() {
     const { commutePrivateStore } = this.props;
     commutePrivateStore.getTodayCommuteDayInfo();
-    commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
+    commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_MONTH);
     commutePrivateStore.initSearchDateAll();
     commutePrivateStore.search();
   }
@@ -235,7 +235,10 @@ class CommutePrivateApp extends Component {
                     <span> ({todayWeekTextInfo})</span>
                   </p>
                   <p>{currentTime}</p>
-                  <ul class="flex_sb mgtop40">
+                  <ul
+                    class="flex_sb mgtop40"
+                    style={{ visibility: startWorkDate ? 'hidden' : 'visible' }}
+                  >
                     <li>
                       <div class="radio">
                         <input

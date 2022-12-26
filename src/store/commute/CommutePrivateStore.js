@@ -8,6 +8,7 @@ import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 import _ from 'lodash';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -166,7 +167,7 @@ class CommutePrivateStore {
     const todayCommuteDayInfo = this.todayCommuteDayInfo;
 
     if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
-      Helper.toastMessage('aaaa', 'bbb');
+      Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
     const apiParam = {
@@ -176,11 +177,21 @@ class CommutePrivateStore {
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.put('commutes/startWork.do', apiParam).then((response) => {
-      const detailInfo = response.data;
-      runInAction(() => {
-        this.todayCommuteDayInfo = detailInfo;
-      });
+    let confirmMessage =
+      '출근 체크를 하시겠습니까?' +
+      (this.inWorkYn === 'Y' ? '(업무)' : '(재택)');
+
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('commutes/startWork.do', apiParam).then((response) => {
+          const detailInfo = response.data;
+          Helper.toastMessage('출근 체크를 완료하였습니다.');
+          runInAction(() => {
+            this.todayCommuteDayInfo = detailInfo;
+          });
+        });
+      }
     });
   }
 
@@ -196,11 +207,30 @@ class CommutePrivateStore {
     if (profile) {
       apiParam.userId = profile.user_key;
     }
-    ApiService.put('commutes/outWork.do', apiParam).then((response) => {
-      const detailInfo = response.data;
-      runInAction(() => {
-        this.todayCommuteDayInfo = detailInfo;
-      });
+    if (todayCommuteDayInfo && todayCommuteDayInfo.outWorkDate) {
+      Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
+      return;
+    }
+    if (!todayCommuteDayInfo || !todayCommuteDayInfo.startWorkDate) {
+      Helper.toastMessage(
+        '퇴근은 체크는 출근을 먼저 체크해야합니다.',
+        '',
+        'warning'
+      );
+      return;
+    }
+    let confirmMessage = '퇴근 체크를 하시겠습니까?';
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('commutes/outWork.do', apiParam).then((response) => {
+          const detailInfo = response.data;
+          Helper.toastMessage('퇴근 체크를 완료하였습니다.');
+          runInAction(() => {
+            this.todayCommuteDayInfo = detailInfo;
+          });
+        });
+      }
     });
   }
 
