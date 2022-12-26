@@ -720,7 +720,7 @@ class PortalAdminApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>공지사항 리스트</caption>
                 <colgroup>
@@ -750,7 +750,7 @@ class PortalAdminApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="border_bottom box_fix">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>전체 출퇴근 현황 리스트</caption>
                 <colgroup>
@@ -780,7 +780,7 @@ class PortalAdminApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="border_bottom box_fix">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>전체 연차 현황 리스트</caption>
                 <colgroup>

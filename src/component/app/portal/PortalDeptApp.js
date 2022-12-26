@@ -392,7 +392,7 @@ class PortalDeptApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>팀원 근무/출퇴근 현황</caption>
                 <colgroup>
@@ -431,7 +431,7 @@ class PortalDeptApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>공지사항 리스트</caption>
                 <colgroup>
@@ -462,7 +462,7 @@ class PortalDeptApp extends Component {
               </a>{' '}
               <span>(요청/반려)</span>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>결재 현황 리스트</caption>
                 <colgroup>
@@ -493,7 +493,7 @@ class PortalDeptApp extends Component {
               </a>
               <span>{workReport7RangeText}</span>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>업무 보고 현황 리스트</caption>
                 <colgroup>

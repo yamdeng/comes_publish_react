@@ -96,3 +96,7 @@ table {
 .scroll-minimum::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
 }
+
+.box_fix { 
+    border-bottom: 0px;
+}

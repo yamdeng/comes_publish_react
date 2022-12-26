@@ -447,7 +447,7 @@ class PortalHeadApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>실원 근무/출퇴근 현황</caption>
                 <colgroup>
@@ -488,7 +488,7 @@ class PortalHeadApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>공지사항 리스트</caption>
                 <colgroup>
@@ -519,7 +519,7 @@ class PortalHeadApp extends Component {
               </a>{' '}
               <span>(요청/반려)</span>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>결재 현황 리스트</caption>
                 <colgroup>
@@ -549,7 +549,7 @@ class PortalHeadApp extends Component {
                 더보기
               </a>
             </h3>
-            <div class="">
+            <div class="box_fix scroll-minimum">
               <table class="board-list">
                 <caption>팀 업무 보고 현황 리스트</caption>
                 <colgroup>
