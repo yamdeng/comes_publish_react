@@ -59,7 +59,6 @@ import ModalTest from 'component/app/ModalTest';
 */
 
 const getAppComponent = function () {
-  // reactPageType = 'aaa';
   if (reactPageType === 'PortalPrivateApp') {
     return <PortalPrivateApp />;
   } else if (reactPageType === 'PortalDeptApp') {
@@ -99,7 +98,6 @@ const getAppComponent = function () {
   } else if (reactPageType === 'HolidayManageApp') {
     return <HolidayManageApp />;
   }
-
   return null;
 };
 
