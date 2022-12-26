@@ -340,7 +340,7 @@ class PortalAdminApp extends Component {
               <ul class="tabnav">
                 <li onClick={() => this.changeSelectedAdminStatsTabIndex(1)}>
                   <a
-                    href="#tab01"
+                    href="javascript:void(0);"
                     className={selectedAdminStatsTabIndex === 1 ? 'active' : ''}
                   >
                     전체
@@ -348,7 +348,7 @@ class PortalAdminApp extends Component {
                 </li>
                 <li onClick={() => this.changeSelectedAdminStatsTabIndex(2)}>
                   <a
-                    href="#tab02"
+                    href="javascript:void(0);"
                     className={selectedAdminStatsTabIndex === 2 ? 'active' : ''}
                   >
                     출퇴근 제출
@@ -356,7 +356,7 @@ class PortalAdminApp extends Component {
                 </li>
                 <li onClick={() => this.changeSelectedAdminStatsTabIndex(3)}>
                   <a
-                    href="#tab03"
+                    href="javascript:void(0);"
                     className={selectedAdminStatsTabIndex === 3 ? 'active' : ''}
                   >
                     업무보고

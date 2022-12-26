@@ -164,7 +164,7 @@ class PortalHeadApp extends Component {
         return (
           <li onClick={() => this.changeSelectedHeadStatsTab(deptKey)}>
             <a
-              href={'#' + deptKey}
+              href={'javascript:void(0);'}
               className={classnames({
                 active: selectedHeadStatsTab === deptKey
               })}
