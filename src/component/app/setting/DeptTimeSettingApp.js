@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import Constant from 'config/Constant';
@@ -15,6 +16,8 @@ class DeptTimeSettingApp extends Component {
     this.state = {};
     this.init = this.init.bind(this);
     this.search = this.search.bind(this);
+    this.openFormPopup = this.openFormPopup.bind(this);
+    this.closeFormPopup = this.closeFormPopup.bind(this);
   }
 
   init() {
@@ -26,13 +29,23 @@ class DeptTimeSettingApp extends Component {
     deptTimeSettingStore.search();
   }
 
+  openFormPopup() {
+    const { deptTimeSettingStore } = this.props;
+    deptTimeSettingStore.openFormPopup();
+  }
+
+  closeFormPopup() {
+    const { deptTimeSettingStore } = this.props;
+    deptTimeSettingStore.closeFormPopup();
+  }
+
   componentDidMount() {
     this.init();
   }
 
   render() {
     const { deptTimeSettingStore } = this.props;
-    const { datagridStore } = deptTimeSettingStore;
+    const { datagridStore, isFormPopupOpen } = deptTimeSettingStore;
     return (
       <div id="contents_sub" class="">
         <SettingSubMenu />
@@ -59,7 +72,11 @@ class DeptTimeSettingApp extends Component {
               </div> */}
               <div></div>
               <div class="search_right">
-                <a href="javascript:void(0);" class="btn_normal btn_blue">
+                <a
+                  href="javascript:void(0);"
+                  class="btn_normal btn_blue"
+                  onClick={this.openFormPopup}
+                >
                   근무시간 등록
                 </a>
               </div>
@@ -123,6 +140,125 @@ class DeptTimeSettingApp extends Component {
               </DataGrid>
             </div>
           </div>
+        </div>
+        <div>
+          <Modal isOpen={isFormPopupOpen} className={'modal_box modal_box_450'}>
+            <ModalHeader
+              className="popup_head"
+              close={
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                  onClick={this.closeFormPopup}
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              }
+            >
+              근무시간 정보 등록
+            </ModalHeader>
+            <ModalBody>
+              <div class="pd20">
+                <div class="flex_sb">
+                  <p class="con_title2">근무시간명</p>
+                  <div class="con_box2">
+                    <input
+                      type="text"
+                      class="w100p"
+                      placeholder="제목을 입력해주세요."
+                    />
+                  </div>
+                </div>
+                <div class="flex_sb mgtop10">
+                  <p class="con_title2">근무지</p>
+                  <div class="con_box2">
+                    <input
+                      type="text"
+                      class="w100p"
+                      placeholder="제목을 입력해주세요."
+                    />
+                  </div>
+                </div>
+                <div class="flex_sb mgtop10">
+                  <p class="con_title2">근무시간 설명</p>
+                  <div class="con_box2">
+                    <label for="option1" class="blind">
+                      출근 시간
+                    </label>
+                    <select id="option1" class="w90">
+                      <option>09:00</option>
+                    </select>
+                    <span>~</span>
+                    <label for="option2" class="blind">
+                      퇴근 시간
+                    </label>
+                    <select id="option2" class="w90">
+                      <option>18:00</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex_sb mgtop10">
+                  <p class="con_title2">점심시간</p>
+                  <div class="con_box2">
+                    <label for="option3" class="blind">
+                      점심 시작 시간
+                    </label>
+                    <select id="option3" class="w90" disabled>
+                      <option>12:00</option>
+                    </select>
+                    <span>~</span>
+                    <label for="option4" class="blind">
+                      점심 종료 시간
+                    </label>
+                    <select id="option4" class="w90" disabled>
+                      <option>13:00</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex_sb mgtop10">
+                  <p class="con_title2">적용기간</p>
+                  <div class="con_box2">
+                    <div>
+                      <input type="checkbox" id="check1" />
+                      <label for="check1" class="mglt10">
+                        종료일 미정
+                      </label>
+                    </div>
+                    <input type="text" class="w90" />
+                    <a href="javascript:void(0);" class="btn_calen mgrg10">
+                      <img src="images/calen_sel_ico.png" />
+                    </a>
+                    <span>~</span>
+                    <input type="text" class="w90" />
+                    <a href="javascript:void(0);" class="btn_calen">
+                      <img src="images/calen_sel_ico.png" />
+                    </a>
+                  </div>
+                </div>
+                <div class="flex_sb mgtop10">
+                  <p class="con_title2">적용 부서 선택</p>
+                  <div class="con_box2">
+                    <label for="option5" class="blind">
+                      적용 부서
+                    </label>
+                    <select id="option5" class="w90">
+                      <option>SQ1</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <button type="button" class="btn btn-secondary">
+                취소
+              </button>
+              <button type="button" class="btn btn-primary">
+                저장
+              </button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
     );

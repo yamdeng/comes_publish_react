@@ -52,6 +52,18 @@ class DeptTimeSettingStore {
     this.rootStore = rootStore;
   }
 
+  // 팝업 오픈
+  @action
+  openFormPopup() {
+    this.isFormPopupOpen = true;
+  }
+
+  // 팝업 종료
+  @action
+  closeFormPopup() {
+    this.isFormPopupOpen = false;
+  }
+
   // 근무시간 등록 팝업 오픈
   @action
   handleAddButton() {}

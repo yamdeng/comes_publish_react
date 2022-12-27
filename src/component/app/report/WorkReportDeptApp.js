@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { observer, inject } from 'mobx-react';
 import 'devextreme/data/odata/store';
 import DatePicker from 'react-datepicker';
@@ -7,6 +8,7 @@ import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'workReportStore')
 @observer
@@ -40,6 +42,13 @@ class WorkReportDeptApp extends Component {
     this.prevDay = this.prevDay.bind(this);
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
+
+    // 모달 핸들러
+    this.openFormModal = this.openFormModal.bind(this);
+    this.closeFormModal = this.closeFormModal.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
+    this.saveWorkReport = this.saveWorkReport.bind(this);
+    this.changeIssueYn = this.changeIssueYn.bind(this);
   }
 
   init() {
@@ -128,6 +137,34 @@ class WorkReportDeptApp extends Component {
     workReportStore.prevDay(kind);
   }
 
+  openFormModal(reportId) {
+    const { workReportStore } = this.props;
+    workReportStore.openFormModal(reportId);
+  }
+
+  closeFormModal() {
+    const { workReportStore } = this.props;
+    workReportStore.closeFormModal();
+  }
+
+  handleRowClick(e) {
+    const { workReportStore } = this.props;
+    if (e.data) {
+      workReportStore.openFormModal(e.data);
+    }
+  }
+
+  saveWorkReport() {
+    const { workReportStore } = this.props;
+    workReportStore.saveWorkReport();
+  }
+
+  changeIssueYn(event) {
+    let value = event.target.checked;
+    const { workReportStore } = this.props;
+    workReportStore.changeIssueYn(value ? 'Y' : 'N');
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -148,9 +185,14 @@ class WorkReportDeptApp extends Component {
       totalCount,
       statsInfo,
       datagridStore,
-      searchDashBoardKind
+      searchDashBoardKind,
+      isFormModalOpen,
+      workDetailInfo,
+      issueYn
     } = workReportStore;
     statsInfo = statsInfo || {};
+    workDetailInfo = workDetailInfo || {};
+    const { baseDateStr } = workDetailInfo;
     return (
       <div id="contents_sub" class="">
         <WorkReportSubMenu />
@@ -378,6 +420,7 @@ class WorkReportDeptApp extends Component {
                 remoteOperations={true}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
+                onRowClick={this.handleRowClick}
               >
                 <Column
                   dataField="baseDateStr"
@@ -404,6 +447,12 @@ class WorkReportDeptApp extends Component {
                   dataType="datetime"
                   caption="작성일시"
                   format="YYYY-MM-DD HH:mm"
+                  calculateCellValue={function (rowData) {
+                    if (!rowData || !rowData.reportDate) {
+                      return '미제출';
+                    }
+                    return moment(rowData.reportDate).format('YYYY-MM-DD');
+                  }}
                 />
                 <Column
                   dataField="managerName"
@@ -427,6 +476,59 @@ class WorkReportDeptApp extends Component {
             </div>
           </div>
         </div>
+        {/* 업무 보고 수정 팝업 */}
+        <Modal isOpen={isFormModalOpen} className={'modal_box modal_box_850'}>
+          <ModalHeader
+            className="popup_head"
+            close={
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                onClick={this.closeFormModal}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            }
+          >
+            일일 업무 보고 수정
+          </ModalHeader>
+          <ModalBody>
+            <div class="pd20">
+              <h4>
+                {baseDateStr ? moment(baseDateStr).format('M월 D일(ddd)') : ''}
+              </h4>
+              <div class="mgtop10 modal_grid_area" id="reactEditor"></div>
+              <div class="right mgtop10">
+                <input
+                  type="checkbox"
+                  checked={issueYn === 'Y' ? true : false}
+                  onChange={this.changeIssueYn}
+                />
+                <label for="issue" class="mglt10">
+                  이슈
+                </label>
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onClick={this.closeFormModal}
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={this.saveWorkReport}
+            >
+              저장
+            </button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }

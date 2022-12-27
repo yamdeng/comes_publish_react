@@ -63,11 +63,8 @@ class ModalTest extends Component {
       this.xfe = new XFE({
         basePath: '/office6/engine/we/xfree',
         width: '100%',
-        height: '700px',
-        onLoad: () => {
-          // alert('aaaa');
-          // debugger;
-        }
+        height: '500px',
+        onLoad: () => {}
       });
 
       // debugger;

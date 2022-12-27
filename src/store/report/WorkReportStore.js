@@ -1,4 +1,4 @@
-/* global reactPageType */
+/* global reactPageType, XFE */
 
 import { observable, action, runInAction } from 'mobx';
 import 'devextreme/data/odata/store';
@@ -15,7 +15,11 @@ import _ from 'lodash';
 
 */
 
+const basePath = '/office6/engine/we/xfree';
+
 class WorkReportStore {
+  // 에디터
+  xfe = null;
   // 개인_출퇴근 목록 grid
   @observable
   datagridStore = null;
@@ -75,6 +79,18 @@ class WorkReportStore {
   // 하위 실 선택 정보
   @observable
   selectedSilDeptKey = 'ALL';
+
+  // 폼 모달 open 여부
+  @observable
+  isFormModalOpen = false;
+
+  // 업무보고 이슈 여부
+  @observable
+  issueYn = 'N';
+
+  // 업무보고 상세 정보
+  @observable
+  workDetailInfo = null;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -385,6 +401,54 @@ class WorkReportStore {
     this.endDatepickerOpend = false;
   }
   /* 종료일 datepicker 처리 end */
+
+  // form 모달 open
+  @action
+  openFormModal(workDetailInfo) {
+    this.isFormModalOpen = true;
+    this.workDetailInfo = workDetailInfo;
+    this.issueYn = workDetailInfo.issueYn;
+    setTimeout(() => {
+      this.xfe = new XFE({
+        basePath: basePath,
+        width: '100%',
+        height: '430px',
+        onLoad: () => {}
+      });
+      this.xfe.render('reactEditor');
+      this.xfe.setBodyValue(workDetailInfo.reportContent);
+    }, 300);
+  }
+
+  // form 모달 close
+  @action
+  closeFormModal() {
+    this.isFormModalOpen = false;
+  }
+
+  // 이슈 변경
+  @action
+  changeIssueYn(issueYn) {
+    this.issueYn = issueYn;
+  }
+
+  // 업무보고 저장
+  @action
+  saveWorkReport() {
+    const reportContent = this.xfe.getBodyValue();
+    const issueYn = this.issueYn;
+    const workDetailInfo = this.workDetailInfo;
+    const { baseDateStr } = workDetailInfo;
+    const apiParam = {};
+    apiParam.reportId = workDetailInfo.reportId;
+    apiParam.reportContent = reportContent;
+    apiParam.issueYn = issueYn;
+    ApiService.put('work-reports/update.do', apiParam).then((response) => {
+      Helper.toastMessage(baseDateStr + ' 업무보고를 저장하였습니다.');
+      this.closeFormModal();
+      this.search();
+    });
+  }
 
   // 하위실 콤보 변경
   @action
