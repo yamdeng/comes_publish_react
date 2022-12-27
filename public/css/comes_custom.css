@@ -104,4 +104,8 @@ table {
 .dx-datagrid {  
     font-family: "Pretendard", sans-serif;
     font-size: 14px;
-}  
+}
+
+.progress-bar-wrap {
+    background: none;
+}
