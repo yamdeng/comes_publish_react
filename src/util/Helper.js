@@ -111,7 +111,7 @@ const convertNumberValue = function (value) {
 const getTodayString = function () {
   let todayString;
   let today = moment();
-  todayString = today.format('YYYY-MM-DD');
+  todayString = today.format('YYYYMMDD');
   return todayString;
 };
 

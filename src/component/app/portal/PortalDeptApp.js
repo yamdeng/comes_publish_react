@@ -87,9 +87,9 @@ class PortalDeptApp extends Component {
     if (startWorkDeviceType) {
       startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
     }
-
-    const { annualCount, plusVacationCount, usedCount } = todayVacationYearInfo;
-    const restVacationCount = annualCount + plusVacationCount - usedCount;
+    todayVacationYearInfo = todayVacationYearInfo || {};
+    const { annualCount, plusVacationCount, usedCount, restVacationCount } =
+      todayVacationYearInfo;
 
     let commuteDayListComponent = null;
     if (commuteDayList.length) {

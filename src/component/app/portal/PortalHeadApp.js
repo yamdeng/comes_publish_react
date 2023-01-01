@@ -17,6 +17,7 @@ class PortalHeadApp extends Component {
     this.changeInWorkYn = this.changeInWorkYn.bind(this);
     this.startWork = this.startWork.bind(this);
     this.outWork = this.outWork.bind(this);
+    this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
   }
 
   init() {
@@ -60,6 +61,11 @@ class PortalHeadApp extends Component {
     portalStore.changeSelectedHeadStatsTab(deptKey);
   }
 
+  toggleVisibleGuideText() {
+    const { portalStore } = this.props;
+    portalStore.toggleVisibleGuideText();
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -78,7 +84,8 @@ class PortalHeadApp extends Component {
       approveList,
       workReportList,
       selectedHeadStatsTab,
-      portalHeadStatsList
+      portalHeadStatsList,
+      visibleGuideText
     } = portalStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
     const {
@@ -429,8 +436,37 @@ class PortalHeadApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <div class="tab">
+            <div class="tab relative">
               <ul class="tabnav">{silDeptListComponent}</ul>
+              <a
+                href="javascript:void(0);"
+                class="btn_right"
+                onClick={this.toggleVisibleGuideText}
+              >
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
+                  alt="가이드"
+                />
+              </a>
+              <div
+                class="tip_box"
+                style={{
+                  display: visibleGuideText ? '' : 'none'
+                }}
+              >
+                {' '}
+                [실 구성원] 현재 실원 / 현재 실 팀
+                <br />
+                [개인 출근 미제출] 당일 현재 출근 체크를 하지 않은
+                <br />
+                [휴가/휴직] 당일 휴가/휴직인 실원
+                <br />
+                [출퇴근 미제출] 전일(이전 평일) 기준 출퇴근 미제출 팀
+                <br />
+                [업무보고 미제출] 전일(이전 평일) 기준 업무보고 미제출 팀
+                <br />
+                [업무보고 이슈] 전일(이전 평일) 업무보고 시 이슈 발생 건 수
+              </div>
               <div class="tabcontent">
                 <div id="tab01">
                   <div class="border_box">

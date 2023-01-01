@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
+import classnames from 'classnames';
 
 @inject('appStore', 'uiStore', 'portalStore')
 @observer
@@ -70,15 +71,15 @@ class PortalPrivateApp extends Component {
     todayVacationYearInfo = todayVacationYearInfo || {};
     const { todayDayTextInfo, todayWeekTextInfo, currentTime } = uiStore;
     const {
-      userId,
       startWorkDate,
       outWorkDate,
       startWorkIp,
       workStatusCodeName,
       startWorkDeviceType
     } = todayCommuteDayInfo;
-    const { annualCount, plusVacationCount, usedCount } = todayVacationYearInfo;
-    const restVacationCount = annualCount + plusVacationCount - usedCount;
+    const { annualCount, plusVacationCount, usedCount, restVacationCount } =
+      todayVacationYearInfo;
+    todayVacationYearInfo = todayVacationYearInfo || {};
 
     let startWorkDeviceTypeText = '';
     if (startWorkDeviceType) {
@@ -201,10 +202,7 @@ class PortalPrivateApp extends Component {
                   <span> ({todayWeekTextInfo})</span>
                 </p>
                 <p>{currentTime}</p>
-                <ul
-                  class="flex_sb mgtop40"
-                  style={{ visibility: startWorkDate ? 'hidden' : 'visible' }}
-                >
+                <ul class="flex_sb mgtop40">
                   <li>
                     <div class="radio">
                       <input
@@ -214,7 +212,6 @@ class PortalPrivateApp extends Component {
                         value="Y"
                         checked={inWorkYn === 'Y'}
                         onChange={this.changeInWorkYn}
-                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option1">업무</label>
                     </div>
@@ -228,7 +225,6 @@ class PortalPrivateApp extends Component {
                         value="N"
                         checked={inWorkYn === 'N'}
                         onChange={this.changeInWorkYn}
-                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option2">재택</label>
                     </div>
@@ -249,9 +245,10 @@ class PortalPrivateApp extends Component {
                     <li onClick={this.startWork}>
                       <a
                         href="javascript:void(0);"
-                        class={
-                          startWorkDate ? 'activate1' : userId ? 'disabled' : ''
-                        }
+                        className={classnames({
+                          activate1: startWorkDate ? true : false,
+                          disabled: startWorkDate ? false : true
+                        })}
                       >
                         출근{' '}
                         <span>
@@ -268,9 +265,10 @@ class PortalPrivateApp extends Component {
                     <li onClick={this.outWork}>
                       <a
                         href="javascript:void(0);"
-                        class={
-                          outWorkDate ? 'activate2' : userId ? 'disabled' : ''
-                        }
+                        className={classnames({
+                          activate2: outWorkDate ? true : false,
+                          disabled: outWorkDate ? false : true
+                        })}
                       >
                         퇴근{' '}
                         <span>

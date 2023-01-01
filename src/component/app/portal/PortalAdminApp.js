@@ -20,6 +20,7 @@ class PortalAdminApp extends Component {
     this.changeInWorkYn = this.changeInWorkYn.bind(this);
     this.startWork = this.startWork.bind(this);
     this.outWork = this.outWork.bind(this);
+    this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
   }
 
   init() {
@@ -83,6 +84,11 @@ class PortalAdminApp extends Component {
     portalStore.changeSelectedHeadStatsTab(deptKey);
   }
 
+  toggleVisibleGuideText() {
+    const { portalStore } = this.props;
+    portalStore.toggleVisibleGuideText();
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -105,14 +111,14 @@ class PortalAdminApp extends Component {
       portalAdminCommuteStatsInfo,
       portalAdminWorkReportStatsInfo,
       selectedAdminStatsTabIndex,
-      vacationDayHistoryList
+      vacationDayHistoryList,
+      visibleGuideText
     } = portalStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
     portalAdminAllStatsInfo = portalAdminAllStatsInfo || {};
     portalAdminCommuteStatsInfo = portalAdminCommuteStatsInfo || {};
     portalAdminWorkReportStatsInfo = portalAdminWorkReportStatsInfo || {};
     const {
-      userId,
       startWorkDate,
       outWorkDate,
       startWorkIp,
@@ -207,8 +213,7 @@ class PortalAdminApp extends Component {
     if (vacationDayHistoryList.length) {
       vacationDayHistoryListComponent = vacationDayHistoryList.map(
         (vacationDetailInfo) => {
-          const { userName, vacationKindCodeName, vacationKindCode } =
-            vacationDetailInfo;
+          const { userName, vacationKindCodeName } = vacationDetailInfo;
           return (
             <tr>
               <td>{userName}</td>
@@ -247,10 +252,7 @@ class PortalAdminApp extends Component {
                   <span> ({todayWeekTextInfo})</span>
                 </p>
                 <p>{currentTime}</p>
-                <ul
-                  class="flex_sb mgtop40"
-                  style={{ visibility: startWorkDate ? 'hidden' : 'visible' }}
-                >
+                <ul class="flex_sb mgtop40">
                   <li>
                     <div class="radio">
                       <input
@@ -260,7 +262,6 @@ class PortalAdminApp extends Component {
                         value="Y"
                         checked={inWorkYn === 'Y'}
                         onChange={this.changeInWorkYn}
-                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option1">업무</label>
                     </div>
@@ -274,7 +275,6 @@ class PortalAdminApp extends Component {
                         value="N"
                         checked={inWorkYn === 'N'}
                         onChange={this.changeInWorkYn}
-                        disabled={startWorkDate ? true : false}
                       />
                       <label for="work_option2">재택</label>
                     </div>
@@ -295,9 +295,10 @@ class PortalAdminApp extends Component {
                     <li onClick={this.startWork}>
                       <a
                         href="javascript:void(0);"
-                        class={
-                          startWorkDate ? 'activate1' : userId ? 'disabled' : ''
-                        }
+                        className={classnames({
+                          activate1: startWorkDate ? true : false,
+                          disabled: startWorkDate ? false : true
+                        })}
                       >
                         출근{' '}
                         <span>
@@ -314,9 +315,10 @@ class PortalAdminApp extends Component {
                     <li onClick={this.outWork}>
                       <a
                         href="javascript:void(0);"
-                        class={
-                          outWorkDate ? 'activate2' : userId ? 'disabled' : ''
-                        }
+                        className={classnames({
+                          activate2: outWorkDate ? true : false,
+                          disabled: outWorkDate ? false : true
+                        })}
                       >
                         퇴근{' '}
                         <span>
@@ -336,7 +338,7 @@ class PortalAdminApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <div class="tab">
+            <div class="tab relative">
               <ul class="tabnav">
                 <li onClick={() => this.changeSelectedAdminStatsTabIndex(1)}>
                   <a
@@ -363,6 +365,74 @@ class PortalAdminApp extends Component {
                   </a>
                 </li>
               </ul>
+              <a
+                href="javascript:void(0);"
+                class="btn_right"
+                onClick={this.toggleVisibleGuideText}
+              >
+                <img
+                  src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
+                  alt="가이드"
+                />
+              </a>
+              {/* 전체 가이드 */}
+              <div
+                class="tip_box"
+                style={{
+                  display:
+                    visibleGuideText && selectedAdminStatsTabIndex === 1
+                      ? ''
+                      : 'none'
+                }}
+              >
+                {' '}
+                [구성원] 현재 임직원수 / 현재 팀 수
+                <br />
+                [출근 미제출] 당일 출근 미체크 임직원수 / 당일 팀 근태 미제출 팀
+                수
+                <br />
+                [업무보고 등록] 당일 팀 업무보고 등록 팀 수
+                <br />
+                [미결재] 당일 전사 미결재 처리 건 수
+              </div>
+              {/* 출퇴근제출 가이드 */}
+              <div
+                class="tip_box"
+                style={{
+                  display:
+                    visibleGuideText && selectedAdminStatsTabIndex === 2
+                      ? ''
+                      : 'none'
+                }}
+              >
+                {' '}
+                [제출전] 당일 팀 근태 제출전 팀 수
+                <br />
+                [반려] 당일 팀 근태 반려 팀 수 수
+                <br />
+                [승인전] 당일 팀 근태 제출 완료 팀 수
+                <br />
+                [승인완료] 당일 팀 근태 승인 팀 수
+              </div>
+              {/* 업무보고 가이드 */}
+              <div
+                class="tip_box"
+                style={{
+                  display:
+                    visibleGuideText && selectedAdminStatsTabIndex === 3
+                      ? ''
+                      : 'none'
+                }}
+              >
+                {' '}
+                [제출전] 당일 팀 근태 제출전 팀 수
+                <br />
+                [미제출] 당일 업무보고 미제출 팀 수
+                <br />
+                [이슈] 당일 업무보고 등록 팀 중 이슈 발생 팀 수
+                <br />
+                [코멘트] 당일 업무보고 등록 팀 중 코멘트 발생 팀 수
+              </div>
               <div class="tabcontent">
                 <div
                   id="tab01"

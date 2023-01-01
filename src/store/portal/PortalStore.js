@@ -1,6 +1,5 @@
 import { observable, action, runInAction } from 'mobx';
 import 'devextreme/data/odata/store';
-import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import moment from 'moment';
 import Helper from 'util/Helper';
@@ -177,18 +176,23 @@ class PortalStore {
   startWork() {
     const profile = this.rootStore.appStore.profile;
     const todayCommuteDayInfo = this.todayCommuteDayInfo;
-    const apiParam = {
-      inWorkYn: this.inWorkYn,
-      baseDateStr: todayCommuteDayInfo.baseDateStr
-    };
-    if (profile) {
-      apiParam.userId = profile.user_key;
-    }
+    const inWorkYn = this.inWorkYn;
 
     if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
       Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
+
+    let baseDateStr = Helper.getTodayString();
+    if (todayCommuteDayInfo) {
+      baseDateStr = todayCommuteDayInfo.baseDateStr;
+    }
+
+    const apiParam = {
+      inWorkYn: inWorkYn,
+      baseDateStr: baseDateStr,
+      userId: profile.user_key
+    };
 
     let confirmMessage =
       '출근 체크를 하시겠습니까?' +
