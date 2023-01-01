@@ -479,6 +479,19 @@ const convertMapToList = function (list, labelKey, valueKey) {
   return result;
 };
 
+const getIsAllDayVacation = function (vacationKindCode) {
+  let isAllDayVacation = false;
+  if (vacationKindCode) {
+    const filterVacationCodeList = Constant.ALL_DAY_VACATION_CODE_LIST.filter(
+      (codeValue) => codeValue === vacationKindCode
+    );
+    if (filterVacationCodeList.length > 0) {
+      isAllDayVacation = true;
+    }
+  }
+  return isAllDayVacation;
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -515,5 +528,6 @@ export default {
   getQueryStringValue,
   goUrl,
   toastMessage,
-  convertMapToList
+  convertMapToList,
+  getIsAllDayVacation
 };

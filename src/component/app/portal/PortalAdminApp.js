@@ -213,12 +213,15 @@ class PortalAdminApp extends Component {
     if (vacationDayHistoryList.length) {
       vacationDayHistoryListComponent = vacationDayHistoryList.map(
         (vacationDetailInfo) => {
-          const { userName, vacationKindCodeName } = vacationDetailInfo;
+          const { userName, vacationKindCodeName, vacationKindCode } =
+            vacationDetailInfo;
           return (
             <tr>
               <td>{userName}</td>
               <td>{vacationKindCodeName}</td>
-              <td>{'전일'}</td>
+              <td>
+                {Helper.getIsAllDayVacation(vacationKindCode) ? '전일' : '반일'}
+              </td>
             </tr>
           );
         }
