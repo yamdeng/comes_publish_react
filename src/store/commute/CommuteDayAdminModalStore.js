@@ -58,6 +58,17 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
   }
   /* 일 datepicker 처리 end */
 
+  @action
+  changeDeptId(deptId) {
+    const targetDeptList = toJS(this.targetDeptList);
+    const searchIndex = targetDeptList.findIndex(
+      (info) => info.deptId === deptId
+    );
+    this.currentDeptIndex = searchIndex;
+    this.currentDeptId = targetDeptList[searchIndex].deptId;
+    this.search();
+  }
+
   // 다음 부서
   @action
   nextDept() {

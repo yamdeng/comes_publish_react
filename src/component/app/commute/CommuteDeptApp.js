@@ -73,7 +73,7 @@ class CommuteDeptApp extends Component {
     commutePrivateStore.search();
   }
 
-  changeSearchDateType() {
+  changeSearchDateType(event) {
     const value = event.target.value;
     const { commutePrivateStore } = this.props;
     commutePrivateStore.changeSearchDateType(value);

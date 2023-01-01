@@ -23,6 +23,7 @@ import CommuteDaySubmitModalStore from './commute/CommuteDaySubmitModalStore';
 import CommuteDayUpdateModalStore from './commute/CommuteDayUpdateModalStore';
 import CommuteDayAdminModalStore from './commute/CommuteDayAdminModalStore';
 import WorkReportFormModalStore from './report/WorkReportFormModalStore';
+import WorkReportViewModalStore from './report/WorkReportViewModalStore';
 
 /*
 
@@ -73,6 +74,7 @@ class RootStore {
     this.commuteDayUpdateModalStore = new CommuteDayUpdateModalStore(this);
     this.commuteDayAdminModalStore = new CommuteDayAdminModalStore(this);
     this.workReportFormModalStore = new WorkReportFormModalStore(this);
+    this.workReportViewModalStore = new WorkReportViewModalStore(this);
   }
 }
 

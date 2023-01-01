@@ -45,8 +45,6 @@ class WorkReportDeptApp extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
 
     this.handleRowClick = this.handleRowClick.bind(this);
-    this.saveWorkReport = this.saveWorkReport.bind(this);
-    this.changeIssueYn = this.changeIssueYn.bind(this);
   }
 
   init() {
@@ -140,17 +138,6 @@ class WorkReportDeptApp extends Component {
     if (e.data) {
       workReportFormModalStore.openModal(e.data);
     }
-  }
-
-  saveWorkReport() {
-    const { workReportStore } = this.props;
-    workReportStore.saveWorkReport();
-  }
-
-  changeIssueYn(event) {
-    let value = event.target.checked;
-    const { workReportStore } = this.props;
-    workReportStore.changeIssueYn(value ? 'Y' : 'N');
   }
 
   componentDidMount() {

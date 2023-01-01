@@ -25,6 +25,25 @@ class WorkReportFormModal extends Component {
     super(props);
     this.state = {};
     this.init = this.init.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.saveReport = this.saveReport.bind(this);
+    this.changeIssueYn = this.changeIssueYn.bind(this);
+  }
+
+  closeModal() {
+    const { workReportFormModalStore } = this.props;
+    workReportFormModalStore.closeModal();
+  }
+
+  saveReport() {
+    const { workReportFormModalStore } = this.props;
+    workReportFormModalStore.saveReport();
+  }
+
+  changeIssueYn(event) {
+    let value = event.target.checked;
+    const { workReportFormModalStore } = this.props;
+    workReportFormModalStore.changeIssueYn(value ? 'Y' : 'N');
   }
 
   init() {}
@@ -35,7 +54,15 @@ class WorkReportFormModal extends Component {
 
   render() {
     const { workReportFormModalStore } = this.props;
-    const { visibleModal } = workReportFormModalStore;
+    let {
+      visibleModal,
+      reportDetailInfo,
+      commentDetailInfo,
+      searchDate,
+      issueYn
+    } = workReportFormModalStore;
+    reportDetailInfo = reportDetailInfo || {};
+    commentDetailInfo = commentDetailInfo || {};
     return (
       <Modal isOpen={visibleModal} className={'modal_box modal_box_850'}>
         <ModalHeader
@@ -46,52 +73,39 @@ class WorkReportFormModal extends Component {
               class="close"
               data-dismiss="modal"
               aria-label="Close"
-              onClick={() => this.closeModal(3)}
+              onClick={this.closeModal}
             >
               <span aria-hidden="true">&times;</span>
             </button>
           }
         >
-          일일 업무 보고 수정
+          일일 업무 보고 {reportDetailInfo.userId ? '수정' : '등록'}
         </ModalHeader>
         <ModalBody>
           <div class="pd20">
-            <h4>6월 2일 (목)</h4>
+            <h4>{Helper.dateToString(searchDate, 'M월 DD일 (ddd)')}</h4>
             <div class="mgtop10 modal_grid_area" id="reactEditor"></div>
             <div class="right mgtop10">
-              <input type="checkbox" id="issue" />
+              <input
+                type="checkbox"
+                checked={issueYn === 'Y' ? true : false}
+                onChange={this.changeIssueYn}
+              />
               <label for="issue" class="mglt10">
                 이슈
               </label>
             </div>
-            <div class="coment_list mgtop10">
+            <div
+              class="coment_list mgtop10"
+              style={{ display: commentDetailInfo.userId ? '' : 'none' }}
+            >
               <ul>
                 <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
-                </li>
-                <li>
-                  <b>이현수 수석부장</b> 코멘트 작성 내용 출력
+                  <b>
+                    {commentDetailInfo.userName}{' '}
+                    {commentDetailInfo.positionTitle}
+                  </b>{' '}
+                  {commentDetailInfo.commentContent}
                 </li>
               </ul>
             </div>
@@ -101,12 +115,16 @@ class WorkReportFormModal extends Component {
           <button
             type="button"
             class="btn btn-secondary"
-            onClick={this.setHtml}
+            onClick={this.closeModal}
           >
             취소
           </button>
-          <button type="button" class="btn btn-primary" onClick={this.getHtml}>
-            수정
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={this.saveReport}
+          >
+            {reportDetailInfo.userId ? '수정' : '등록'}
           </button>
         </ModalFooter>
       </Modal>

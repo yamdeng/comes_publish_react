@@ -9,8 +9,9 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
 import moment from 'moment';
+import WorkReportViewModal from './WorkReportViewModal';
 
-@inject('appStore', 'uiStore', 'workReportStore')
+@inject('appStore', 'uiStore', 'workReportStore', 'workReportViewModalStore')
 @observer
 class WorkReportHeadApp extends Component {
   constructor(props) {
@@ -43,6 +44,7 @@ class WorkReportHeadApp extends Component {
     this.prevDay = this.prevDay.bind(this);
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
+    this.openViewModal = this.openViewModal.bind(this);
   }
 
   init() {
@@ -135,6 +137,12 @@ class WorkReportHeadApp extends Component {
   prevDay(kind) {
     const { workReportStore } = this.props;
     workReportStore.prevDay(kind);
+  }
+
+  openViewModal() {
+    const { workReportViewModalStore, workReportStore } = this.props;
+    const { searchDate } = workReportStore;
+    workReportViewModalStore.openModal(searchDate);
   }
 
   componentDidMount() {
@@ -395,6 +403,19 @@ class WorkReportHeadApp extends Component {
             </ul>
           </div>
           <div class="grid_area">
+            <div
+              class="grid_top flex_sb mgtop20"
+              style={{
+                display:
+                  searchDateType === Constant.SEARCH_DATE_TYPE_DAY ? '' : 'none'
+              }}
+            >
+              <div class="number">
+                <p onClick={this.openViewModal}>
+                  <b class="blue">{totalCount}</b> 팀
+                </p>
+              </div>
+            </div>
             <div class="mgtop10">
               <DataGrid
                 dataSource={datagridStore}
@@ -457,6 +478,7 @@ class WorkReportHeadApp extends Component {
             </div>
           </div>
         </div>
+        <WorkReportViewModal />
       </div>
     );
   }

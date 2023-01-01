@@ -1,11 +1,12 @@
 /* global reactPageType, XFE */
 
-import { observable, action, runInAction, computed } from 'mobx';
+import { observable, action, runInAction, computed, toJS } from 'mobx';
 import 'devextreme/data/odata/store';
 import moment from 'moment';
 import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -61,24 +62,36 @@ class WorkReportFormModalStore {
     this.rootStore = rootStore;
   }
 
+  @action
+  changeCommentContent(commentContent) {
+    this.commentContent = commentContent;
+  }
+
   // 저장
   @action
-  saveReport(editerContent) {
-    const profile = this.rootStore.appStore.profile;
+  saveReport() {
+    const reportDetailInfo = this.reportDetailInfo;
     const issueYn = this.issueYn;
-    const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    // const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    const editerContent = this.xfe.getBodyValue();
     const apiParam = {
       reportContent: editerContent,
       issueYn: issueYn,
-      baseDateStr: baseDateStr,
-      deptId: profile.dept_key
+      reportId: reportDetailInfo.reportId
     };
-    ApiService.put('work-reports/update.do', apiParam).then((response) => {
-      const detailInfo = response.data;
-      runInAction(() => {
-        this.reportDetailInfo = detailInfo;
-      });
-      Helper.toastMessage('등록이 완료되었습니다');
+
+    let confirmMessage = '업무보고를 저장하시겠습니까?';
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('work-reports/update.do', apiParam).then((response) => {
+          const detailInfo = response.data;
+          runInAction(() => {
+            this.reportDetailInfo = detailInfo;
+          });
+          Helper.toastMessage('업무보고가 저장되었습니다.');
+        });
+      }
     });
   }
 
@@ -94,7 +107,7 @@ class WorkReportFormModalStore {
       this.xfe = new XFE({
         basePath: Constant.EDITOR_BASE_PATH,
         width: '100%',
-        height: '430px',
+        height: '400px',
         onLoad: () => {}
       });
       this.xfe.render('reactEditor');
@@ -130,23 +143,64 @@ class WorkReportFormModalStore {
   changeSearchDate(searchDate) {
     this.searchDate = searchDate;
     this.dayDatepickerOpend = false;
-    this.getReportDetailInfo();
+    this.getTargetDeptList();
   }
 
   // 다음일
   @action
   nextDay() {
     this.searchDate = moment(this.searchDate).add(1, 'days').toDate();
-    this.getReportDetailInfo();
+    this.getTargetDeptList();
   }
 
   // 이전일
   @action
   prevDay() {
     this.searchDate = moment(this.searchDate).subtract(1, 'days').toDate();
-    this.getReportDetailInfo();
+    this.getTargetDeptList();
   }
   /* 일 datepicker 처리 end */
+
+  @action
+  changeDeptId(deptId) {
+    const targetDeptList = toJS(this.targetDeptList);
+    const searchIndex = targetDeptList.findIndex(
+      (info) => info.deptId === deptId
+    );
+    this.currentDeptIndex = searchIndex;
+    this.currentDeptId = targetDeptList[searchIndex].deptId;
+    this.getReportDetailInfo();
+  }
+
+  // 다음 부서
+  @action
+  nextDept() {
+    const targetDeptList = toJS(this.targetDeptList);
+    let currentDeptIndex = this.currentDeptIndex;
+    if (currentDeptIndex === targetDeptList.length - 1) {
+      currentDeptIndex = 0;
+    } else {
+      currentDeptIndex = currentDeptIndex + 1;
+    }
+    this.currentDeptIndex = currentDeptIndex;
+    this.currentDeptId = targetDeptList[currentDeptIndex].deptId;
+    this.getReportDetailInfo();
+  }
+
+  // 이전 부서
+  @action
+  prevDept() {
+    const targetDeptList = toJS(this.targetDeptList);
+    let currentDeptIndex = this.currentDeptIndex;
+    if (currentDeptIndex === 0) {
+      currentDeptIndex = targetDeptList.length - 1;
+    } else {
+      currentDeptIndex = currentDeptIndex - 1;
+    }
+    this.currentDeptIndex = currentDeptIndex;
+    this.currentDeptId = targetDeptList[currentDeptIndex].deptId;
+    this.getReportDetailInfo();
+  }
 
   @action
   getReportDetailInfo() {
@@ -160,8 +214,9 @@ class WorkReportFormModalStore {
       runInAction(() => {
         this.reportDetailInfo = detailInfo;
         if (this.xfe && this.xfe.setBodyValue) {
-          // this.xfe.setBodyValue(detailInfo.reportContent);
+          this.xfe.setBodyValue(detailInfo.reportContent);
         }
+        this.issueYn = detailInfo.issueYn;
       });
       ApiService.post('work-reports/comment/detail.do', {
         reportId: detailInfo.reportId

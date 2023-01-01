@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import VacationSubMenu from 'component/submenu/VacationSubMenu';
-import 'devextreme/data/odata/store';
 import DatePicker from 'react-datepicker';
+import 'devextreme/data/odata/store';
 import DataGrid, {
   Column,
   Paging,
@@ -18,78 +17,84 @@ import Helper from 'util/Helper';
 import moment from 'moment';
 import Code from 'config/Code';
 
-@inject('appStore', 'uiStore', 'commuteDayUpdateModalStore')
+@inject('appStore', 'uiStore', 'workReportViewModalStore')
 @observer
 class WorkReportViewModal extends Component {
   constructor(props) {
     super(props);
-    this.state = { changes: [] };
-    this.dataGridRef = React.createRef();
+    this.state = {};
     this.init = this.init.bind(this);
-    this.search = this.search.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.refresh = this.refresh();
-
-    this.changeSearchDate = this.changeSearchDate.bind(this);
-    this.openDayDatepicker = this.openDayDatepicker.bind(this);
     this.nextDay = this.nextDay.bind(this);
     this.prevDay = this.prevDay.bind(this);
-    this.update = this.update.bind(this);
-    this.onChangesChange = this.onChangesChange.bind(this);
+    this.changeSearchDate = this.changeSearchDate.bind(this);
+    this.openDayDatepicker = this.openDayDatepicker.bind(this);
+    this.changeDeptId = this.changeDeptId.bind(this);
+    this.nextDept = this.nextDept.bind(this);
+    this.prevDept = this.prevDept.bind(this);
+    this.changeIssueYn = this.changeIssueYn.bind(this);
+    this.saveComment = this.saveComment.bind(this);
+    this.changeCommentContent = this.changeCommentContent.bind(this);
   }
 
-  init() {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.initDataGridComponent(this.dataGridRef);
-  }
-
-  search() {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.search();
-  }
+  init() {}
 
   closeModal() {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.closeModal();
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.closeModal();
   }
 
-  refresh() {
-    this.setState({ changes: [] });
+  nextDay() {
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.nextDay();
+  }
+
+  prevDay() {
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.prevDay();
   }
 
   changeSearchDate(date) {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.changeSearchDate(date);
-    this.setState({ changes: [] });
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.changeSearchDate(date);
   }
 
   openDayDatepicker() {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.openDayDatepicker();
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.openDayDatepicker();
   }
 
-  nextDay(kind) {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.nextDay(kind);
-    this.setState({ changes: [] });
-  }
-  prevDay(kind) {
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.prevDay(kind);
-    this.setState({ changes: [] });
+  changeDeptId(event) {
+    const value = event.target.value;
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.changeDeptId(value);
   }
 
-  update() {
-    const { changes } = this.state;
-    const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.updateBatch(changes).then(() => {
-      this.setState({ changes: [] });
-      this.search();
-    });
+  nextDept() {
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.nextDept();
   }
 
-  onChangesChange(changes) {
-    this.setState({ changes: changes });
+  prevDept() {
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.prevDept();
+  }
+
+  changeIssueYn(event) {
+    let value = event.target.checked;
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.changeIssueYn(value ? 'Y' : 'N');
+  }
+
+  saveComment() {
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.saveComment();
+  }
+
+  changeCommentContent(event) {
+    const value = event.target.value;
+    const { workReportViewModalStore } = this.props;
+    workReportViewModalStore.changeCommentContent(value);
   }
 
   componentDidMount() {
@@ -97,15 +102,78 @@ class WorkReportViewModal extends Component {
   }
 
   render() {
-    const { changes } = this.state;
-    const { commuteDayUpdateModalStore } = this.props;
-    const {
+    const { workReportViewModalStore, appStore } = this.props;
+    const { profile } = appStore;
+    const { user_name, userType, user_key, position_title } = profile;
+    let {
       visibleModal,
+      reportDetailInfo,
+      commentDetailInfo,
       searchDate,
-      datagridStore,
+      issueYn,
+      targetDeptList,
+      currentDeptIndex,
+      currentDeptId,
       dayDatepickerOpend,
-      commuteDeptSubmitInfo
-    } = commuteDayUpdateModalStore;
+      commentContent
+    } = workReportViewModalStore;
+    targetDeptList = targetDeptList || [];
+    reportDetailInfo = reportDetailInfo || {};
+    commentDetailInfo = commentDetailInfo || {};
+
+    let commentComponent = null;
+    // 실장인 경우만 댓글 등록 가능
+    // 실장이 아닌 경우 view, 이미 등록되었고 등록자가 내가 아닌 경우 view
+    // comment 정보가 존재하지 않고
+
+    if (
+      userType !== Constant.USER_TYPE_HEADER ||
+      (commentDetailInfo &&
+        commentDetailInfo.userId &&
+        commentDetailInfo.userId !== user_key)
+    ) {
+      commentComponent = (
+        <div
+          class="coment_list mgtop10"
+          style={{ display: commentDetailInfo.userId ? '' : 'none' }}
+        >
+          <ul>
+            <li>
+              <b>
+                {commentDetailInfo.userName} {commentDetailInfo.positionTitle}
+              </b>{' '}
+              {commentDetailInfo.commentContent}
+            </li>
+          </ul>
+        </div>
+      );
+    } else {
+      commentComponent = (
+        <div class="coment_write flex_sb mgtop10">
+          <div class="coment_write_form">
+            <p class="coment_user">
+              <b>
+                {user_name} {position_title}
+              </b>
+            </p>
+            <textarea
+              maxlength="100"
+              placeholder="댓글을 입력하세요. (최대 100자)"
+              style={{ boxSizing: 'border-box' }}
+              value={commentContent}
+              onChange={this.changeCommentContent}
+            ></textarea>
+          </div>
+          <a
+            href="javascript:void(0);"
+            class="btn_blue btn_normal"
+            onClick={this.saveComment}
+          >
+            {commentDetailInfo.userId ? '수정' : '등록'}
+          </a>
+        </div>
+      );
+    }
     return (
       <Modal isOpen={visibleModal} className={'modal_box modal_box_1000'}>
         <ModalHeader
@@ -116,16 +184,16 @@ class WorkReportViewModal extends Component {
               class="close"
               data-dismiss="modal"
               aria-label="Close"
-              onClick={() => this.closeModal()}
+              onClick={this.closeModal}
             >
               <span aria-hidden="true">&times;</span>
             </button>
           }
         >
-          팀원 출퇴근 수정
+          팀 일일 업무 보고 확인
         </ModalHeader>
         <ModalBody>
-          <div class="pd20" style={{ zIndex: 1, overflow: 'visible' }}>
+          <div class="pd20">
             <div class="sel_month">
               <a href="javascript:void(0);" class="prev" onClick={this.prevDay}>
                 이전
@@ -151,157 +219,113 @@ class WorkReportViewModal extends Component {
                   selected={searchDate}
                   onChange={(date) => this.changeSearchDate(date)}
                   dateFormat="yyyyMMdd"
-                  zIndex={2}
                   inline
                 />
               )}
+              <span
+                class="mglt20"
+                style={{ display: targetDeptList.length ? '' : 'none' }}
+              >
+                {currentDeptIndex + 1} &#47; {targetDeptList.length}
+              </span>
             </div>
-
             <div>
-              <div class="grid_top">
-                <a
-                  href="javascript:void(0);"
-                  class="btn_right btn_ico"
-                  onClick={this.refresh}
-                >
-                  <i class="ico_refresh"></i>새로고침
-                </a>
-              </div>
-              <div class="mgtop10">
-                <DataGrid
-                  ref={this.dataGridRef}
-                  dataSource={datagridStore}
-                  showBorders={true}
-                  remoteOperations={true}
-                  noDataText={'출근 정보가 존재하지 않습니다.'}
-                  height={500}
-                  columnResizingMode={true}
-                  columnAutoWidth={true}
-                  cacheEnabled={false}
-                  onToolbarPreparing={(e) => {
-                    e.toolbarOptions.visible = false;
+              <div class="grid_top flex_sb mgtop10">
+                <div
+                  class="grp_sel_option"
+                  style={{
+                    visibility: targetDeptList.length ? 'visible' : 'hidden'
                   }}
                 >
-                  <Editing
-                    mode="batch"
-                    keyExpr="userKey"
-                    key="userKey"
-                    allowUpdating={true}
-                    selectTextOnEditStart={true}
-                    startEditAction={'click'}
-                    refreshMode2="repaint"
-                    changes={changes}
-                    onChangesChange={this.onChangesChange}
-                  />
-                  <Column
-                    dataField="deptName"
-                    dataType="string"
-                    caption="부서명"
-                    allowEditing={false}
-                  />
-                  <Column
-                    dataField="userName"
-                    dataType="string"
-                    caption="이름"
-                    allowEditing={false}
-                  />
-                  <Column
-                    dataField="positionTitle"
-                    dataType="string"
-                    caption="직급명"
-                  />
-                  <Column
-                    dataField="startWorkIp"
-                    dataType="string"
-                    caption="출근아이피"
-                  />
-                  {/* 출근시간 변경 */}
-                  <Column
-                    dataField="startWorkDate"
-                    dataType="datetime"
-                    caption="출근시간"
-                    format="yyyy-MM-dd HH:mm"
-                    dateFormat="yyyy-MM-dd HH:mm"
-                    width={150}
-                    calculateDisplayValue={function (rowData) {
-                      let { startWorkDate, finalStartWorkDate, modYn } =
-                        rowData;
-                      // YYYY-MM-DD HH:mm:ss
-                      let startWorkDateCellResult = '';
-                      if (startWorkDate) {
-                        // 사용자가 출근 액션을 수행하였을 경우
-                        // 수정을 하였을 경우
-                        if (modYn && modYn === 'Y') {
-                          if (finalStartWorkDate) {
-                            startWorkDateCellResult =
-                              moment(finalStartWorkDate).format('HH:mm') +
-                              '(' +
-                              moment(finalStartWorkDate).format('HH:mm') +
-                              ')';
-                          } else {
-                            startWorkDateCellResult =
-                              moment(startWorkDate).format('HH:mm');
-                          }
-                        } else {
-                          // 수정이 아닌 경우
-                          startWorkDateCellResult =
-                            moment(startWorkDate).format('HH:mm');
-                        }
-                      } else {
-                        // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
-                        if (finalStartWorkDate) {
-                          startWorkDateCellResult =
-                            moment(startWorkDate).format('HH:mm') + '()';
-                        }
-                      }
-                      return startWorkDateCellResult;
-                    }}
-                  />
-                  <Column
-                    dataField="outWorkIp"
-                    dataType="string"
-                    caption="퇴근아이피"
-                  />
-                  {/* 퇴근시간 변경 */}
-                  <Column
-                    dataField="outWorkDate"
-                    dataType="datetime"
-                    caption="퇴근시간"
-                    format="HH:mm"
-                  />
-                  {/* 외근여부 변경 */}
-                  <Column
-                    dataField="outsideWorkYn"
-                    dataType="string"
-                    caption="외근여부"
+                  <label for="sel_option" class="blind">
+                    부서 선택
+                  </label>
+                  <select
+                    id="sel_option"
+                    class="w90"
+                    onChange={this.changeDeptId}
+                    value={currentDeptId}
                   >
-                    <Lookup
-                      dataSource={Code.outsideWorkYnCodeList}
-                      valueExpr="value"
-                      displayExpr="name"
-                    />
-                  </Column>
-                  {/* 기타셜명 변경 */}
-                  <Column
-                    dataField="etcDescription"
-                    dataType="string"
-                    caption="기타설명"
-                    width={150}
-                  />
-                  {/* 근태결과 변경 */}
-                  <Column
-                    dataField="workResultCode"
-                    dataType="string"
-                    caption="근태결과"
-                  >
-                    <Lookup
-                      dataSource={Code.workResultCodeList}
-                      valueExpr="value"
-                      displayExpr="name"
-                    />
-                  </Column>
-                </DataGrid>
+                    {targetDeptList.map((item) => (
+                      <option value={item.deptId} key={item.deptId}>
+                        {item.deptName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div class="grp_sel_result">
+                  <ul class="flex_sb table_ul">
+                    <li>
+                      <span>작성일시</span>
+                      <span class="sel_relt_text">
+                        {reportDetailInfo.reportDate
+                          ? reportDetailInfo.reportDate
+                          : '-'}
+                      </span>
+                    </li>
+                    <li>
+                      <span>작성자</span>
+                      <span class="sel_relt_text">
+                        {reportDetailInfo.userName
+                          ? reportDetailInfo.userName
+                          : '-'}
+                      </span>
+                    </li>
+                    <li>
+                      <span>이슈</span>
+                      <span class="sel_relt_text">
+                        {reportDetailInfo.issueYn
+                          ? reportDetailInfo.issueYn
+                          : '-'}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
+              <div class="mgtop10 modal_grid_area">
+                <a
+                  href="javascript:void(0);"
+                  class="btn_nepr prev"
+                  style={{
+                    zIndex: 1,
+                    display: targetDeptList.length > 1 ? '' : 'none'
+                  }}
+                  onClick={this.prevDept}
+                >
+                  <span>이전</span>
+                </a>
+                <div
+                  class="mgtop10 modal_grid_area"
+                  style={{ height: 400, border: '1px solid #d6d6d6' }}
+                  dangerouslySetInnerHTML={{
+                    __html: reportDetailInfo.reportContent
+                  }}
+                ></div>
+                <a
+                  href="javascript:void(0);"
+                  class="btn_nepr next"
+                  onClick={this.nextDept}
+                  style={{
+                    zIndex: 1,
+                    display: targetDeptList.length > 1 ? '' : 'none'
+                  }}
+                >
+                  <span>다음</span>
+                </a>
+              </div>
+
+              <div class="right mgtop10">
+                <input
+                  type="checkbox"
+                  id="issue"
+                  checked={issueYn === 'Y'}
+                  onChange={this.changeIssueYn}
+                />
+                <label for="issue" class="mglt10">
+                  이슈
+                </label>
+              </div>
+              {commentComponent}
             </div>
           </div>
         </ModalBody>
@@ -311,10 +335,7 @@ class WorkReportViewModal extends Component {
             class="btn btn-secondary"
             onClick={this.closeModal}
           >
-            취소
-          </button>
-          <button type="button" class="btn btn-primary" onClick={this.update}>
-            수정
+            닫기
           </button>
         </ModalFooter>
       </Modal>
