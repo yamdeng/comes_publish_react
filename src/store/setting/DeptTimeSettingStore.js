@@ -74,7 +74,7 @@ class DeptTimeSettingStore {
     const apiParam = {};
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {

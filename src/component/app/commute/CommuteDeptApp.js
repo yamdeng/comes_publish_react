@@ -7,13 +7,24 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
+import CommuteDayModal from './CommuteDayModal';
+import CommuteDaySubmitModal from './CommuteDaySubmitModal';
 
-@inject('appStore', 'uiStore', 'commutePrivateStore')
+@inject(
+  'appStore',
+  'uiStore',
+  'commutePrivateStore',
+  'commuteDayUpdateModalStore',
+  'commuteDaySubmitModalStore'
+)
 @observer
 class CommuteDeptApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.dataGridRef = React.createRef();
+
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
     this.search = this.search.bind(this);
@@ -39,10 +50,13 @@ class CommuteDeptApp extends Component {
     this.prevDay = this.prevDay.bind(this);
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
+    this.openUpdateModal = this.openUpdateModal.bind(this);
+    this.openSubmitModal = this.openSubmitModal.bind(this);
   }
 
   init() {
     const { commutePrivateStore } = this.props;
+    commutePrivateStore.initDataGridComponent(this.dataGridRef);
     commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
     commutePrivateStore.initSearchDateAll();
     this.search();
@@ -125,6 +139,18 @@ class CommuteDeptApp extends Component {
   prevDay(kind) {
     const { commutePrivateStore } = this.props;
     commutePrivateStore.prevDay(kind);
+  }
+
+  openUpdateModal() {
+    const { commutePrivateStore, commuteDayUpdateModalStore } = this.props;
+    const { searchDate } = commutePrivateStore;
+    commuteDayUpdateModalStore.openModal(searchDate);
+  }
+
+  openSubmitModal() {
+    const { commutePrivateStore, commuteDaySubmitModalStore } = this.props;
+    const { searchDate } = commutePrivateStore;
+    commuteDaySubmitModalStore.openModal(searchDate);
   }
 
   componentDidMount() {
@@ -581,22 +607,40 @@ class CommuteDeptApp extends Component {
                   <b class="blue">{totalCount}</b> 명
                 </p>
               </div>
-              <div class="search_right">
-                <a href="javascript:void(0);" class="btn_normal">
+              <div
+                class="search_right"
+                style={{
+                  display:
+                    searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                      ? ''
+                      : 'none'
+                }}
+              >
+                <a
+                  href="javascript:void(0);"
+                  class="btn_normal"
+                  onClick={this.openUpdateModal}
+                >
                   수정
                 </a>
-                <a href="javascript:void(0);" class="btn_normal btn_blue">
+                <a
+                  href="javascript:void(0);"
+                  class="btn_normal btn_blue"
+                  onClick={this.openSubmitModal}
+                >
                   제출
                 </a>
               </div>
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
+                cacheEnabled={false}
               >
                 <Column
                   dataField="baseDateStr"
@@ -647,11 +691,16 @@ class CommuteDeptApp extends Component {
                   caption="근무결과"
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>
         </div>
+        <CommuteDayModal />
+        <CommuteDaySubmitModal />
       </div>
     );
   }

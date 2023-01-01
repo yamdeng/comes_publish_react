@@ -102,7 +102,7 @@ class VacationManageStore {
     apiParam.baseYear = this.baseYear;
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {
@@ -137,7 +137,7 @@ class VacationManageStore {
     apiParam.baseYear = this.baseYear;
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {

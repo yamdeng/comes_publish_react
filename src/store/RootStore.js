@@ -19,6 +19,8 @@ import WorkReportStore from './report/WorkReportStore';
 import VacationManageStore from './setting/VacationManageStore';
 import HolidayManageStore from './setting/HolidayManageStore';
 import DeptTimeSettingStore from './setting/DeptTimeSettingStore';
+import CommuteDaySubmitModalStore from './commute/CommuteDaySubmitModalStore';
+import CommuteDayUpdateModalStore from './commute/CommuteDayUpdateModalStore';
 
 /*
 
@@ -65,6 +67,8 @@ class RootStore {
     this.vacationManageStore = new VacationManageStore(this);
     this.holidayManageStore = new HolidayManageStore(this);
     this.deptTimeSettingStore = new DeptTimeSettingStore(this);
+    this.commuteDaySubmitModalStore = new CommuteDaySubmitModalStore(this);
+    this.commuteDayUpdateModalStore = new CommuteDayUpdateModalStore(this);
   }
 }
 

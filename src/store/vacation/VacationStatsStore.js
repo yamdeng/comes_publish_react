@@ -80,7 +80,7 @@ class VacationStatsStore {
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {

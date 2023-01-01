@@ -112,4 +112,11 @@ Constant.ALL_DAY_VACATION_CODE_LIST = [
   'VACATION_ETC'
 ];
 
+Constant.CODE_COMMUTE_DEPT_STATUS_SUBMIT = 'SUBMIT'; /* 제출 */
+Constant.CODE_COMMUTE_DEPT_STATUS_APPROVE = 'APPROVE'; /* 승인 */
+Constant.CODE_COMMUTE_DEPT_STATUS_REJECT = 'REJECT'; /* 반려 */
+Constant.CODE_REPORT_STATUS_SUBMIT = 'SUBMIT'; /* 제출 */
+Constant.CODE_REPORT_STATUS_APPROVE = 'APPROVE'; /* 승인 */
+Constant.CODE_REPORT_STATUS_REJECT = 'REJECT'; /* 반려 */
+
 export default Constant;

@@ -127,7 +127,7 @@ class VacationStore {
     }
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {
@@ -163,7 +163,7 @@ class VacationStore {
     apiParam.userId = detailUserId;
 
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {

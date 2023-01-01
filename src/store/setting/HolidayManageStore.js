@@ -48,7 +48,7 @@ class HolidayManageStore {
 
     const store = new CustomStore({
       cacheEnabled: false,
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {

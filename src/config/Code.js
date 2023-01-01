@@ -254,6 +254,18 @@ Code.commuteStatsSearchTypeCodeList = [
   }
 ];
 
+// 외근 여부
+Code.outsideWorkYnCodeList = [
+  {
+    name: 'Y',
+    value: 'Y'
+  },
+  {
+    name: 'N',
+    value: 'N'
+  }
+];
+
 // 코드명 가져오기 : value 기준
 Code.getCodeNameByValue = function (codeCategory, codeValue) {
   let codeName = null;

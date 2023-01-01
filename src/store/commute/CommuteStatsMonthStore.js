@@ -181,7 +181,7 @@ class CommuteStatsMonthStore {
       });
 
       const store = new CustomStore({
-        load(loadOptions) {
+        load: (loadOptions) => {
           if (loadOptions) {
             const { skip, take } = loadOptions;
             if (take) {
@@ -223,7 +223,7 @@ class CommuteStatsMonthStore {
       apiParam.workWeekTimeKind = workWeekTimeKind;
     }
     const store = new CustomStore({
-      load(loadOptions) {
+      load: (loadOptions) => {
         if (loadOptions) {
           const { skip, take } = loadOptions;
           if (take) {
@@ -272,7 +272,7 @@ class CommuteStatsMonthStore {
       });
 
       const store = new CustomStore({
-        load(loadOptions) {
+        load: (loadOptions) => {
           if (loadOptions) {
             const { skip, take } = loadOptions;
             if (take) {
