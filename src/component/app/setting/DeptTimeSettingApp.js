@@ -228,12 +228,18 @@ class DeptTimeSettingApp extends Component {
                     </div>
                     <input type="text" class="w90" />
                     <a href="javascript:void(0);" class="btn_calen mgrg10">
-                      <img src="images/calen_sel_ico.png" />
+                      <img
+                        src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
+                        alt=""
+                      />
                     </a>
                     <span>~</span>
                     <input type="text" class="w90" />
                     <a href="javascript:void(0);" class="btn_calen">
-                      <img src="images/calen_sel_ico.png" />
+                      <img
+                        src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
+                        alt=""
+                      />
                     </a>
                   </div>
                 </div>

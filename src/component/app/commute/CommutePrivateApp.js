@@ -6,6 +6,8 @@ import Helper from 'util/Helper';
 import DatePicker from 'react-datepicker';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import Constant from 'config/Constant';
+import classnames from 'classnames';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -13,6 +15,7 @@ class CommutePrivateApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
     this.init = this.init.bind(this);
     this.openMonthDatepicker = this.openMonthDatepicker.bind(this);
     this.changeSearchMonth = this.changeSearchMonth.bind(this);
@@ -24,10 +27,12 @@ class CommutePrivateApp extends Component {
     this.clickOuter = this.clickOuter.bind(this);
     this.nextMonth = this.nextMonth.bind(this);
     this.prevMonth = this.prevMonth.bind(this);
+    this.workOutNextDay = this.workOutNextDay.bind(this);
   }
 
   init() {
     const { commutePrivateStore } = this.props;
+    commutePrivateStore.initDataGridComponent(this.dataGridRef);
     commutePrivateStore.getTodayCommuteDayInfo();
     commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_MONTH);
     commutePrivateStore.initSearchDateAll();
@@ -89,11 +94,18 @@ class CommutePrivateApp extends Component {
     commutePrivateStore.hideVisibleGuideText();
   }
 
+  workOutNextDay(commuteDayInfo) {
+    debugger;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.workOutNextDay(commuteDayInfo);
+  }
+
   componentDidMount() {
     this.init();
   }
 
   render() {
+    const that = this;
     const { commutePrivateStore, uiStore, appStore } = this.props;
     let {
       datagridStore,
@@ -106,6 +118,14 @@ class CommutePrivateApp extends Component {
     } = commutePrivateStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
 
+    const {
+      startWorkDate,
+      outWorkDate,
+      startWorkIp,
+      workStatusCodeName,
+      startWorkDeviceType
+    } = todayCommuteDayInfo;
+
     let tardyFilterList = privateMonthStatsList.filter(
       (info) => info.kind === 'tardy'
     );
@@ -115,22 +135,14 @@ class CommutePrivateApp extends Component {
     let notOutWorkFilterList = privateMonthStatsList.filter(
       (info) => info.kind === 'not_out_work'
     );
+    // debugger;
     const tardyCount = tardyFilterList.length ? tardyFilterList[0].aggCount : 0;
     const notStartWorkCount = notStartWorkFilterList.length
-      ? tardyFilterList[0].aggCount
+      ? notStartWorkFilterList[0].aggCount
       : 0;
     const notOutWorkCount = notOutWorkFilterList.length
-      ? tardyFilterList[0].aggCount
+      ? notOutWorkFilterList[0].aggCount
       : 0;
-
-    const {
-      userId,
-      startWorkDate,
-      outWorkDate,
-      startWorkIp,
-      workStatusCodeName,
-      startWorkDeviceType
-    } = todayCommuteDayInfo;
 
     let startWorkDeviceTypeText = '';
     if (startWorkDeviceType) {
@@ -235,10 +247,7 @@ class CommutePrivateApp extends Component {
                     <span> ({todayWeekTextInfo})</span>
                   </p>
                   <p>{currentTime}</p>
-                  <ul
-                    class="flex_sb mgtop40"
-                    style={{ visibility: startWorkDate ? 'hidden' : 'visible' }}
-                  >
+                  <ul class="flex_sb mgtop40">
                     <li>
                       <div class="radio">
                         <input
@@ -248,7 +257,6 @@ class CommutePrivateApp extends Component {
                           name="work_option"
                           checked={inWorkYn === 'Y'}
                           onChange={this.changeInWorkYn}
-                          disabled={startWorkDate ? true : false}
                         />
                         <label for="work_option1">업무</label>
                       </div>
@@ -262,7 +270,6 @@ class CommutePrivateApp extends Component {
                           name="work_option"
                           checked={inWorkYn === 'N'}
                           onChange={this.changeInWorkYn}
-                          disabled={startWorkDate ? true : false}
                         />
                         <label for="work_option2">재택</label>
                       </div>
@@ -270,19 +277,19 @@ class CommutePrivateApp extends Component {
                   </ul>
                 </div>
                 <div class="wo_con2 flex_center">
-                  <p>접속 IP : (-) {Helper.convertEmptyValue(startWorkIp)} </p>
+                  <p>
+                    접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
+                    {Helper.convertEmptyValue(startWorkIp)}{' '}
+                  </p>
                   <div>
                     <ul class="flex_sb mgtop40">
                       <li onClick={this.startWork}>
                         <a
                           href="javascript:void(0);"
-                          class={
-                            startWorkDate
-                              ? 'activate1'
-                              : userId
-                              ? 'disabled'
-                              : ''
-                          }
+                          className={classnames({
+                            activate1: startWorkDate ? true : false,
+                            disabled: startWorkDate ? false : true
+                          })}
                         >
                           출근{' '}
                           <span>
@@ -299,9 +306,10 @@ class CommutePrivateApp extends Component {
                       <li onClick={this.outWork}>
                         <a
                           href="javascript:void(0);"
-                          class={
-                            outWorkDate ? 'activate2' : userId ? 'disabled' : ''
-                          }
+                          className={classnames({
+                            activate2: outWorkDate ? true : false,
+                            disabled: outWorkDate ? false : true
+                          })}
                         >
                           퇴근{' '}
                           <span>
@@ -402,6 +410,57 @@ class CommutePrivateApp extends Component {
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
+                  calculateCellValue={function (rowData) {
+                    const { startWorkDate, finalStartWorkDate, modYn } =
+                      rowData;
+                    // YYYY-MM-DD HH:mm:ss
+                    let startWorkDateCellResult = '';
+                    if (startWorkDate) {
+                      // 사용자가 출근 액션을 수행하였을 경우
+                      // 수정을 하였을 경우
+                      if (modYn && modYn === 'Y') {
+                        if (finalStartWorkDate) {
+                          startWorkDateCellResult =
+                            Helper.convertDate(
+                              startWorkDate,
+                              'YYYY-MM-DD HH:mm:ss',
+                              'HH:mm'
+                            ) +
+                            '(' +
+                            Helper.convertDate(
+                              finalStartWorkDate,
+                              'YYYY-MM-DD HH:mm:ss',
+                              'HH:mm'
+                            ) +
+                            ')';
+                        } else {
+                          startWorkDateCellResult = Helper.convertDate(
+                            startWorkDate,
+                            'YYYY-MM-DD HH:mm:ss',
+                            'HH:mm'
+                          );
+                        }
+                      } else {
+                        // 수정이 아닌 경우
+                        startWorkDateCellResult = Helper.convertDate(
+                          startWorkDate,
+                          'YYYY-MM-DD HH:mm:ss',
+                          'HH:mm'
+                        );
+                      }
+                    } else {
+                      // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
+                      if (finalStartWorkDate) {
+                        startWorkDateCellResult =
+                          Helper.convertDate(
+                            finalStartWorkDate,
+                            'YYYY-MM-DD HH:mm:ss',
+                            'HH:mm'
+                          ) + '()';
+                      }
+                    }
+                    return startWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="outWorkIp"
@@ -413,6 +472,104 @@ class CommutePrivateApp extends Component {
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
+                  cellRender={function (columnInfo) {
+                    const { data } = columnInfo;
+                    const {
+                      baseDateStr,
+                      outWorkDate,
+                      finalOutWorkDate,
+                      modYn
+                    } = data;
+                    // YYYY-MM-DD HH:mm:ss
+                    let outWorkDateFormat = 'HH:mm';
+                    let finalOutWorkDateFormat = 'HH:mm';
+                    if (
+                      moment(baseDateStr).diff(
+                        moment(moment(outWorkDate).format('YYYYMMDD')),
+                        'days'
+                      ) < 0
+                    ) {
+                      outWorkDateFormat = 'M/D/YYYY H:mm a';
+                    }
+
+                    if (
+                      moment(baseDateStr).diff(
+                        moment(moment(finalOutWorkDate).format('YYYYMMDD')),
+                        'days'
+                      ) < 0
+                    ) {
+                      finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                    }
+                    // 현재날짜 기준으로 기준날짜보다 초과하였는지 체크
+                    let isNextDay = false;
+                    if (
+                      moment(baseDateStr).diff(
+                        moment(moment().format('YYYYMMDD')),
+                        'days'
+                      ) < 0
+                    ) {
+                      isNextDay = true;
+                    }
+
+                    let outWorkDateCellResult = '';
+                    if (outWorkDate) {
+                      // 사용자가 퇴근 액션을 수행하였을 경우
+                      // 수정을 하였을 경우
+                      if (modYn && modYn === 'Y') {
+                        if (finalOutWorkDate) {
+                          outWorkDateCellResult =
+                            Helper.convertDate(
+                              outWorkDate,
+                              'YYYY-MM-DD HH:mm:ss',
+                              outWorkDateFormat
+                            ) +
+                            '(' +
+                            Helper.convertDate(
+                              finalOutWorkDate,
+                              'YYYY-MM-DD HH:mm:ss',
+                              finalOutWorkDateFormat
+                            ) +
+                            ')';
+                        } else {
+                          outWorkDateCellResult = Helper.convertDate(
+                            outWorkDate,
+                            'YYYY-MM-DD HH:mm:ss',
+                            outWorkDateFormat
+                          );
+                        }
+                      } else {
+                        // 수정이 아닌 경우
+                        outWorkDateCellResult = Helper.convertDate(
+                          outWorkDate,
+                          'YYYY-MM-DD HH:mm:ss',
+                          outWorkDateFormat
+                        );
+                      }
+                    } else {
+                      // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
+                      if (finalOutWorkDate) {
+                        outWorkDateCellResult =
+                          Helper.convertDate(
+                            finalOutWorkDate,
+                            'YYYY-MM-DD HH:mm:ss',
+                            'HH:mm'
+                          ) + '()';
+                      } else if (isNextDay) {
+                        return (
+                          <a
+                            href="javascript:void(0);"
+                            class="btn_normal btn_blue"
+                            onClick={() =>
+                              commutePrivateStore.workOutNextDay(data)
+                            }
+                          >
+                            퇴근
+                          </a>
+                        );
+                      }
+                    }
+                    return outWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="workStatusCodeName"
@@ -425,7 +582,10 @@ class CommutePrivateApp extends Component {
                   caption="근무결과"
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

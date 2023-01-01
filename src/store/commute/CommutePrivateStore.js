@@ -17,6 +17,9 @@ import ModalService from 'service/ModalService';
 */
 
 class CommutePrivateStore {
+  // datagridRef
+  dataGridRef = null;
+
   // 개인_출퇴근 목록 grid
   @observable
   datagridStore = null;
@@ -109,6 +112,23 @@ class CommutePrivateStore {
     this.rootStore = rootStore;
   }
 
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
+  }
+
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
+  }
+
   // datepicker 종류 변경
   @action
   changeSearchDateType(searchDateType) {
@@ -165,18 +185,24 @@ class CommutePrivateStore {
   startWork() {
     const profile = this.rootStore.appStore.profile;
     const todayCommuteDayInfo = this.todayCommuteDayInfo;
+    const inWorkYn = this.inWorkYn;
 
     if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
       Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
-    const apiParam = {
-      inWorkYn: this.inWorkYn,
-      baseDateStr: todayCommuteDayInfo.baseDateStr + '1'
-    };
-    if (profile) {
-      apiParam.userId = profile.user_key;
+
+    let baseDateStr = Helper.getTodayString();
+    if (todayCommuteDayInfo) {
+      baseDateStr = todayCommuteDayInfo.baseDateStr;
     }
+
+    const apiParam = {
+      inWorkYn: inWorkYn,
+      baseDateStr: baseDateStr,
+      userId: profile.user_key
+    };
+
     let confirmMessage =
       '출근 체크를 하시겠습니까?' +
       (this.inWorkYn === 'Y' ? '(업무)' : '(재택)');
@@ -201,7 +227,6 @@ class CommutePrivateStore {
     const profile = this.rootStore.appStore.profile;
     const todayCommuteDayInfo = this.todayCommuteDayInfo;
     const apiParam = {
-      inWorkYn: this.inWorkYn,
       baseDateStr: todayCommuteDayInfo.baseDateStr
     };
     if (profile) {
@@ -234,10 +259,48 @@ class CommutePrivateStore {
     });
   }
 
+  // 철야를 하였을 경우 퇴근 처리
+  @action
+  workOutNextDay(commuteDayInfo) {
+    debugger;
+    const profile = this.rootStore.appStore.profile;
+    const apiParam = {
+      baseDateStr: commuteDayInfo.baseDateStr
+    };
+    if (profile) {
+      apiParam.userId = profile.user_key;
+    }
+    if (commuteDayInfo && commuteDayInfo.outWorkDate) {
+      Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
+      return;
+    }
+    if (!commuteDayInfo || !commuteDayInfo.startWorkDate) {
+      Helper.toastMessage(
+        '퇴근은 체크는 출근을 먼저 체크해야합니다.',
+        '',
+        'warning'
+      );
+      return;
+    }
+    let confirmMessage = '퇴근 체크를 하시겠습니까?';
+    ModalService.confirm({
+      content: confirmMessage,
+      ok: () => {
+        ApiService.put('commutes/outWork.do', apiParam).then((response) => {
+          Helper.toastMessage('퇴근 체크를 완료하였습니다.');
+          runInAction(() => {
+            this.search();
+          });
+        });
+      }
+    });
+  }
+
   // [조회] 공통
   @action
   search() {
     // 초기화 조회시 모든 경우에 통계 정보 재조회
+    this.refreshPage();
     this.getStatsSearch();
     const searchDateType = this.searchDateType;
     const appStore = this.rootStore.appStore;
@@ -293,8 +356,6 @@ class CommutePrivateStore {
     // }
 
     const store = new CustomStore({
-      // cacheRawData: false,
-      // useDefaultSearch: true
       load(loadOptions) {
         if (loadOptions) {
           const { skip, take } = loadOptions;
@@ -302,8 +363,8 @@ class CommutePrivateStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('commutes/list.do', apiParam).then(
@@ -323,7 +384,7 @@ class CommutePrivateStore {
     this.datagridStore = store;
   }
 
-  // 초기화해서 조회
+  // 초기화해서
   @action
   initSearch() {
     // 전체 조회
@@ -504,11 +565,10 @@ class CommutePrivateStore {
   getPrivateMonthStatsList() {
     const profile = this.rootStore.appStore.profile;
     const apiParam = {
-      inWorkYn: this.inWorkYn
+      inWorkYn: this.inWorkYn,
+      userId: profile.user_key
     };
-    if (profile) {
-      apiParam.userId = profile.user_key;
-    }
+    apiParam.searchMonthStr = Helper.dateToString(this.searchMonth, 'YYYYMM');
     ApiService.post('commutes/stats/private.do', apiParam).then((response) => {
       runInAction(() => {
         this.privateMonthStatsList = response.data || [];
