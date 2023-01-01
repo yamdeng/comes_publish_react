@@ -1,7 +1,7 @@
 /* global XFE */
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-
+import DatePicker from 'react-datepicker';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import 'devextreme/data/odata/store';
 import DataGrid, { Column } from 'devextreme-react/data-grid';
@@ -60,11 +60,19 @@ class ModalTest extends Component {
     this.setState({ ['isOpen' + index]: true });
 
     setTimeout(() => {
+      // debugger;
       this.xfe = new XFE({
         basePath: '/office6/engine/we/xfree',
         width: '100%',
         height: '500px',
-        onLoad: () => {}
+        SubMenuBar: false,
+        onLoad: (object) => {
+          // object.hideToolbar(true);
+          // object.hideToolbar(true);
+          // object.showMenuBar(false);
+          // object.showMenubar();
+          // debugger;
+        }
       });
 
       // debugger;
@@ -253,7 +261,11 @@ class ModalTest extends Component {
                   </div>
                 </div>
                 <div class="mgtop10 modal_grid_area">
-                  <a href="javascript:void(0);" class="btn_nepr prev">
+                  <a
+                    href="javascript:void(0);"
+                    class="btn_nepr prev"
+                    style={{ zIndex: 1 }}
+                  >
                     <span>이전</span>
                   </a>
 
@@ -364,7 +376,7 @@ class ModalTest extends Component {
           </ModalFooter>
         </Modal>
         {/* 일일 업무보고 확인 */}
-        <Modal isOpen={isOpen4} className={'modal_box modal_box_850'}>
+        <Modal isOpen={isOpen4} className={'modal_box modal_box_1000'}>
           <ModalHeader
             className="popup_head"
             close={
@@ -428,15 +440,15 @@ class ModalTest extends Component {
                   </div>
                 </div>
                 <div class="mgtop10 modal_grid_area">
-                  <a href="javascript:void(0);" class="btn_nepr prev">
+                  <a
+                    href="javascript:void(0);"
+                    class="btn_nepr prev"
+                    style={{ zIndex: 1 }}
+                  >
                     <span>이전</span>
                   </a>
 
-                  <DataGrid
-                    dataSource={dataSourceOptions}
-                    showBorders={true}
-                    width={763}
-                  >
+                  <DataGrid dataSource={dataSourceOptions} showBorders={true}>
                     <Column dataField="Product_ID" />
                     <Column dataField="Product_Name" width={250} />
                     <Column
@@ -481,6 +493,7 @@ class ModalTest extends Component {
                     <textarea
                       maxlength="100"
                       placeholder="댓글을 입력하세요. (최대 100자)"
+                      style={{ boxSizing: 'border-box' }}
                     ></textarea>
                   </div>
                   <a href="javascript:void(0);" class="btn_blue btn_normal">
@@ -500,7 +513,7 @@ class ModalTest extends Component {
           </ModalFooter>
         </Modal>
         {/* 근무시간수정 */}
-        <Modal isOpen={isOpen5} className={'modal_box modal_box_450'}>
+        <Modal isOpen={isOpen5} className={'modal_box modal_box_850'}>
           <ModalHeader
             className="popup_head"
             close={
@@ -577,22 +590,29 @@ class ModalTest extends Component {
               </div>
               <div class="flex_sb mgtop10">
                 <p class="con_title2">적용기간</p>
-                <div class="con_box2">
+                <div class="con_box2 relative">
                   <div>
                     <input type="checkbox" id="check1" />
                     <label for="check1" class="mglt10">
                       종료일 미정
                     </label>
                   </div>
-                  <input type="text" class="w90" />
-                  <a href="javascript:void(0);" class="btn_calen mgrg10">
-                    <img src="images/calen_sel_ico.png" />
-                  </a>
-                  <span>~</span>
-                  <input type="text" class="w90" />
                   <a href="javascript:void(0);" class="btn_calen">
-                    <img src="images/calen_sel_ico.png" />
-                  </a>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
+                      alt=""
+                    />
+                  </a>{' '}
+                  <DatePicker selected={null} onChange={(date) => {}} />
+                  <br />
+                  <br />
+                  <a href="javascript:void(0);" class="btn_calen">
+                    <img
+                      src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
+                      alt=""
+                    />
+                  </a>{' '}
+                  <DatePicker selected={null} onChange={(date) => {}} />
                 </div>
               </div>
               <div class="flex_sb mgtop10">

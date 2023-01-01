@@ -119,4 +119,6 @@ Constant.CODE_REPORT_STATUS_SUBMIT = 'SUBMIT'; /* 제출 */
 Constant.CODE_REPORT_STATUS_APPROVE = 'APPROVE'; /* 승인 */
 Constant.CODE_REPORT_STATUS_REJECT = 'REJECT'; /* 반려 */
 
+Constant.EDITOR_BASE_PATH = '/office6/engine/we/xfree';
+
 export default Constant;

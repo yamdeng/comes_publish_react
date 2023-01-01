@@ -420,36 +420,6 @@ class WorkReportStore {
     }, 300);
   }
 
-  // form 모달 close
-  @action
-  closeFormModal() {
-    this.isFormModalOpen = false;
-  }
-
-  // 이슈 변경
-  @action
-  changeIssueYn(issueYn) {
-    this.issueYn = issueYn;
-  }
-
-  // 업무보고 저장
-  @action
-  saveWorkReport() {
-    const reportContent = this.xfe.getBodyValue();
-    const issueYn = this.issueYn;
-    const workDetailInfo = this.workDetailInfo;
-    const { baseDateStr } = workDetailInfo;
-    const apiParam = {};
-    apiParam.reportId = workDetailInfo.reportId;
-    apiParam.reportContent = reportContent;
-    apiParam.issueYn = issueYn;
-    ApiService.put('work-reports/update.do', apiParam).then((response) => {
-      Helper.toastMessage(baseDateStr + ' 업무보고를 저장하였습니다.');
-      this.closeFormModal();
-      this.search();
-    });
-  }
-
   // 하위실 콤보 변경
   @action
   changeSilDept(silDeptKey) {

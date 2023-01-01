@@ -109,3 +109,26 @@ table {
 .progress-bar-wrap {
     background: none;
 }
+
+.modal .react-datepicker {
+    z-index: 2;
+}
+
+.modal_box_1000 { max-width:1000px; }
+
+
+.modal_box div.coment_write a.btn_blue {
+    line-height: 100px;
+}
+
+.modal_box div.coment_write .coment_write_form, .modal_box div.coment_write a.btn_blue {
+    height: 100px;
+}
+
+.modal_box div.coment_write .coment_write_form textarea {
+    height: 60px;
+}
+
+.react-datepicker-wrapper {
+    width: initial;
+}

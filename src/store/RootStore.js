@@ -21,6 +21,8 @@ import HolidayManageStore from './setting/HolidayManageStore';
 import DeptTimeSettingStore from './setting/DeptTimeSettingStore';
 import CommuteDaySubmitModalStore from './commute/CommuteDaySubmitModalStore';
 import CommuteDayUpdateModalStore from './commute/CommuteDayUpdateModalStore';
+import CommuteDayAdminModalStore from './commute/CommuteDayAdminModalStore';
+import WorkReportFormModalStore from './report/WorkReportFormModalStore';
 
 /*
 
@@ -69,6 +71,8 @@ class RootStore {
     this.deptTimeSettingStore = new DeptTimeSettingStore(this);
     this.commuteDaySubmitModalStore = new CommuteDaySubmitModalStore(this);
     this.commuteDayUpdateModalStore = new CommuteDayUpdateModalStore(this);
+    this.commuteDayAdminModalStore = new CommuteDayAdminModalStore(this);
+    this.workReportFormModalStore = new WorkReportFormModalStore(this);
   }
 }
 

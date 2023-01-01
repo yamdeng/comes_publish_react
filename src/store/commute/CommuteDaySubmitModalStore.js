@@ -19,23 +19,6 @@ class CommuteDaySubmitModalStore extends CommuteDayUpdateModalStore {
     this.rootStore = rootStore;
   }
 
-  // datagrid 컴포넌트 셋팅
-  initDataGridComponent(dataGridRef) {
-    this.dataGridRef = dataGridRef;
-  }
-
-  // pageIndex 초기화
-  refreshPage() {
-    if (
-      this.dataGridRef &&
-      this.dataGridRef.current &&
-      this.dataGridRef.current.instance &&
-      this.dataGridRef.current.instance.pageIndex
-    ) {
-      this.dataGridRef.current.instance.pageIndex(0);
-    }
-  }
-
   // [조회] 공통
   @action
   search(disableRefresh) {

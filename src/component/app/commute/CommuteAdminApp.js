@@ -8,7 +8,7 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 
-@inject('appStore', 'uiStore', 'commuteDeptStore')
+@inject('appStore', 'uiStore', 'commuteDeptStore', 'commuteDayAdminModalStore')
 @observer
 class CommuteAdminApp extends Component {
   constructor(props) {
@@ -40,6 +40,7 @@ class CommuteAdminApp extends Component {
     this.prevDay = this.prevDay.bind(this);
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
+    this.openModal = this.openModal.bind(this);
   }
 
   init() {
@@ -128,6 +129,8 @@ class CommuteAdminApp extends Component {
     commuteDeptStore.prevDay(kind);
   }
 
+  openModal() {}
+
   componentDidMount() {
     this.init();
   }
@@ -148,7 +151,7 @@ class CommuteAdminApp extends Component {
       allStatsInfo,
       datagridStore,
       searchDashBoardKind,
-      managerMonthStatsUserList
+      targetDeptList
     } = commuteDeptStore;
     allStatsInfo = allStatsInfo || {};
     return (
@@ -458,7 +461,7 @@ class CommuteAdminApp extends Component {
             <div class="grid_top flex_sb mgtop20">
               <div class="number">
                 <p>
-                  <b class="blue">{totalCount}</b> 명
+                  <b class="blue">{totalCount}</b> 팀
                 </p>
               </div>
               <div class="search_right">

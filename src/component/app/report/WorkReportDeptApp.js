@@ -9,8 +9,9 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
 import moment from 'moment';
+import WorkReportFormModal from './WorkReportFormModal';
 
-@inject('appStore', 'uiStore', 'workReportStore')
+@inject('appStore', 'uiStore', 'workReportStore', 'workReportFormModalStore')
 @observer
 class WorkReportDeptApp extends Component {
   constructor(props) {
@@ -43,9 +44,6 @@ class WorkReportDeptApp extends Component {
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
 
-    // 모달 핸들러
-    this.openFormModal = this.openFormModal.bind(this);
-    this.closeFormModal = this.closeFormModal.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
     this.saveWorkReport = this.saveWorkReport.bind(this);
     this.changeIssueYn = this.changeIssueYn.bind(this);
@@ -137,20 +135,10 @@ class WorkReportDeptApp extends Component {
     workReportStore.prevDay(kind);
   }
 
-  openFormModal(reportId) {
-    const { workReportStore } = this.props;
-    workReportStore.openFormModal(reportId);
-  }
-
-  closeFormModal() {
-    const { workReportStore } = this.props;
-    workReportStore.closeFormModal();
-  }
-
   handleRowClick(e) {
-    const { workReportStore } = this.props;
+    const { workReportFormModalStore } = this.props;
     if (e.data) {
-      workReportStore.openFormModal(e.data);
+      workReportFormModalStore.openModal(e.data);
     }
   }
 
@@ -174,25 +162,18 @@ class WorkReportDeptApp extends Component {
 
     let {
       searchDateType,
-      searchDate,
       searchMonth,
       startDate,
       endDate,
-      dayDatepickerOpend,
       monthDatepickerOpend,
       startDatepickerOpend,
       endDatepickerOpend,
       totalCount,
       statsInfo,
       datagridStore,
-      searchDashBoardKind,
-      isFormModalOpen,
-      workDetailInfo,
-      issueYn
+      searchDashBoardKind
     } = workReportStore;
     statsInfo = statsInfo || {};
-    workDetailInfo = workDetailInfo || {};
-    const { baseDateStr } = workDetailInfo;
     return (
       <div id="contents_sub" class="">
         <WorkReportSubMenu />
@@ -476,59 +457,7 @@ class WorkReportDeptApp extends Component {
             </div>
           </div>
         </div>
-        {/* 업무 보고 수정 팝업 */}
-        <Modal isOpen={isFormModalOpen} className={'modal_box modal_box_850'}>
-          <ModalHeader
-            className="popup_head"
-            close={
-              <button
-                type="button"
-                class="close"
-                data-dismiss="modal"
-                aria-label="Close"
-                onClick={this.closeFormModal}
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-            }
-          >
-            일일 업무 보고 수정
-          </ModalHeader>
-          <ModalBody>
-            <div class="pd20">
-              <h4>
-                {baseDateStr ? moment(baseDateStr).format('M월 D일(ddd)') : ''}
-              </h4>
-              <div class="mgtop10 modal_grid_area" id="reactEditor"></div>
-              <div class="right mgtop10">
-                <input
-                  type="checkbox"
-                  checked={issueYn === 'Y' ? true : false}
-                  onChange={this.changeIssueYn}
-                />
-                <label for="issue" class="mglt10">
-                  이슈
-                </label>
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              onClick={this.closeFormModal}
-            >
-              취소
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onClick={this.saveWorkReport}
-            >
-              저장
-            </button>
-          </ModalFooter>
-        </Modal>
+        <WorkReportFormModal />
       </div>
     );
   }
