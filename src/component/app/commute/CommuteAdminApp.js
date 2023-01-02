@@ -7,6 +7,7 @@ import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
+import CommuteDayAdminModal from './CommuteDayAdminModal';
 
 @inject('appStore', 'uiStore', 'commuteDeptStore', 'commuteDayAdminModalStore')
 @observer
@@ -14,6 +15,7 @@ class CommuteAdminApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -45,6 +47,7 @@ class CommuteAdminApp extends Component {
 
   init() {
     const { commuteDeptStore } = this.props;
+    commuteDeptStore.initDataGridComponent(this.dataGridRef);
     commuteDeptStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
     commuteDeptStore.initSearchDateAll();
     this.search();
@@ -129,7 +132,11 @@ class CommuteAdminApp extends Component {
     commuteDeptStore.prevDay(kind);
   }
 
-  openModal() {}
+  openModal() {
+    const { commuteDayAdminModalStore, commuteDeptStore } = this.props;
+    const { searchDate } = commuteDeptStore;
+    commuteDayAdminModalStore.openModal(searchDate);
+  }
 
   componentDidMount() {
     this.init();
@@ -458,33 +465,34 @@ class CommuteAdminApp extends Component {
           </div>
           {/* 통계영역 종료 */}
           <div class="">
-            <div class="grid_top flex_sb mgtop20">
-              <div class="number">
+            <div
+              class="grid_top flex_sb mgtop20"
+              style={{
+                display:
+                  searchDateType === Constant.SEARCH_DATE_TYPE_DAY ? '' : 'none'
+              }}
+            >
+              <div class="number" onClick={this.openModal}>
                 <p>
                   <b class="blue">{totalCount}</b> 팀
                 </p>
               </div>
-              <div class="search_right">
-                <a href="javascript:void(0);" class="btn_normal">
-                  수정
-                </a>
-                <a href="javascript:void(0);" class="btn_normal btn_blue">
-                  제출
-                </a>
-              </div>
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
+                cacheEnabled={false}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -500,40 +508,106 @@ class CommuteAdminApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="managerName"
                   dataType="string"
                   caption="팀장명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="managerMobileTel"
                   dataType="string"
                   caption="연락처"
+                  allowSorting={false}
                 />
+
+                {/* targetCount startWorkCompleteCount / outWorkCompleteCount */}
                 <Column
                   dataField="startWorkCompleteCount"
                   dataType="number"
                   caption="출근"
+                  allowSorting={false}
+                  calculateDisplayValue={function (rowData) {
+                    const {
+                      targetCount,
+                      startWorkCompleteCount,
+                      outWorkCompleteCount
+                    } = rowData;
+                    let resultText = '';
+                    if (targetCount === startWorkCompleteCount) {
+                      resultText =
+                        '완료(' +
+                        startWorkCompleteCount +
+                        '/' +
+                        targetCount +
+                        ')';
+                    } else {
+                      resultText =
+                        '미완료(' +
+                        startWorkCompleteCount +
+                        '/' +
+                        targetCount +
+                        ')';
+                    }
+                    return resultText;
+                  }}
                 />
                 <Column
                   dataField="outWorkCompleteCount"
                   dataType="number"
                   caption="퇴근"
+                  allowSorting={false}
+                  calculateDisplayValue={function (rowData) {
+                    const { targetCount, outWorkCompleteCount } = rowData;
+                    let resultText = '';
+                    if (targetCount === outWorkCompleteCount) {
+                      resultText =
+                        '완료(' +
+                        outWorkCompleteCount +
+                        '/' +
+                        targetCount +
+                        ')';
+                    } else {
+                      resultText =
+                        '미완료(' +
+                        outWorkCompleteCount +
+                        '/' +
+                        targetCount +
+                        ')';
+                    }
+                    return resultText;
+                  }}
                 />
-                <Column dataField="modYn" dataType="string" caption="수정" />
-                <Column dataField="tardyYn" dataType="string" caption="지각" />
                 <Column
-                  dataField="commute_submit_status_code_name"
+                  dataField="modYn"
+                  dataType="string"
+                  caption="수정"
+                  allowSorting={false}
+                />
+                <Column
+                  dataField="tardyYn"
+                  dataType="string"
+                  caption="지각"
+                  allowSorting={false}
+                />
+                <Column
+                  dataField="commuteSubmitStatusCodeName"
                   dataType="string"
                   caption="상태"
+                  allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>
         </div>
+        <CommuteDayAdminModal />
       </div>
     );
   }

@@ -80,6 +80,10 @@ class CommutePrivateStore {
   @observable
   visibleGuideText = false;
 
+  // 가이드 문구2 show / hide
+  @observable
+  visibleGuideText2 = false;
+
   // totalCount
   @observable
   totalCount = 0;
@@ -107,6 +111,33 @@ class CommutePrivateStore {
   // 조건 검색
   @observable
   workTimeKind = '';
+
+  // 공휴일 여부 : 검색시 사용
+  @observable
+  searchHolidayYn = 'N';
+
+  // 근무결과 : 검색시 사용
+  @observable
+  searchWorkResultCode = '';
+
+  // 사용자 이름
+  @observable
+  searchUserName = '';
+
+  @action
+  changeSearchHolidayYn(searchHolidayYn) {
+    this.searchHolidayYn = searchHolidayYn;
+  }
+
+  @action
+  changeSearchWorkResultCode(searchWorkResultCode) {
+    this.searchWorkResultCode = searchWorkResultCode;
+  }
+
+  @action
+  changeSearchUserName(searchUserName) {
+    this.searchUserName = searchUserName;
+  }
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -307,8 +338,15 @@ class CommutePrivateStore {
     const profile = appStore.profile;
     const searchDashBoardKind = this.searchDashBoardKind;
     const selectedSilDeptKey = this.selectedSilDeptKey;
+    const holidayYn = this.searchHolidayYn;
+    const userName = this.searchUserName;
+    const workResultCode = this.searchWorkResultCode;
 
-    const apiParam = {};
+    const apiParam = {
+      holidayYn: holidayYn,
+      userName: userName ? userName : null,
+      workResultCode: workResultCode ? workResultCode : null
+    };
 
     // 페이지 타입에 따라 기본 파라미터값 적용
     if (reactPageType === 'CommutePrivateApp') {
@@ -369,8 +407,31 @@ class CommutePrivateStore {
             runInAction(() => {
               this.totalCount = data.totalCount;
             });
+            let searchList = data.list || [];
+            searchList.forEach((searchInfo) => {
+              if (searchInfo.startWorkDate) {
+                searchInfo.startWorkDate = moment(
+                  searchInfo.startWorkDate
+                ).toDate();
+              }
+              if (searchInfo.outWorkDate) {
+                searchInfo.outWorkDate = moment(
+                  searchInfo.outWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalStartWorkDate) {
+                searchInfo.finalStartWorkDate = moment(
+                  searchInfo.finalStartWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalOutWorkDate) {
+                searchInfo.finalOutWorkDate = moment(
+                  searchInfo.finalOutWorkDate
+                ).toDate();
+              }
+            });
             return {
-              data: data.list,
+              data: searchList,
               totalCount: data.totalCount
             };
           }
@@ -411,6 +472,20 @@ class CommutePrivateStore {
   @action
   hideVisibleGuideText() {
     this.visibleGuideText = false;
+  }
+
+  @action
+  toggleVisibleGuideText2() {
+    if (this.visibleGuideText2) {
+      this.visibleGuideText2 = false;
+    } else {
+      this.visibleGuideText2 = true;
+    }
+  }
+
+  @action
+  hideVisibleGuideText2() {
+    this.visibleGuideText2 = false;
   }
 
   /* 월 datepicker 처리 start */

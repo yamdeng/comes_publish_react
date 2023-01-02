@@ -8,6 +8,7 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import Constant from 'config/Constant';
 import classnames from 'classnames';
 import moment from 'moment';
+import Code from 'config/Code';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -28,6 +29,29 @@ class CommutePrivateApp extends Component {
     this.nextMonth = this.nextMonth.bind(this);
     this.prevMonth = this.prevMonth.bind(this);
     this.workOutNextDay = this.workOutNextDay.bind(this);
+
+    this.changeSearchHolidayYn = this.changeSearchHolidayYn.bind(this);
+    this.changeSearchWorkResultCode =
+      this.changeSearchWorkResultCode.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+  }
+
+  changeSearchHolidayYn(event) {
+    let value = event.target.checked;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchHolidayYn(value ? 'Y' : 'N');
+  }
+
+  changeSearchWorkResultCode(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchWorkResultCode(value);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchUserName(value);
   }
 
   init() {
@@ -114,7 +138,11 @@ class CommutePrivateApp extends Component {
       todayCommuteDayInfo,
       privateMonthStatsList,
       inWorkYn,
-      visibleGuideText
+      visibleGuideText,
+      totalCount,
+      searchHolidayYn,
+      searchWorkResultCode,
+      searchUserName
     } = commutePrivateStore;
     todayCommuteDayInfo = todayCommuteDayInfo || {};
 
@@ -153,6 +181,10 @@ class CommutePrivateApp extends Component {
 
     const { profile } = appStore;
     const { dept_name, user_name } = profile;
+
+    let workResultCodeList = [{ name: '전체', value: '' }].concat(
+      Code.workResultCodeList
+    );
     return (
       <div
         id="contents_sub"
@@ -372,18 +404,53 @@ class CommutePrivateApp extends Component {
           </div>
 
           <div class="">
+            <div class="grid_top flex_sb mgtop20">
+              <div class="number">
+                <p>
+                  <b class="blue">{totalCount}</b> 명
+                </p>
+              </div>
+              <div class="search_right">
+                <input
+                  type="checkbox"
+                  id="holidayYn"
+                  checked={searchHolidayYn === 'Y' ? true : false}
+                  onChange={this.changeSearchHolidayYn}
+                />
+                <label for="holidayYn" class="mglt10">
+                  공휴일
+                </label>{' '}
+                <label for="search_option" class="blind">
+                  검색조건
+                </label>
+                <select
+                  id="search_option"
+                  value={searchWorkResultCode}
+                  onChange={this.changeSearchWorkResultCode}
+                >
+                  {workResultCodeList.map((item) => (
+                    <option value={item.value} key={item.value}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
+                cacheEnabled={false}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -399,65 +466,49 @@ class CommutePrivateApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="startWorkIp"
                   dataType="string"
                   caption="출근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="startWorkDate"
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     const { startWorkDate, finalStartWorkDate, modYn } =
                       rowData;
                     // YYYY-MM-DD HH:mm:ss
+
+                    // 1.출근시간
+                    // 1-1.출근시간, 출근수정시간 존재하지 않으면 : ''
+                    // 1-2.출근시간 존재시
+                    //   1-2-1.출근수정시간 존재시 : 출근수정시간(최초출근시간)
+                    //   1-2-2.출근수정시간 존재 않할 경우 : 출근시간만
+                    // 1-3.출근수정시간 존재시
+                    //   -출근수정시간만
                     let startWorkDateCellResult = '';
-                    if (startWorkDate) {
-                      // 사용자가 출근 액션을 수행하였을 경우
-                      // 수정을 하였을 경우
-                      if (modYn && modYn === 'Y') {
-                        if (finalStartWorkDate) {
-                          startWorkDateCellResult =
-                            Helper.convertDate(
-                              startWorkDate,
-                              'YYYY-MM-DD HH:mm:ss',
-                              'HH:mm'
-                            ) +
-                            '(' +
-                            Helper.convertDate(
-                              finalStartWorkDate,
-                              'YYYY-MM-DD HH:mm:ss',
-                              'HH:mm'
-                            ) +
-                            ')';
-                        } else {
-                          startWorkDateCellResult = Helper.convertDate(
-                            startWorkDate,
-                            'YYYY-MM-DD HH:mm:ss',
-                            'HH:mm'
-                          );
-                        }
-                      } else {
-                        // 수정이 아닌 경우
-                        startWorkDateCellResult = Helper.convertDate(
-                          startWorkDate,
-                          'YYYY-MM-DD HH:mm:ss',
-                          'HH:mm'
-                        );
-                      }
-                    } else {
-                      // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
+                    if (!startWorkDate && !finalStartWorkDate) {
+                      return '';
+                    } else if (startWorkDate) {
                       if (finalStartWorkDate) {
                         startWorkDateCellResult =
-                          Helper.convertDate(
-                            finalStartWorkDate,
-                            'YYYY-MM-DD HH:mm:ss',
-                            'HH:mm'
-                          ) + '()';
+                          moment(finalStartWorkDate).format('HH:mm') +
+                          '(' +
+                          moment(startWorkDate).format('HH:mm') +
+                          ')';
+                      } else {
+                        startWorkDateCellResult =
+                          moment(startWorkDate).format('HH:mm');
                       }
+                    } else if (finalStartWorkDate) {
+                      startWorkDateCellResult =
+                        moment(finalStartWorkDate).format('HH:mm') + '()';
                     }
                     return startWorkDateCellResult;
                   }}
@@ -466,39 +517,38 @@ class CommutePrivateApp extends Component {
                   dataField="outWorkIp"
                   dataType="string"
                   caption="퇴근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="outWorkDate"
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
+                  allowSorting={false}
                   cellRender={function (columnInfo) {
                     const { data } = columnInfo;
-                    const {
-                      baseDateStr,
-                      outWorkDate,
-                      finalOutWorkDate,
-                      modYn
-                    } = data;
+                    const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
                     // YYYY-MM-DD HH:mm:ss
                     let outWorkDateFormat = 'HH:mm';
                     let finalOutWorkDateFormat = 'HH:mm';
-                    if (
-                      moment(baseDateStr).diff(
-                        moment(moment(outWorkDate).format('YYYYMMDD')),
-                        'days'
-                      ) < 0
-                    ) {
-                      outWorkDateFormat = 'M/D/YYYY H:mm a';
+                    if (outWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(moment(outWorkDate), 'days') <
+                        0
+                      ) {
+                        outWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
                     }
 
-                    if (
-                      moment(baseDateStr).diff(
-                        moment(moment(finalOutWorkDate).format('YYYYMMDD')),
-                        'days'
-                      ) < 0
-                    ) {
-                      finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                    if (finalOutWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(
+                          moment(finalOutWorkDate),
+                          'days'
+                        ) < 0
+                      ) {
+                        finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
                     }
                     // 현재날짜 기준으로 기준날짜보다 초과하였는지 체크
                     let isNextDay = false;
@@ -512,50 +562,10 @@ class CommutePrivateApp extends Component {
                     }
 
                     let outWorkDateCellResult = '';
-                    if (outWorkDate) {
-                      // 사용자가 퇴근 액션을 수행하였을 경우
-                      // 수정을 하였을 경우
-                      if (modYn && modYn === 'Y') {
-                        if (finalOutWorkDate) {
-                          outWorkDateCellResult =
-                            Helper.convertDate(
-                              outWorkDate,
-                              'YYYY-MM-DD HH:mm:ss',
-                              outWorkDateFormat
-                            ) +
-                            '(' +
-                            Helper.convertDate(
-                              finalOutWorkDate,
-                              'YYYY-MM-DD HH:mm:ss',
-                              finalOutWorkDateFormat
-                            ) +
-                            ')';
-                        } else {
-                          outWorkDateCellResult = Helper.convertDate(
-                            outWorkDate,
-                            'YYYY-MM-DD HH:mm:ss',
-                            outWorkDateFormat
-                          );
-                        }
-                      } else {
-                        // 수정이 아닌 경우
-                        outWorkDateCellResult = Helper.convertDate(
-                          outWorkDate,
-                          'YYYY-MM-DD HH:mm:ss',
-                          outWorkDateFormat
-                        );
-                      }
-                    } else {
-                      // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
-                      if (finalOutWorkDate) {
-                        outWorkDateCellResult =
-                          Helper.convertDate(
-                            finalOutWorkDate,
-                            'YYYY-MM-DD HH:mm:ss',
-                            'HH:mm'
-                          ) + '()';
-                      } else if (isNextDay) {
-                        return (
+
+                    if (!outWorkDate && !finalOutWorkDate) {
+                      if (isNextDay) {
+                        outWorkDateCellResult = (
                           <a
                             href="javascript:void(0);"
                             class="btn_normal btn_blue"
@@ -566,7 +576,27 @@ class CommutePrivateApp extends Component {
                             퇴근
                           </a>
                         );
+                      } else {
+                        return '';
                       }
+                    } else if (outWorkDate) {
+                      if (finalOutWorkDate) {
+                        outWorkDateCellResult =
+                          moment(finalOutWorkDate).format(
+                            finalOutWorkDateFormat
+                          ) +
+                          '(' +
+                          moment(outWorkDate).format(outWorkDateFormat) +
+                          ')';
+                      } else {
+                        outWorkDateCellResult =
+                          moment(outWorkDate).format(outWorkDateFormat);
+                      }
+                    } else if (finalOutWorkDate) {
+                      outWorkDateCellResult =
+                        moment(finalOutWorkDate).format(
+                          finalOutWorkDateFormat
+                        ) + '()';
                     }
                     return outWorkDateCellResult;
                   }}
@@ -580,6 +610,16 @@ class CommutePrivateApp extends Component {
                   dataField="workResultCodeName"
                   dataType="date"
                   caption="근무결과"
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.workResultCodeName) {
+                      if (rowData.resultModYn === 'Y') {
+                        return '*' + rowData.workResultCodeName;
+                      } else {
+                        return rowData.workResultCodeName;
+                      }
+                    }
+                    return '';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

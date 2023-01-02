@@ -7,6 +7,7 @@ import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import CommuteDayUpdateModalStore from './CommuteDayUpdateModalStore';
 import moment from 'moment';
+import Constant from 'config/Constant';
 
 /*
   
@@ -37,7 +38,6 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
   changeSearchDate(searchDate) {
     this.searchDate = searchDate;
     this.dayDatepickerOpend = false;
-    this.getCommuteDeptDetailInfo();
     this.getTargetDeptList();
   }
 
@@ -45,7 +45,6 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
   @action
   nextDay() {
     this.searchDate = moment(this.searchDate).add(1, 'days').toDate();
-    this.getCommuteDeptDetailInfo();
     this.getTargetDeptList();
   }
 
@@ -53,7 +52,6 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
   @action
   prevDay() {
     this.searchDate = moment(this.searchDate).subtract(1, 'days').toDate();
-    this.getCommuteDeptDetailInfo();
     this.getTargetDeptList();
   }
   /* 일 datepicker 처리 end */
@@ -66,6 +64,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
     );
     this.currentDeptIndex = searchIndex;
     this.currentDeptId = targetDeptList[searchIndex].deptId;
+    this.getCommuteDeptDetailInfo();
     this.search();
   }
 
@@ -81,6 +80,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
     }
     this.currentDeptIndex = currentDeptIndex;
     this.currentDeptId = targetDeptList[currentDeptIndex].deptId;
+    this.getCommuteDeptDetailInfo();
     this.search();
   }
 
@@ -96,6 +96,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
     }
     this.currentDeptIndex = currentDeptIndex;
     this.currentDeptId = targetDeptList[currentDeptIndex].deptId;
+    this.getCommuteDeptDetailInfo();
     this.search();
   }
 
@@ -138,8 +139,31 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
             runInAction(() => {
               this.totalCount = data.totalCount;
             });
+            let searchList = data.list || [];
+            searchList.forEach((searchInfo) => {
+              if (searchInfo.startWorkDate) {
+                searchInfo.startWorkDate = moment(
+                  searchInfo.startWorkDate
+                ).toDate();
+              }
+              if (searchInfo.outWorkDate) {
+                searchInfo.outWorkDate = moment(
+                  searchInfo.outWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalStartWorkDate) {
+                searchInfo.finalStartWorkDate = moment(
+                  searchInfo.finalStartWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalOutWorkDate) {
+                searchInfo.finalOutWorkDate = moment(
+                  searchInfo.finalOutWorkDate
+                ).toDate();
+              }
+            });
             return {
-              data: data.list,
+              data: searchList,
               totalCount: data.totalCount
             };
           }
@@ -149,32 +173,86 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
     this.datagridStore = store;
   }
 
-  // 제출
-  @action
-  submit() {
-    // 제출 이후 다시 부서_출퇴근 정보 조회
-  }
-
   // 승인
   @action
-  approve() {}
+  approve() {
+    const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
+    const apiParam = {
+      baseDateStr: commuteDeptSubmitInfo.baseDateStr,
+      deptId: commuteDeptSubmitInfo.deptId,
+      commuteSubmitStatusCode: Constant.CODE_COMMUTE_DEPT_STATUS_APPROVE
+    };
+    ApiService.put('commute-depts/detail/status.do', apiParam).then(
+      (response) => {
+        let detailInfo = response.data;
+        runInAction(() => {
+          this.commuteDeptSubmitInfo = detailInfo;
+        });
+        Helper.toastMessage(
+          commuteDeptSubmitInfo.baseDateStr +
+            ' ' +
+            commuteDeptSubmitInfo.deptName +
+            ' 출퇴근 기록을 승인하였습니다.'
+        );
+      }
+    );
+  }
 
   // 반려
   @action
-  reject() {}
+  reject() {
+    const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
+    const apiParam = {
+      baseDateStr: commuteDeptSubmitInfo.baseDateStr,
+      deptId: commuteDeptSubmitInfo.deptId,
+      commuteSubmitStatusCode: Constant.CODE_COMMUTE_DEPT_STATUS_REJECT
+    };
+    ApiService.put('commute-depts/detail/status.do', apiParam).then(
+      (response) => {
+        let detailInfo = response.data;
+        runInAction(() => {
+          this.commuteDeptSubmitInfo = detailInfo;
+        });
+        Helper.toastMessage(
+          commuteDeptSubmitInfo.baseDateStr +
+            ' ' +
+            commuteDeptSubmitInfo.deptName +
+            ' 출퇴근 기록을 반려하였습니다.'
+        );
+      }
+    );
+  }
+
+  // 부서_출퇴근 상세 정보 조회
+  @action
+  getCommuteDeptDetailInfo() {
+    const apiParam = {};
+    apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    apiParam.deptId = this.currentDeptId;
+    ApiService.post('commute-depts/detail.do', apiParam).then((response) => {
+      let detailInfo = response.data;
+      runInAction(() => {
+        this.commuteDeptSubmitInfo = detailInfo;
+      });
+    });
+  }
 
   // 부서_출퇴든 대상 부서 목록 가져오기
   @action
   getTargetDeptList() {
     const apiParam = {};
     apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
-    ApiService.post('commute-depts/list.do').then((response) => {
-      const data = response.data;
+    ApiService.post('commute-depts/list.do', apiParam).then((response) => {
+      const data = response.data.list;
       runInAction(() => {
-        this.targetDeptList = data;
-        if (data.length) {
+        this.targetDeptList = data || [];
+        if (data && data.length) {
           this.currentDeptIndex = 0;
           this.currentDeptId = data[0].deptId;
+          this.getCommuteDeptDetailInfo();
+          this.search();
+        } else {
+          this.commuteDeptSubmitInfo = null;
           this.search();
         }
       });

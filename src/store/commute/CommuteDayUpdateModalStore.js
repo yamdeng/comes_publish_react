@@ -1,12 +1,14 @@
 /* global reactPageType */
 
-import { observable, action, runInAction, computed } from 'mobx';
+import { observable, action, runInAction, computed, toJS } from 'mobx';
 import 'devextreme/data/odata/store';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
+import ModalService from 'service/ModalService';
+import { Modal } from 'reactstrap';
 
 /*
   
@@ -21,6 +23,10 @@ class CommuteDayUpdateModalStore {
   // 개인_출퇴근 목록 grid
   @observable
   datagridStore = null;
+
+  // 변경된 grid row
+  @observable
+  updateRows = [];
 
   // 검색 일
   @observable
@@ -47,11 +53,13 @@ class CommuteDayUpdateModalStore {
   }
 
   // datagrid 컴포넌트 셋팅
+  @action
   initDataGridComponent(dataGridRef) {
     this.dataGridRef = dataGridRef;
   }
 
   // pageIndex 초기화
+  @action
   refreshPage() {
     if (
       this.dataGridRef &&
@@ -61,6 +69,11 @@ class CommuteDayUpdateModalStore {
     ) {
       this.dataGridRef.current.instance.pageIndex(0);
     }
+  }
+
+  @action
+  changeUpdateRows(changes) {
+    this.updateRows = changes;
   }
 
   // 모달 오픈 : 조회 일 기준으로
@@ -83,7 +96,7 @@ class CommuteDayUpdateModalStore {
   getCommuteDeptDetailInfo() {
     const profile = this.rootStore.appStore.profile;
     const apiParam = {};
-    apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
     apiParam.deptId = profile.dept_key;
     ApiService.post('commute-depts/detail.do', apiParam).then((response) => {
       let detailInfo = response.data;
@@ -125,8 +138,32 @@ class CommuteDayUpdateModalStore {
             runInAction(() => {
               this.totalCount = data.totalCount;
             });
+
+            let searchList = data.list || [];
+            searchList.forEach((searchInfo) => {
+              if (searchInfo.startWorkDate) {
+                searchInfo.startWorkDate = moment(
+                  searchInfo.startWorkDate
+                ).toDate();
+              }
+              if (searchInfo.outWorkDate) {
+                searchInfo.outWorkDate = moment(
+                  searchInfo.outWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalStartWorkDate) {
+                searchInfo.finalStartWorkDate = moment(
+                  searchInfo.finalStartWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalOutWorkDate) {
+                searchInfo.finalOutWorkDate = moment(
+                  searchInfo.finalOutWorkDate
+                ).toDate();
+              }
+            });
             return {
-              data: data.list,
+              data: searchList,
               totalCount: data.totalCount
             };
           }
@@ -177,43 +214,50 @@ class CommuteDayUpdateModalStore {
 
   // 수정
   @action
-  updateBatch(updateRows) {
+  updateBatch() {
     const profile = this.rootStore.appStore.profile;
     const deptId = profile.dept_key;
+    const updateRows = toJS(this.updateRows);
 
     if (updateRows.length) {
-      const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
-      let dayList = updateRows.map((rowInfo) => {
-        const info = rowInfo.data;
-        info.deptKey = deptId;
-        info.baseDateStr = baseDateStr;
-        info.userId = rowInfo.key;
-        if (info.startWorkDate) {
-          info.finalStartWorkDate = moment(info.startWorkDate).format(
-            'YYYY-MM-DD HH:mm:ss'
+      ModalService.confirm({
+        content: '출퇴근을 수정 하시겠습니까?',
+        ok: () => {
+          const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+          let dayList = updateRows.map((rowInfo) => {
+            const info = rowInfo.data;
+            info.deptKey = deptId;
+            info.baseDateStr = baseDateStr;
+            info.userId = rowInfo.key;
+            if (info.startWorkDate) {
+              info.finalStartWorkDate = moment(info.startWorkDate).format(
+                'YYYY-MM-DD HH:mm:ss'
+              );
+              delete info.startWorkDate;
+            }
+            if (info.outWorkDate) {
+              info.finalOutWorkDate = moment(info.outWorkDate).format(
+                'YYYY-MM-DD HH:mm:ss'
+              );
+              delete info.outWorkDate;
+            }
+            return info;
+          });
+          ApiService.put('commutes/update.do', { dayList: dayList }).then(
+            (response) => {
+              runInAction(() => {
+                this.search();
+                this.updateRows = [];
+              });
+            }
           );
-          delete info.startWorkDate;
         }
-        if (info.outWorkDate) {
-          info.finalOutWorkDate = moment(info.outWorkDate).format(
-            'YYYY-MM-DD HH:mm:ss'
-          );
-          delete info.outWorkDate;
-        }
-        return info;
       });
-      return ApiService.put('commutes/update.do', { dayList: dayList });
     } else {
       // 수정한 이력이 없으면 메시지
       Helper.toastMessage('수정된 출근 정보가 없습니다.', '', 'warning');
       return Promise.resolve();
     }
-  }
-
-  // 제출
-  @action
-  submit() {
-    // 제출 이후 다시 부서_출퇴근 정보 조회
   }
 
   // 수정 가능 여부

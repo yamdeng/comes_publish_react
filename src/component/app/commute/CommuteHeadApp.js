@@ -7,6 +7,7 @@ import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -14,6 +15,8 @@ class CommuteHeadApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+
+    this.dataGridRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -42,10 +45,15 @@ class CommuteHeadApp extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
 
     this.changeSilDept = this.changeSilDept.bind(this);
+
+    this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
+
+    this.toggleVisibleGuideText2 = this.toggleVisibleGuideText2.bind(this);
   }
 
   init() {
     const { commutePrivateStore } = this.props;
+    commutePrivateStore.initDataGridComponent(this.dataGridRef);
     commutePrivateStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
     commutePrivateStore.initSearchDateAll();
     this.search();
@@ -136,6 +144,18 @@ class CommuteHeadApp extends Component {
     commutePrivateStore.changeSilDept(value);
   }
 
+  toggleVisibleGuideText(event) {
+    event.stopPropagation();
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.toggleVisibleGuideText();
+  }
+
+  toggleVisibleGuideText2(event) {
+    event.stopPropagation();
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.toggleVisibleGuideText2();
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -165,7 +185,9 @@ class CommuteHeadApp extends Component {
       searchDashBoardKind,
       selectedSilDeptKey,
       headSimpleStatsInfo,
-      headMonthStatsUserList
+      headMonthStatsUserList,
+      visibleGuideText,
+      visibleGuideText2
     } = commutePrivateStore;
     manageDayStatsInfo = manageDayStatsInfo || {};
     headSimpleStatsInfo = headSimpleStatsInfo || {};
@@ -182,14 +204,19 @@ class CommuteHeadApp extends Component {
             <img
               src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
               alt="가이드"
+              onClick={this.toggleVisibleGuideText}
             />
           </a>
         </h3>
-        <div id="toggle_tip4" class="tip_box" style={{ display: 'none' }}>
+        <div
+          id="toggle_tip4"
+          class="tip_box"
+          style={{ display: visibleGuideText ? '' : 'none' }}
+        >
           {' '}
-          [지각] 근무 시작 시간 10분을 초과하여 출근 체크한 건수
+          [지각] 조회 기간 10분을 초과하여 출근 체크한 건수
           <br />
-          [출/퇴근 미체크] 조회 기간의 출/퇴근 미체크 건수
+          [휴가/휴직] 휴가/휴직 건수
         </div>
         <div class="flex_center bg">
           <div class="result">
@@ -214,15 +241,26 @@ class CommuteHeadApp extends Component {
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
                   alt="가이드"
+                  onClick={this.toggleVisibleGuideText2}
                 />
               </a>
             </h3>
           </div>
-          <div id="toggle_tip5" class="tip_box" style={{ display: 'none' }}>
+          <div
+            id="toggle_tip5"
+            class="tip_box"
+            style={{ display: visibleGuideText2 ? '' : 'none' }}
+          >
             정상출근 / 지각 / 휴가,휴직 / 평균 근무 시간
           </div>
           <div class="sub_serch_result relative">
-            <a href="javascript:void(0);" class="btn_nepr prev">
+            <a
+              href="javascript:void(0);"
+              class="btn_nepr prev"
+              style={{
+                display: headMonthStatsUserList.length < 7 ? 'none' : ''
+              }}
+            >
               <span>이전</span>
             </a>
             <div class="flex_ul_box_container_half">
@@ -252,7 +290,13 @@ class CommuteHeadApp extends Component {
                 })}
               </ul>
             </div>
-            <a href="javascript:void(0);" class="btn_nepr next">
+            <a
+              href="javascript:void(0);"
+              class="btn_nepr next"
+              style={{
+                display: headMonthStatsUserList.length < 7 ? 'none' : ''
+              }}
+            >
               <span>다음</span>
             </a>
           </div>
@@ -637,27 +681,22 @@ class CommuteHeadApp extends Component {
                   <b class="blue">{totalCount}</b> 명
                 </p>
               </div>
-              <div class="search_right">
-                <a href="javascript:void(0);" class="btn_normal">
-                  수정
-                </a>
-                <a href="javascript:void(0);" class="btn_normal btn_blue">
-                  제출
-                </a>
-              </div>
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
+                cacheEnabled={false}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -673,47 +712,156 @@ class CommuteHeadApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
-                <Column dataField="userName" dataType="string" caption="이름" />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="이름"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="positionTitle"
                   dataType="string"
                   caption="직급"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="startWorkIp"
                   dataType="string"
                   caption="출근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="startWorkDate"
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
+                  allowSorting={false}
+                  calculateCellValue={function (rowData) {
+                    const { startWorkDate, finalStartWorkDate } = rowData;
+                    let startWorkDateCellResult = '';
+                    if (!startWorkDate && !finalStartWorkDate) {
+                      return '';
+                    } else if (startWorkDate) {
+                      if (finalStartWorkDate) {
+                        startWorkDateCellResult =
+                          moment(finalStartWorkDate).format('HH:mm') +
+                          '(' +
+                          moment(startWorkDate).format('HH:mm') +
+                          ')';
+                      } else {
+                        startWorkDateCellResult =
+                          moment(startWorkDate).format('HH:mm');
+                      }
+                    } else if (finalStartWorkDate) {
+                      startWorkDateCellResult =
+                        moment(finalStartWorkDate).format('HH:mm') + '()';
+                    }
+                    return startWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="outWorkIp"
                   dataType="string"
                   caption="퇴근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="outWorkDate"
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
+                  allowSorting={false}
+                  cellRender={function (columnInfo) {
+                    const { data } = columnInfo;
+                    const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
+                    // YYYY-MM-DD HH:mm:ss
+                    let outWorkDateFormat = 'HH:mm';
+                    let finalOutWorkDateFormat = 'HH:mm';
+                    if (outWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(moment(outWorkDate), 'days') <
+                        0
+                      ) {
+                        outWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
+                    }
+
+                    if (finalOutWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(
+                          moment(finalOutWorkDate),
+                          'days'
+                        ) < 0
+                      ) {
+                        finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
+                    }
+                    // 현재날짜 기준으로 기준날짜보다 초과하였는지 체크
+                    let isNextDay = false;
+                    if (
+                      moment(baseDateStr).diff(
+                        moment(moment().format('YYYYMMDD')),
+                        'days'
+                      ) < 0
+                    ) {
+                      isNextDay = true;
+                    }
+
+                    let outWorkDateCellResult = '';
+
+                    if (!outWorkDate && !finalOutWorkDate) {
+                      return '';
+                    } else if (outWorkDate) {
+                      if (finalOutWorkDate) {
+                        outWorkDateCellResult =
+                          moment(finalOutWorkDate).format(
+                            finalOutWorkDateFormat
+                          ) +
+                          '(' +
+                          moment(outWorkDate).format(outWorkDateFormat) +
+                          ')';
+                      } else {
+                        outWorkDateCellResult =
+                          moment(outWorkDate).format(outWorkDateFormat);
+                      }
+                    } else if (finalOutWorkDate) {
+                      outWorkDateCellResult =
+                        moment(finalOutWorkDate).format(
+                          finalOutWorkDateFormat
+                        ) + '()';
+                    }
+                    return outWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="workStatusCodeName"
                   dataType="date"
                   caption="근무상태"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="workResultCodeName"
                   dataType="date"
                   caption="근무결과"
+                  allowSorting={false}
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.workResultCodeName) {
+                      if (rowData.resultModYn === 'Y') {
+                        return '*' + rowData.workResultCodeName;
+                      } else {
+                        return rowData.workResultCodeName;
+                      }
+                    }
+                    return '';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

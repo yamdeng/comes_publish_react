@@ -9,6 +9,8 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import CommuteDayModal from './CommuteDayModal';
 import CommuteDaySubmitModal from './CommuteDaySubmitModal';
+import Code from 'config/Code';
+import moment from 'moment';
 
 @inject(
   'appStore',
@@ -52,6 +54,33 @@ class CommuteDeptApp extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
     this.openUpdateModal = this.openUpdateModal.bind(this);
     this.openSubmitModal = this.openSubmitModal.bind(this);
+
+    this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
+
+    // 검색 추가
+
+    this.changeSearchHolidayYn = this.changeSearchHolidayYn.bind(this);
+    this.changeSearchWorkResultCode =
+      this.changeSearchWorkResultCode.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+  }
+
+  changeSearchHolidayYn(event) {
+    let value = event.target.checked;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchHolidayYn(value ? 'Y' : 'N');
+  }
+
+  changeSearchWorkResultCode(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchWorkResultCode(value);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchUserName(value);
   }
 
   init() {
@@ -153,6 +182,12 @@ class CommuteDeptApp extends Component {
     commuteDaySubmitModalStore.openModal(searchDate);
   }
 
+  toggleVisibleGuideText(event) {
+    event.stopPropagation();
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.toggleVisibleGuideText();
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -174,7 +209,11 @@ class CommuteDeptApp extends Component {
       manageDayStatsInfo,
       datagridStore,
       searchDashBoardKind,
-      managerMonthStatsUserList
+      managerMonthStatsUserList,
+      searchHolidayYn,
+      searchWorkResultCode,
+      searchUserName,
+      visibleGuideText
     } = commutePrivateStore;
     manageDayStatsInfo = manageDayStatsInfo || {};
     let managerMonthStatsUserListComponent = null;
@@ -232,6 +271,9 @@ class CommuteDeptApp extends Component {
         <div class="relative">팀원이 존재하지 않습니다.</div>
       );
     }
+    let workResultCodeList = [{ name: '전체', value: '' }].concat(
+      Code.workResultCodeList
+    );
     return (
       <div id="contents_sub" class="">
         <CommuteSubMenu />
@@ -590,9 +632,14 @@ class CommuteDeptApp extends Component {
                 <img
                   src={`${process.env.PUBLIC_URL}/images/btn_info.png`}
                   alt="더보기"
+                  onClick={this.toggleVisibleGuideText}
                 />
               </a>
-              <div id="toggle_tip2" class="tip_box" style={{ display: 'none' }}>
+              <div
+                id="toggle_tip2"
+                class="tip_box"
+                style={{ display: visibleGuideText ? '' : 'none' }}
+              >
                 {' '}
                 정상출근 / 지각 / 휴가,휴직{' '}
               </div>
@@ -607,18 +654,47 @@ class CommuteDeptApp extends Component {
                   <b class="blue">{totalCount}</b> 명
                 </p>
               </div>
-              <div
-                class="search_right"
-                style={{
-                  display:
-                    searchDateType === Constant.SEARCH_DATE_TYPE_DAY
-                      ? ''
-                      : 'none'
-                }}
-              >
+              <div class="search_right">
+                <input
+                  type="checkbox"
+                  id="holidayYn"
+                  checked={searchHolidayYn === 'Y' ? true : false}
+                  onChange={this.changeSearchHolidayYn}
+                />
+                <label for="holidayYn" class="mglt10">
+                  공휴일
+                </label>{' '}
+                <label for="search_option" class="blind">
+                  검색조건
+                </label>
+                <select
+                  id="search_option"
+                  value={searchWorkResultCode}
+                  onChange={this.changeSearchWorkResultCode}
+                >
+                  {workResultCodeList.map((item) => (
+                    <option value={item.value} key={item.value}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>{' '}
+                <input
+                  type="text"
+                  class="w100"
+                  placeholder="사용자이름을 입력해주세요."
+                  value={searchUserName}
+                  onChange={this.changeSearchUserName}
+                  style={{ height: 30 }}
+                />{' '}
                 <a
                   href="javascript:void(0);"
                   class="btn_normal"
+                  style={{
+                    display:
+                      searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                        ? ''
+                        : 'none'
+                  }}
                   onClick={this.openUpdateModal}
                 >
                   수정
@@ -626,6 +702,12 @@ class CommuteDeptApp extends Component {
                 <a
                   href="javascript:void(0);"
                   class="btn_normal btn_blue"
+                  style={{
+                    display:
+                      searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                        ? ''
+                        : 'none'
+                  }}
                   onClick={this.openSubmitModal}
                 >
                   제출
@@ -646,6 +728,7 @@ class CommuteDeptApp extends Component {
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -657,38 +740,142 @@ class CommuteDeptApp extends Component {
                     return '';
                   }}
                 />
-                <Column dataField="userName" dataType="string" caption="이름" />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="이름"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="startWorkIp"
                   dataType="string"
                   caption="출근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="startWorkDate"
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
+                  allowSorting={false}
+                  calculateCellValue={function (rowData) {
+                    const { startWorkDate, finalStartWorkDate } = rowData;
+                    let startWorkDateCellResult = '';
+                    if (!startWorkDate && !finalStartWorkDate) {
+                      return '';
+                    } else if (startWorkDate) {
+                      if (finalStartWorkDate) {
+                        startWorkDateCellResult =
+                          moment(finalStartWorkDate).format('HH:mm') +
+                          '(' +
+                          moment(startWorkDate).format('HH:mm') +
+                          ')';
+                      } else {
+                        startWorkDateCellResult =
+                          moment(startWorkDate).format('HH:mm');
+                      }
+                    } else if (finalStartWorkDate) {
+                      startWorkDateCellResult =
+                        moment(finalStartWorkDate).format('HH:mm') + '()';
+                    }
+                    return startWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="outWorkIp"
                   dataType="string"
                   caption="퇴근아이피"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="outWorkDate"
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
+                  allowSorting={false}
+                  cellRender={function (columnInfo) {
+                    const { data } = columnInfo;
+                    const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
+                    // YYYY-MM-DD HH:mm:ss
+                    let outWorkDateFormat = 'HH:mm';
+                    let finalOutWorkDateFormat = 'HH:mm';
+                    if (outWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(moment(outWorkDate), 'days') <
+                        0
+                      ) {
+                        outWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
+                    }
+
+                    if (finalOutWorkDate) {
+                      if (
+                        moment(baseDateStr).diff(
+                          moment(finalOutWorkDate),
+                          'days'
+                        ) < 0
+                      ) {
+                        finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                      }
+                    }
+                    // 현재날짜 기준으로 기준날짜보다 초과하였는지 체크
+                    let isNextDay = false;
+                    if (
+                      moment(baseDateStr).diff(
+                        moment(moment().format('YYYYMMDD')),
+                        'days'
+                      ) < 0
+                    ) {
+                      isNextDay = true;
+                    }
+
+                    let outWorkDateCellResult = '';
+
+                    if (!outWorkDate && !finalOutWorkDate) {
+                      return '';
+                    } else if (outWorkDate) {
+                      if (finalOutWorkDate) {
+                        outWorkDateCellResult =
+                          moment(finalOutWorkDate).format(
+                            finalOutWorkDateFormat
+                          ) +
+                          '(' +
+                          moment(outWorkDate).format(outWorkDateFormat) +
+                          ')';
+                      } else {
+                        outWorkDateCellResult =
+                          moment(outWorkDate).format(outWorkDateFormat);
+                      }
+                    } else if (finalOutWorkDate) {
+                      outWorkDateCellResult =
+                        moment(finalOutWorkDate).format(
+                          finalOutWorkDateFormat
+                        ) + '()';
+                    }
+                    return outWorkDateCellResult;
+                  }}
                 />
                 <Column
                   dataField="workStatusCodeName"
                   dataType="date"
                   caption="근무상태"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="workResultCodeName"
                   dataType="date"
                   caption="근무결과"
+                  allowSorting={false}
+                  calculateCellValue={function (rowData) {
+                    if (rowData && rowData.workResultCodeName) {
+                      if (rowData.resultModYn === 'Y') {
+                        return '*' + rowData.workResultCodeName;
+                      } else {
+                        return rowData.workResultCodeName;
+                      }
+                    }
+                    return '';
+                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

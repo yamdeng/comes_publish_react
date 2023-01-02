@@ -6,6 +6,8 @@ import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import CommuteDayUpdateModalStore from './CommuteDayUpdateModalStore';
+import moment from 'moment';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -51,8 +53,31 @@ class CommuteDaySubmitModalStore extends CommuteDayUpdateModalStore {
             runInAction(() => {
               this.totalCount = data.totalCount;
             });
+            let searchList = data.list || [];
+            searchList.forEach((searchInfo) => {
+              if (searchInfo.startWorkDate) {
+                searchInfo.startWorkDate = moment(
+                  searchInfo.startWorkDate
+                ).toDate();
+              }
+              if (searchInfo.outWorkDate) {
+                searchInfo.outWorkDate = moment(
+                  searchInfo.outWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalStartWorkDate) {
+                searchInfo.finalStartWorkDate = moment(
+                  searchInfo.finalStartWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalOutWorkDate) {
+                searchInfo.finalOutWorkDate = moment(
+                  searchInfo.finalOutWorkDate
+                ).toDate();
+              }
+            });
             return {
-              data: data.list,
+              data: searchList,
               totalCount: data.totalCount
             };
           }
@@ -66,6 +91,34 @@ class CommuteDaySubmitModalStore extends CommuteDayUpdateModalStore {
   @action
   submit() {
     // 제출 이후 다시 부서_출퇴근 정보 조회
+    const profile = this.rootStore.appStore.profile;
+    const apiParam = {};
+    apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    apiParam.deptKey = profile.dept_key;
+    apiParam.deptId = profile.dept_key;
+    ApiService.post('commute-depts/submit-validate-count.do', apiParam).then(
+      (response) => {
+        const data = response.data;
+        if (data > 0) {
+          Helper.toastMessage(
+            '출근시간 또는 퇴근시간 중 미제출 내역이 있습니다.',
+            '',
+            'warning'
+          );
+          alert('출근시간 또는 퇴근시간 중 미제출 내역이 있습니다.');
+        } else {
+          ModalService.confirm({
+            content: '출퇴근을 제출 하시겠습니까?',
+            ok: () => {
+              ApiService.post('commute-depts/submit.do', apiParam).then(() => {
+                Helper.toastMessage('출퇴근 기록을 제출하였습니다.');
+                this.search();
+              });
+            }
+          });
+        }
+      }
+    );
   }
 
   @action

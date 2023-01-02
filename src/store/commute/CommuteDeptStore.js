@@ -29,6 +29,7 @@ class CommuteDeptStore extends CommutePrivateStore {
   @action
   search() {
     // 초기화 조회시 모든 경우에 통계 정보 재조회
+    this.refreshPage();
     this.getStatsSearch();
 
     const searchDateType = this.searchDateType;

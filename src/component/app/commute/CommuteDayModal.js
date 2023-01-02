@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import VacationSubMenu from 'component/submenu/VacationSubMenu';
@@ -23,12 +24,12 @@ import Code from 'config/Code';
 class CommuteDayModal extends Component {
   constructor(props) {
     super(props);
-    this.state = { changes: [] };
+    this.state = {};
     this.dataGridRef = React.createRef();
     this.init = this.init.bind(this);
     this.search = this.search.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.refresh = this.refresh();
+    this.refresh = this.refresh.bind(this);
 
     this.changeSearchDate = this.changeSearchDate.bind(this);
     this.openDayDatepicker = this.openDayDatepicker.bind(this);
@@ -54,13 +55,15 @@ class CommuteDayModal extends Component {
   }
 
   refresh() {
-    this.setState({ changes: [] });
+    const { commuteDayUpdateModalStore } = this.props;
+    commuteDayUpdateModalStore.changeUpdateRows([]);
+    this.search();
   }
 
   changeSearchDate(date) {
     const { commuteDayUpdateModalStore } = this.props;
     commuteDayUpdateModalStore.changeSearchDate(date);
-    this.setState({ changes: [] });
+    commuteDayUpdateModalStore.changeUpdateRows([]);
   }
 
   openDayDatepicker() {
@@ -71,25 +74,22 @@ class CommuteDayModal extends Component {
   nextDay(kind) {
     const { commuteDayUpdateModalStore } = this.props;
     commuteDayUpdateModalStore.nextDay(kind);
-    this.setState({ changes: [] });
+    commuteDayUpdateModalStore.changeUpdateRows([]);
   }
   prevDay(kind) {
     const { commuteDayUpdateModalStore } = this.props;
     commuteDayUpdateModalStore.prevDay(kind);
-    this.setState({ changes: [] });
+    commuteDayUpdateModalStore.changeUpdateRows([]);
   }
 
   update() {
-    const { changes } = this.state;
     const { commuteDayUpdateModalStore } = this.props;
-    commuteDayUpdateModalStore.updateBatch(changes).then(() => {
-      this.setState({ changes: [] });
-      this.search();
-    });
+    commuteDayUpdateModalStore.updateBatch();
   }
 
   onChangesChange(changes) {
-    this.setState({ changes: changes });
+    const { commuteDayUpdateModalStore } = this.props;
+    commuteDayUpdateModalStore.changeUpdateRows(changes);
   }
 
   componentDidMount() {
@@ -97,14 +97,14 @@ class CommuteDayModal extends Component {
   }
 
   render() {
-    const { changes } = this.state;
     const { commuteDayUpdateModalStore } = this.props;
     const {
       visibleModal,
       searchDate,
       datagridStore,
       dayDatepickerOpend,
-      commuteDeptSubmitInfo
+      isUpdateAvailable,
+      updateRows
     } = commuteDayUpdateModalStore;
     return (
       <Modal isOpen={visibleModal} className={'modal_box modal_box_1000'}>
@@ -174,8 +174,7 @@ class CommuteDayModal extends Component {
                   showBorders={true}
                   remoteOperations={true}
                   noDataText={'출근 정보가 존재하지 않습니다.'}
-                  height={500}
-                  columnResizingMode={true}
+                  height={450}
                   columnAutoWidth={true}
                   cacheEnabled={false}
                   onToolbarPreparing={(e) => {
@@ -189,31 +188,36 @@ class CommuteDayModal extends Component {
                     allowUpdating={true}
                     selectTextOnEditStart={true}
                     startEditAction={'click'}
-                    refreshMode2="repaint"
-                    changes={changes}
+                    changes={toJS(updateRows)}
                     onChangesChange={this.onChangesChange}
                   />
                   <Column
                     dataField="deptName"
                     dataType="string"
                     caption="부서명"
+                    allowSorting={false}
                     allowEditing={false}
                   />
                   <Column
                     dataField="userName"
                     dataType="string"
                     caption="이름"
+                    allowSorting={false}
                     allowEditing={false}
                   />
                   <Column
                     dataField="positionTitle"
                     dataType="string"
                     caption="직급명"
+                    allowSorting={false}
+                    allowEditing={false}
                   />
                   <Column
                     dataField="startWorkIp"
                     dataType="string"
                     caption="출근아이피"
+                    allowSorting={false}
+                    allowEditing={false}
                   />
                   {/* 출근시간 변경 */}
                   <Column
@@ -221,38 +225,27 @@ class CommuteDayModal extends Component {
                     dataType="datetime"
                     caption="출근시간"
                     format="yyyy-MM-dd HH:mm"
-                    dateFormat="yyyy-MM-dd HH:mm"
-                    width={150}
+                    width={200}
+                    allowSorting={false}
                     calculateDisplayValue={function (rowData) {
-                      let { startWorkDate, finalStartWorkDate, modYn } =
-                        rowData;
-                      // YYYY-MM-DD HH:mm:ss
+                      const { startWorkDate, finalStartWorkDate } = rowData;
                       let startWorkDateCellResult = '';
-                      if (startWorkDate) {
-                        // 사용자가 출근 액션을 수행하였을 경우
-                        // 수정을 하였을 경우
-                        if (modYn && modYn === 'Y') {
-                          if (finalStartWorkDate) {
-                            startWorkDateCellResult =
-                              moment(finalStartWorkDate).format('HH:mm') +
-                              '(' +
-                              moment(finalStartWorkDate).format('HH:mm') +
-                              ')';
-                          } else {
-                            startWorkDateCellResult =
-                              moment(startWorkDate).format('HH:mm');
-                          }
+                      if (!startWorkDate && !finalStartWorkDate) {
+                        return '';
+                      } else if (startWorkDate) {
+                        if (finalStartWorkDate) {
+                          startWorkDateCellResult =
+                            moment(finalStartWorkDate).format('HH:mm') +
+                            '(' +
+                            moment(startWorkDate).format('HH:mm') +
+                            ')';
                         } else {
-                          // 수정이 아닌 경우
                           startWorkDateCellResult =
                             moment(startWorkDate).format('HH:mm');
                         }
-                      } else {
-                        // 사용자가 퇴근 액션을 수행하지 않고 관리자가 수정을 하였을 경우
-                        if (finalStartWorkDate) {
-                          startWorkDateCellResult =
-                            moment(startWorkDate).format('HH:mm') + '()';
-                        }
+                      } else if (finalStartWorkDate) {
+                        startWorkDateCellResult =
+                          moment(finalStartWorkDate).format('HH:mm') + '()';
                       }
                       return startWorkDateCellResult;
                     }}
@@ -261,6 +254,8 @@ class CommuteDayModal extends Component {
                     dataField="outWorkIp"
                     dataType="string"
                     caption="퇴근아이피"
+                    allowSorting={false}
+                    allowEditing={false}
                   />
                   {/* 퇴근시간 변경 */}
                   <Column
@@ -268,12 +263,67 @@ class CommuteDayModal extends Component {
                     dataType="datetime"
                     caption="퇴근시간"
                     format="HH:mm"
+                    width={200}
+                    allowSorting={false}
+                    calculateDisplayValue={function (rowData) {
+                      const { baseDateStr, outWorkDate, finalOutWorkDate } =
+                        rowData;
+                      let outWorkDateFormat = 'HH:mm';
+                      let finalOutWorkDateFormat = 'HH:mm';
+                      if (outWorkDate) {
+                        if (
+                          moment(baseDateStr).diff(
+                            moment(outWorkDate),
+                            'days'
+                          ) < 0
+                        ) {
+                          outWorkDateFormat = 'M/D/YYYY H:mm a';
+                        }
+                      }
+
+                      if (finalOutWorkDate) {
+                        if (
+                          moment(baseDateStr).diff(
+                            moment(finalOutWorkDate),
+                            'days'
+                          ) < 0
+                        ) {
+                          finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+                        }
+                      }
+
+                      let outWorkDateCellResult = '';
+
+                      if (!outWorkDate && !finalOutWorkDate) {
+                        return '';
+                      } else if (outWorkDate) {
+                        if (finalOutWorkDate) {
+                          outWorkDateCellResult =
+                            moment(finalOutWorkDate).format(
+                              finalOutWorkDateFormat
+                            ) +
+                            '(' +
+                            moment(outWorkDate).format(outWorkDateFormat) +
+                            ')';
+                        } else {
+                          outWorkDateCellResult =
+                            moment(outWorkDate).format(outWorkDateFormat);
+                        }
+                      } else if (finalOutWorkDate) {
+                        outWorkDateCellResult =
+                          moment(finalOutWorkDate).format(
+                            finalOutWorkDateFormat
+                          ) + '()';
+                      }
+                      return outWorkDateCellResult;
+                    }}
                   />
                   {/* 외근여부 변경 */}
                   <Column
                     dataField="outsideWorkYn"
                     dataType="string"
                     caption="외근여부"
+                    allowSorting={false}
                   >
                     <Lookup
                       dataSource={Code.outsideWorkYnCodeList}
@@ -287,12 +337,15 @@ class CommuteDayModal extends Component {
                     dataType="string"
                     caption="기타설명"
                     width={150}
+                    allowSorting={false}
                   />
                   {/* 근태결과 변경 */}
                   <Column
                     dataField="workResultCode"
                     dataType="string"
                     caption="근태결과"
+                    allowSorting={false}
+                    width={150}
                   >
                     <Lookup
                       dataSource={Code.workResultCodeList}
@@ -300,6 +353,11 @@ class CommuteDayModal extends Component {
                       displayExpr="name"
                     />
                   </Column>
+                  <Paging defaultPageSize={10} />
+                  <Pager
+                    showPageSizeSelector={true}
+                    allowedPageSizes={[5, 10, 'all']}
+                  />
                 </DataGrid>
               </div>
             </div>
@@ -313,7 +371,12 @@ class CommuteDayModal extends Component {
           >
             취소
           </button>
-          <button type="button" class="btn btn-primary" onClick={this.update}>
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={this.update}
+            style={{ display: isUpdateAvailable ? '' : 'none' }}
+          >
             수정
           </button>
         </ModalFooter>
