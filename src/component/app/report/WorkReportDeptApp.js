@@ -389,11 +389,13 @@ class WorkReportDeptApp extends Component {
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
                 onRowClick={this.handleRowClick}
+                cacheEnabled={false}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -409,12 +411,14 @@ class WorkReportDeptApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="reportDate"
                   dataType="datetime"
                   caption="작성일시"
                   format="YYYY-MM-DD HH:mm"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (!rowData || !rowData.reportDate) {
                       return '미제출';
@@ -426,11 +430,18 @@ class WorkReportDeptApp extends Component {
                   dataField="managerName"
                   dataType="string"
                   caption="작성자"
+                  allowSorting={false}
                 />
-                <Column dataField="issueYn" dataType="string" caption="이슈" />
+                <Column
+                  dataField="issueYn"
+                  dataType="string"
+                  caption="이슈"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="commentCount"
                   caption="댓글"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.commentCount) {
                       return 'Y';
@@ -439,7 +450,10 @@ class WorkReportDeptApp extends Component {
                   }}
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

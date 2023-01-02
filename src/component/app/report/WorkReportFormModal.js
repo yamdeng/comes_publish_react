@@ -96,7 +96,7 @@ class WorkReportFormModal extends Component {
               </label>
             </div>
             <div
-              class="coment_list mgtop10"
+              class="mgtop10"
               style={{ display: commentDetailInfo.userId ? '' : 'none' }}
             >
               <ul>

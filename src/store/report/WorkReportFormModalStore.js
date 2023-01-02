@@ -71,6 +71,7 @@ class WorkReportFormModalStore {
   @action
   saveReport() {
     const reportDetailInfo = this.reportDetailInfo;
+    const workReportStore = this.rootStore.workReportStore;
     const issueYn = this.issueYn;
     // const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
     const editerContent = this.xfe.getBodyValue();
@@ -90,6 +91,7 @@ class WorkReportFormModalStore {
             this.reportDetailInfo = detailInfo;
           });
           Helper.toastMessage('업무보고가 저장되었습니다.');
+          workReportStore.search();
         });
       }
     });

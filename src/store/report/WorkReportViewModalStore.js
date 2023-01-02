@@ -51,6 +51,11 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
         const commentDetailInfo = response.data;
         runInAction(() => {
           this.commentDetailInfo = commentDetailInfo;
+          if (commentDetailInfo) {
+            this.commentContent = commentDetailInfo.commentContent;
+          } else {
+            this.commentContent = '';
+          }
         });
       });
     });
