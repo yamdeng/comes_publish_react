@@ -113,6 +113,7 @@ class CommuteDayUpdateModalStore {
     if (!disableRefresh) {
       this.refreshPage();
     }
+    this.updateRows = [];
 
     const profile = this.rootStore.appStore.profile;
     const apiParam = {};
@@ -251,6 +252,7 @@ class CommuteDayUpdateModalStore {
             (response) => {
               runInAction(() => {
                 this.search();
+                this.getCommuteDeptDetailInfo();
                 this.updateRows = [];
               });
             }
@@ -307,7 +309,7 @@ class CommuteDayUpdateModalStore {
           available = true;
         }
       } else {
-        // 상태 자체가 존재하지 않으면 수정 가능
+        // 상태 자체가 존재하지 않으면 제출 가능
         available = true;
       }
     }

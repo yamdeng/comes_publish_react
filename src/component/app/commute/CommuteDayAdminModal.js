@@ -539,9 +539,8 @@ class CommuteDayAdminModal extends Component {
             style={{
               display:
                 commuteDeptSubmitInfo.deptId &&
-                (!commuteSubmitStatusCode ||
-                  commuteSubmitStatusCode ===
-                    Constant.CODE_COMMUTE_DEPT_STATUS_SUBMIT)
+                commuteSubmitStatusCode ===
+                  Constant.CODE_COMMUTE_DEPT_STATUS_SUBMIT
                   ? ''
                   : 'none'
             }}

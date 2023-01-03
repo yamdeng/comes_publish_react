@@ -115,6 +115,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
     if (!disableRefresh) {
       this.refreshPage();
     }
+    this.updateRows = [];
 
     const apiParam = {};
     apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');

@@ -112,6 +112,7 @@ class CommuteDaySubmitModalStore extends CommuteDayUpdateModalStore {
             ok: () => {
               ApiService.post('commute-depts/submit.do', apiParam).then(() => {
                 Helper.toastMessage('출퇴근 기록을 제출하였습니다.');
+                this.getCommuteDeptDetailInfo();
                 this.search();
               });
             }

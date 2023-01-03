@@ -475,14 +475,13 @@ class CommutePrivateApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="startWorkDate"
+                  dataField="finalStartWorkDate"
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
                   allowSorting={false}
                   calculateCellValue={function (rowData) {
-                    const { startWorkDate, finalStartWorkDate, modYn } =
-                      rowData;
+                    const { startWorkDate, finalStartWorkDate } = rowData;
                     // YYYY-MM-DD HH:mm:ss
 
                     // 1.출근시간
@@ -520,7 +519,7 @@ class CommutePrivateApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="outWorkDate"
+                  dataField="finalOutWorkDate"
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
