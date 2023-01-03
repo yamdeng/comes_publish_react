@@ -230,15 +230,19 @@ class CommuteDayUpdateModalStore {
             info.baseDateStr = baseDateStr;
             info.userId = rowInfo.key;
             if (info.startWorkDate) {
-              info.finalStartWorkDate = moment(info.startWorkDate).format(
+              info.finalStartWorkDate = moment(info.finalStartWorkDate).format(
                 'YYYY-MM-DD HH:mm:ss'
               );
+            }
+            if (info.finalOutWorkDate) {
+              info.finalOutWorkDate = moment(info.finalOutWorkDate).format(
+                'YYYY-MM-DD HH:mm:ss'
+              );
+            }
+            if (info.startWorkDate) {
               delete info.startWorkDate;
             }
             if (info.outWorkDate) {
-              info.finalOutWorkDate = moment(info.outWorkDate).format(
-                'YYYY-MM-DD HH:mm:ss'
-              );
               delete info.outWorkDate;
             }
             return info;

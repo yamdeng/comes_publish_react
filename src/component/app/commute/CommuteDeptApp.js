@@ -193,7 +193,8 @@ class CommuteDeptApp extends Component {
   }
 
   render() {
-    let { commutePrivateStore } = this.props;
+    let { commutePrivateStore, appStore } = this.props;
+    const { isManager } = appStore;
 
     let {
       searchDateType,
@@ -691,6 +692,7 @@ class CommuteDeptApp extends Component {
                   class="btn_normal"
                   style={{
                     display:
+                      isManager &&
                       searchDateType === Constant.SEARCH_DATE_TYPE_DAY
                         ? ''
                         : 'none'
@@ -704,6 +706,7 @@ class CommuteDeptApp extends Component {
                   class="btn_normal btn_blue"
                   style={{
                     display:
+                      isManager &&
                       searchDateType === Constant.SEARCH_DATE_TYPE_DAY
                         ? ''
                         : 'none'

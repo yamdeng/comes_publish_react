@@ -221,7 +221,7 @@ class CommuteDayModal extends Component {
                   />
                   {/* 출근시간 변경 */}
                   <Column
-                    dataField="startWorkDate"
+                    dataField="finalStartWorkDate"
                     dataType="datetime"
                     caption="출근시간"
                     format="yyyy-MM-dd HH:mm"
@@ -259,7 +259,7 @@ class CommuteDayModal extends Component {
                   />
                   {/* 퇴근시간 변경 */}
                   <Column
-                    dataField="outWorkDate"
+                    dataField="finalOutWorkDate"
                     dataType="datetime"
                     caption="퇴근시간"
                     format="HH:mm"

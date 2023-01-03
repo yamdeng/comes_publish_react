@@ -121,6 +121,19 @@ class AppStore {
     return success;
   }
 
+  // 팀장인 경우
+  @computed
+  get isManager() {
+    let success = false;
+    let profile = this.profile;
+    if (profile) {
+      if (profile.userType === 'MANAGER') {
+        success = true;
+      }
+    }
+    return success;
+  }
+
   @computed
   get childDeptIdList() {
     let profile = this.profile;

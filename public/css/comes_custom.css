@@ -128,7 +128,3 @@ table {
 .modal_box div.coment_write .coment_write_form textarea {
     height: 60px;
 }
-
-.react-datepicker-wrapper {
-    width: initial;
-}

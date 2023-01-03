@@ -246,6 +246,7 @@ class CommutePrivateStore {
           Helper.toastMessage('출근 체크를 완료하였습니다.');
           runInAction(() => {
             this.todayCommuteDayInfo = detailInfo;
+            this.search();
           });
         });
       }
@@ -284,6 +285,7 @@ class CommutePrivateStore {
           Helper.toastMessage('퇴근 체크를 완료하였습니다.');
           runInAction(() => {
             this.todayCommuteDayInfo = detailInfo;
+            this.search();
           });
         });
       }
@@ -293,7 +295,6 @@ class CommutePrivateStore {
   // 철야를 하였을 경우 퇴근 처리
   @action
   workOutNextDay(commuteDayInfo) {
-    debugger;
     const profile = this.rootStore.appStore.profile;
     const apiParam = {
       baseDateStr: commuteDayInfo.baseDateStr
