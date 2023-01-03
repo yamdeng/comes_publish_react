@@ -369,14 +369,6 @@ class WorkReportAdminApp extends Component {
                   <b class="blue">6</b> 명
                 </p>
               </div>
-              <div class="search_right">
-                <a href="javascript:void(0);" class="btn_normal">
-                  수정
-                </a>
-                <a href="javascript:void(0);" class="btn_normal btn_blue">
-                  제출
-                </a>
-              </div>
             </div>
             <div class="mgtop10">
               <DataGrid

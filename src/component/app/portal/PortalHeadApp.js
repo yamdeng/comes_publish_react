@@ -18,6 +18,7 @@ class PortalHeadApp extends Component {
     this.startWork = this.startWork.bind(this);
     this.outWork = this.outWork.bind(this);
     this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
+    this.openApprovalDetail = this.openApprovalDetail.bind(this);
   }
 
   init() {
@@ -64,6 +65,10 @@ class PortalHeadApp extends Component {
   toggleVisibleGuideText() {
     const { portalStore } = this.props;
     portalStore.toggleVisibleGuideText();
+  }
+
+  openApprovalDetail(a_doc_key, a_parser_key) {
+    Helper.openApprovalDetail(a_doc_key, a_parser_key);
   }
 
   componentDidMount() {
@@ -267,15 +272,19 @@ class PortalHeadApp extends Component {
     let approveListComponent = null;
     if (approveList.length) {
       approveListComponent = approveList.map((approveInfo) => {
-        const { fld_date, fld_title, code_name, fld_writer } = approveInfo;
+        const {
+          fld_date,
+          fld_title,
+          code_name,
+          fld_writer,
+          a_doc_key,
+          a_parser_key
+        } = approveInfo;
         return (
-          <tr>
+          <tr onClick={() => this.openApprovalDetail(a_doc_key, a_parser_key)}>
             <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
             <td>{code_name}</td>
-            <td
-              class="subject"
-              onClick={() => Helper.goUrl('gsign/docbox/index.do')}
-            >
+            <td class="subject">
               <a href="javascript:void(0);">{fld_title}</a>
             </td>
             <td>{fld_writer}</td>

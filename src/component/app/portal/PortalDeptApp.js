@@ -14,6 +14,8 @@ class PortalDeptApp extends Component {
     this.changeInWorkYn = this.changeInWorkYn.bind(this);
     this.startWork = this.startWork.bind(this);
     this.outWork = this.outWork.bind(this);
+    this.openVacationApproval = this.openVacationApproval.bind(this);
+    this.openApprovalDetail = this.openApprovalDetail.bind(this);
   }
 
   init() {
@@ -51,6 +53,14 @@ class PortalDeptApp extends Component {
   outWork() {
     const { portalStore } = this.props;
     portalStore.outWork();
+  }
+
+  openVacationApproval() {
+    Helper.openVacationApprovalPopup();
+  }
+
+  openApprovalDetail(a_doc_key, a_parser_key) {
+    Helper.openApprovalDetail(a_doc_key, a_parser_key);
   }
 
   componentDidMount() {
@@ -171,15 +181,19 @@ class PortalDeptApp extends Component {
     let approveListComponent = null;
     if (approveList.length) {
       approveListComponent = approveList.map((approveInfo) => {
-        const { fld_date, fld_title, code_name, fld_writer } = approveInfo;
+        const {
+          fld_date,
+          fld_title,
+          code_name,
+          fld_writer,
+          a_doc_key,
+          a_parser_key
+        } = approveInfo;
         return (
-          <tr>
+          <tr onClick={() => this.openApprovalDetail(a_doc_key, a_parser_key)}>
             <td>{Helper.convertDate(fld_date, 'YYYY-MM-DD', 'YYYY.MM.DD')}</td>
             <td>{code_name}</td>
-            <td
-              class="subject"
-              onClick={() => Helper.goUrl('gsign/docbox/index.do')}
-            >
+            <td class="subject">
               <a href="javascript:void(0);">{fld_title}</a>
             </td>
             <td>{fld_writer}</td>
@@ -376,7 +390,7 @@ class PortalDeptApp extends Component {
                   <a
                     class="btn_vaca"
                     href="javascript:void(0);"
-                    onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+                    onClick={this.openVacationApproval}
                     style={{ display: restVacationCount > 0 ? '' : 'none' }}
                   >
                     휴가 신청

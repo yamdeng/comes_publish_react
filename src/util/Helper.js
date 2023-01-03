@@ -1,4 +1,4 @@
-/* global toastr */
+/* global toastr, signVacationWrite, signView */
 import _ from 'lodash';
 import Constant from 'config/Constant';
 import Config from 'config/Config';
@@ -492,6 +492,14 @@ const getIsAllDayVacation = function (vacationKindCode) {
   return isAllDayVacation;
 };
 
+const openVacationApprovalPopup = function () {
+  signVacationWrite();
+};
+
+const openApprovalDetail = function (a_doc_key, a_parser_key) {
+  signView(a_doc_key, a_parser_key);
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -529,5 +537,7 @@ export default {
   goUrl,
   toastMessage,
   convertMapToList,
-  getIsAllDayVacation
+  getIsAllDayVacation,
+  openVacationApprovalPopup,
+  openApprovalDetail
 };
