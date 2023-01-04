@@ -53,7 +53,7 @@ class CommuteDayAdminModal extends Component {
 
   downloadExcel() {
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Main sheet');
+    const worksheet = workbook.addWorksheet('datagrid-excel');
 
     exportDataGrid({
       component: this.dataGridRef.current.instance,

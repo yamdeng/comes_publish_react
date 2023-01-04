@@ -7,7 +7,7 @@ import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
-import moment from 'moment';
+import Code from 'config/Code';
 import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
@@ -50,6 +50,11 @@ class CommuteHeadApp extends Component {
     this.toggleVisibleGuideText = this.toggleVisibleGuideText.bind(this);
 
     this.toggleVisibleGuideText2 = this.toggleVisibleGuideText2.bind(this);
+
+    this.changeSearchHolidayYn = this.changeSearchHolidayYn.bind(this);
+    this.changeSearchWorkResultCode =
+      this.changeSearchWorkResultCode.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
   }
 
   init() {
@@ -157,6 +162,24 @@ class CommuteHeadApp extends Component {
     commutePrivateStore.toggleVisibleGuideText2();
   }
 
+  changeSearchHolidayYn(event) {
+    let value = event.target.checked;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchHolidayYn(value ? 'Y' : 'N');
+  }
+
+  changeSearchWorkResultCode(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchWorkResultCode(value);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { commutePrivateStore } = this.props;
+    commutePrivateStore.changeSearchUserName(value);
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -188,7 +211,10 @@ class CommuteHeadApp extends Component {
       headSimpleStatsInfo,
       headMonthStatsUserList,
       visibleGuideText,
-      visibleGuideText2
+      visibleGuideText2,
+      searchHolidayYn,
+      searchWorkResultCode,
+      searchUserName
     } = commutePrivateStore;
     manageDayStatsInfo = manageDayStatsInfo || {};
     headSimpleStatsInfo = headSimpleStatsInfo || {};
@@ -304,6 +330,9 @@ class CommuteHeadApp extends Component {
         </div>
       );
     }
+    let workResultCodeList = [{ name: '전체', value: '' }].concat(
+      Code.workResultCodeList
+    );
     return (
       <div id="contents_sub" class="">
         <CommuteSubMenu />
@@ -681,6 +710,44 @@ class CommuteHeadApp extends Component {
                 <p>
                   <b class="blue">{totalCount}</b> 명
                 </p>
+              </div>
+              <div class="search_right">
+                <input
+                  type="checkbox"
+                  id="holidayYn"
+                  checked={searchHolidayYn === 'Y' ? true : false}
+                  onChange={this.changeSearchHolidayYn}
+                />
+                <label for="holidayYn" class="mglt10">
+                  공휴일
+                </label>{' '}
+                <label for="search_option" class="blind">
+                  검색조건
+                </label>
+                <select
+                  id="search_option"
+                  value={searchWorkResultCode}
+                  onChange={this.changeSearchWorkResultCode}
+                >
+                  {workResultCodeList.map((item) => (
+                    <option value={item.value} key={item.value}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>{' '}
+                <input
+                  type="text"
+                  class="w100"
+                  placeholder="사용자이름을 입력해주세요."
+                  value={searchUserName}
+                  onChange={this.changeSearchUserName}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                    }
+                  }}
+                  style={{ height: 30 }}
+                />
               </div>
             </div>
             <div class="mgtop10">

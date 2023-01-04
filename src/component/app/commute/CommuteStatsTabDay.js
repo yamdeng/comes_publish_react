@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver-es';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 import 'devextreme/data/odata/store';
 import DatePicker from 'react-datepicker';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
@@ -43,6 +46,50 @@ class CommuteStatsTabDay extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
 
     this.changeWorkTimeKind = this.changeWorkTimeKind.bind(this);
+
+    // 검색 추가
+
+    this.changeSearchHolidayYn = this.changeSearchHolidayYn.bind(this);
+    this.changeSearchWorkResultCode =
+      this.changeSearchWorkResultCode.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+
+    this.downloadExcel = this.downloadExcel.bind(this);
+  }
+
+  downloadExcel() {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+
+    exportDataGrid({
+      component: this.dataGridRef.current.instance,
+      worksheet: worksheet
+    }).then(function () {
+      workbook.xlsx.writeBuffer().then(function (buffer) {
+        saveAs(
+          new Blob([buffer], { type: 'application/octet-stream' }),
+          'DataGrid.xlsx'
+        );
+      });
+    });
+  }
+
+  changeSearchHolidayYn(event) {
+    let value = event.target.checked;
+    const { commuteStatsDayStore } = this.props;
+    commuteStatsDayStore.changeSearchHolidayYn(value ? 'Y' : 'N');
+  }
+
+  changeSearchWorkResultCode(event) {
+    const value = event.target.value;
+    const { commuteStatsDayStore } = this.props;
+    commuteStatsDayStore.changeSearchWorkResultCode(value);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { commuteStatsDayStore } = this.props;
+    commuteStatsDayStore.changeSearchUserName(value);
   }
 
   init() {
@@ -159,10 +206,15 @@ class CommuteStatsTabDay extends Component {
       statsInfo,
       datagridStore,
       workTimeKind,
-      searchDashBoardKind
+      searchDashBoardKind,
+      searchHolidayYn,
+      searchWorkResultCode,
+      searchUserName
     } = commuteStatsDayStore;
     statsInfo = statsInfo || {};
-
+    let workResultCodeList = [{ name: '전체', value: '' }].concat(
+      Code.workResultCodeList
+    );
     return (
       <div style={{ display: visible ? '' : 'none' }}>
         <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
@@ -459,15 +511,48 @@ class CommuteStatsTabDay extends Component {
               </select>
             </div>
             <div class="search_right">
-              <a href="javascript:void(0);" class="btn_ico">
-                <i class="ico_download"></i>엑셀다운로드
-              </a>
+              <input
+                type="checkbox"
+                id="holidayYn"
+                checked={searchHolidayYn === 'Y' ? true : false}
+                onChange={this.changeSearchHolidayYn}
+              />
+              <label for="holidayYn" class="mglt10">
+                공휴일
+              </label>{' '}
+              <label for="search_option" class="blind">
+                검색조건
+              </label>
+              <select
+                id="search_option"
+                value={searchWorkResultCode}
+                onChange={this.changeSearchWorkResultCode}
+              >
+                {workResultCodeList.map((item) => (
+                  <option value={item.value} key={item.value}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>{' '}
+              <input
+                type="text"
+                class="w100"
+                placeholder="사용자이름을 입력해주세요."
+                value={searchUserName}
+                onChange={this.changeSearchUserName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                  }
+                }}
+                style={{ height: 30 }}
+              />{' '}
               <a
                 href="javascript:void(0);"
                 class="btn_ico"
-                onClick={this.search}
+                onClick={this.downloadExcel}
               >
-                <i class="ico_refresh"></i>새로고침
+                <i class="ico_download"></i>엑셀다운로드
               </a>
             </div>
           </div>

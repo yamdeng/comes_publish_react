@@ -34,7 +34,17 @@ class CommuteStatsDayStore extends CommutePrivateStore {
     const searchDashBoardKind = this.searchDashBoardKind;
     const workTimeKind = this.workTimeKind;
 
-    const apiParam = {};
+    const holidayYn = this.searchHolidayYn;
+    const userName = this.searchUserName;
+    const deptName = this.searchDeptName;
+    const workResultCode = this.searchWorkResultCode;
+
+    const apiParam = {
+      holidayYn: holidayYn,
+      userName: userName ? userName : null,
+      deptName: deptName ? deptName : null,
+      workResultCode: workResultCode ? workResultCode : null
+    };
     if (workTimeKind) {
       apiParam.workTimeKind = workTimeKind;
     }

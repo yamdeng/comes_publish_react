@@ -270,12 +270,8 @@ const workResultcodeColumDisplayValue = function (rowData) {
 
 // 기준일자 column display custom
 const baseDateStrColumDisplayValue = function (rowData) {
-  if (rowData && rowData.workResultCodeName) {
-    if (rowData.resultModYn === 'Y') {
-      return '*' + rowData.workResultCodeName;
-    } else {
-      return rowData.workResultCodeName;
-    }
+  if (rowData && rowData.baseDateStr) {
+    return Helper.convertDate(rowData.baseDateStr, 'YYYYMMDD', 'YYYY-MM-DD');
   }
   return '';
 };

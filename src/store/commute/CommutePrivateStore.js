@@ -124,6 +124,15 @@ class CommutePrivateStore {
   @observable
   searchUserName = '';
 
+  // 부서명 이름
+  @observable
+  searchDeptName = '';
+
+  @action
+  changeSearchDeptName(searchDeptName) {
+    this.searchDeptName = searchDeptName;
+  }
+
   @action
   changeSearchHolidayYn(searchHolidayYn) {
     this.searchHolidayYn = searchHolidayYn;
@@ -342,11 +351,13 @@ class CommutePrivateStore {
     const selectedSilDeptKey = this.selectedSilDeptKey;
     const holidayYn = this.searchHolidayYn;
     const userName = this.searchUserName;
+    const deptName = this.searchDeptName;
     const workResultCode = this.searchWorkResultCode;
 
     const apiParam = {
       holidayYn: holidayYn,
       userName: userName ? userName : null,
+      deptName: deptName ? deptName : null,
       workResultCode: workResultCode ? workResultCode : null
     };
 

@@ -4,7 +4,6 @@ import { observable, action, runInAction } from 'mobx';
 import 'devextreme/data/odata/store';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
-import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 import _ from 'lodash';
@@ -34,10 +33,13 @@ class CommuteDeptStore extends CommutePrivateStore {
 
     const searchDateType = this.searchDateType;
     const searchDashBoardKind = this.searchDashBoardKind;
+    const deptName = this.searchDeptName;
 
     const apiParam = {};
     apiParam.searchKind = searchDashBoardKind;
-    // TODO : all 처리를 어떻게 할지 체크
+    if (deptName) {
+      apiParam.deptName = deptName;
+    }
 
     // 날짜 유형에 따른 검색 조건 처리
     if (searchDateType === Constant.SEARCH_DATE_TYPE_DAY) {

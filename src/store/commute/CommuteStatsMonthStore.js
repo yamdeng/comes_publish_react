@@ -65,6 +65,15 @@ class CommuteStatsMonthStore {
   @observable
   monthHolidayGridLabelList = [];
 
+  // 사용자 이름
+  @observable
+  searchUserName = '';
+
+  @action
+  changeSearchUserName(searchUserName) {
+    this.searchUserName = searchUserName;
+  }
+
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -223,7 +232,10 @@ class CommuteStatsMonthStore {
     this.refreshPageWeek();
     const mondayStartDate = this.mondayStartDate;
     const workWeekTimeKind = this.workWeekTimeKind;
-    const apiParam = {};
+    const userName = this.searchUserName;
+    const apiParam = {
+      userName: userName ? userName : null
+    };
     apiParam.mondayStartDateStr = Helper.dateToString(
       mondayStartDate,
       'YYYYMMDD'
@@ -279,7 +291,10 @@ class CommuteStatsMonthStore {
     this.refreshPageMonthWork();
     const searchMonth = this.searchMonth;
     const workWeekTimeKind = this.workWeekTimeKind;
-    const apiParam = {};
+    const userName = this.searchUserName;
+    const apiParam = {
+      userName: userName ? userName : null
+    };
     apiParam.searchMonthStr = Helper.dateToString(searchMonth, 'YYYYMM');
     if (workWeekTimeKind) {
       apiParam.workWeekTimeKind = workWeekTimeKind;
@@ -319,7 +334,10 @@ class CommuteStatsMonthStore {
     this.refreshPageMonthHoliday();
     const searchMonth = this.searchMonth;
     const workWeekTimeKind = this.workWeekTimeKind;
-    const apiParam = {};
+    const userName = this.searchUserName;
+    const apiParam = {
+      userName: userName ? userName : null
+    };
     const searchMonthStr = Helper.dateToString(searchMonth, 'YYYYMM');
     apiParam.searchMonthStr = searchMonthStr;
     if (workWeekTimeKind) {

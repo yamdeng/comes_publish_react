@@ -43,6 +43,14 @@ class CommuteAdminApp extends Component {
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
     this.openModal = this.openModal.bind(this);
+
+    this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+  }
+
+  changeSearchDeptName(event) {
+    const value = event.target.value;
+    const { commuteDeptStore } = this.props;
+    commuteDeptStore.changeSearchDeptName(value);
   }
 
   init() {
@@ -55,7 +63,7 @@ class CommuteAdminApp extends Component {
 
   initSearch() {
     const { commuteDeptStore } = this.props;
-    commuteDeptStore.initSearch();
+    commuteDeptStore.search();
   }
 
   search() {
@@ -158,7 +166,7 @@ class CommuteAdminApp extends Component {
       allStatsInfo,
       datagridStore,
       searchDashBoardKind,
-      targetDeptList
+      searchDeptName
     } = commuteDeptStore;
     allStatsInfo = allStatsInfo || {};
     return (
@@ -465,18 +473,34 @@ class CommuteAdminApp extends Component {
           </div>
           {/* 통계영역 종료 */}
           <div class="">
-            <div
-              class="grid_top flex_sb mgtop20"
-              style={{
-                display:
-                  searchDateType === Constant.SEARCH_DATE_TYPE_DAY ? '' : 'none'
-              }}
-            >
-              <div class="number" onClick={this.openModal}>
+            <div class="grid_top flex_sb mgtop20">
+              <div
+                class="number"
+                onClick={this.openModal}
+                style={{
+                  visibility:
+                    searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                      ? 'visible'
+                      : 'hidden'
+                }}
+              >
                 <p>
                   <b class="blue">{totalCount}</b> 팀
                 </p>
               </div>
+              <input
+                type="text"
+                class="w100"
+                placeholder="부서명을 입력해주세요."
+                value={searchDeptName}
+                onChange={this.changeSearchDeptName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                  }
+                }}
+                style={{ height: 30 }}
+              />{' '}
             </div>
             <div class="mgtop10">
               <DataGrid

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import 'devextreme/data/odata/store';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver-es';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 import DatePicker from 'react-datepicker';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import Constant from 'config/Constant';
@@ -48,6 +51,51 @@ class CommuteStatsTabMonth extends Component {
     this.prevMondayStartDate = this.prevMondayStartDate.bind(this);
 
     this.changeWorkWeekTimeKind = this.changeWorkWeekTimeKind.bind(this);
+
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+
+    this.downloadExcel = this.downloadExcel.bind(this);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { commuteStatsMonthStore } = this.props;
+    commuteStatsMonthStore.changeSearchUserName(value);
+  }
+
+  downloadExcel() {
+    const { commuteStatsMonthStore } = this.props;
+    const { commuteStatsSearchType } = commuteStatsMonthStore;
+    let dataGridRef = null;
+
+    if (commuteStatsSearchType === Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK) {
+      dataGridRef = this.weekDataGridRef;
+    } else if (
+      commuteStatsSearchType ===
+      Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_WORKDAY
+    ) {
+      dataGridRef = this.monthWorkDatagridRef;
+    } else if (
+      commuteStatsSearchType ===
+      Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_HOLIDAY
+    ) {
+      dataGridRef = this.monthHolidyDatagridRef;
+    }
+
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+
+    exportDataGrid({
+      component: dataGridRef.current.instance,
+      worksheet: worksheet
+    }).then(function () {
+      workbook.xlsx.writeBuffer().then(function (buffer) {
+        saveAs(
+          new Blob([buffer], { type: 'application/octet-stream' }),
+          'DataGrid.xlsx'
+        );
+      });
+    });
   }
 
   init() {
@@ -135,7 +183,8 @@ class CommuteStatsTabMonth extends Component {
       monthDatepickerOpend,
       workWeekTimeKind,
       weekGridLabelList,
-      monthHolidayGridLabelList
+      monthHolidayGridLabelList,
+      searchUserName
     } = commuteStatsMonthStore;
 
     return (
@@ -273,11 +322,25 @@ class CommuteStatsTabMonth extends Component {
             </div>
             <div></div>
             <div class="search_right">
-              <a href="javascript:void(0);" class="btn_ico">
+              <input
+                type="text"
+                class="w100"
+                placeholder="사용자이름을 입력해주세요."
+                value={searchUserName}
+                onChange={this.changeSearchUserName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                  }
+                }}
+                style={{ height: 30 }}
+              />{' '}
+              <a
+                href="javascript:void(0);"
+                class="btn_ico"
+                onClick={this.downloadExcel}
+              >
                 <i class="ico_download"></i>엑셀다운로드
-              </a>
-              <a href="javascript:void(0);" class="btn_ico">
-                <i class="ico_refresh"></i>새로고침
               </a>
             </div>
           </div>
@@ -323,7 +386,7 @@ class CommuteStatsTabMonth extends Component {
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
-                caption="누적근무시간"
+                caption="누적근무시간(h)"
                 allowSorting={false}
               />
               {weekGridLabelList.map((weekGridLabelInfo, index) => {
@@ -415,7 +478,7 @@ class CommuteStatsTabMonth extends Component {
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
-                caption="누적근무시간"
+                caption="누적근무시간(h)"
                 allowSorting={false}
               />
               {[1, 2, 3, 4, 5, 6].map((weekIndex) => {
@@ -493,7 +556,7 @@ class CommuteStatsTabMonth extends Component {
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
-                caption="누적근무시간"
+                caption="누적근무시간(h)"
                 allowSorting={false}
               />
               {monthHolidayGridLabelList.map(
