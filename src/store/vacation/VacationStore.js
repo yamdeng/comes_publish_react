@@ -15,6 +15,12 @@ import _ from 'lodash';
 */
 
 class VacationStore {
+  // 년간 휴가/휴직 현황 grid ref
+  yearDatagridRef = null;
+
+  // 휴가 신청/사용 내역 grid ref
+  detailDatagridRef = null;
+
   // 년간 휴가/휴직 현황
   @observable
   yearDatagridStore = null;
@@ -43,6 +49,40 @@ class VacationStore {
   @action
   initSearchDateAll() {
     this.searchYear = moment().toDate();
+  }
+
+  // 년간 datagrid 컴포넌트 셋팅
+  initYearDataGridComponent(yearDatagridRef) {
+    this.yearDatagridRef = yearDatagridRef;
+  }
+
+  // 년간 pageIndex 초기화
+  refreshPageYear() {
+    if (
+      this.yearDatagridRef &&
+      this.yearDatagridRef.current &&
+      this.yearDatagridRef.current.instance &&
+      this.yearDatagridRef.current.instance.pageIndex
+    ) {
+      this.yearDatagridRef.current.instance.pageIndex(0);
+    }
+  }
+
+  // 상세내역 datagrid 컴포넌트 셋팅
+  initDetailDataGridComponent(detailDatagridRef) {
+    this.detailDatagridRef = detailDatagridRef;
+  }
+
+  // 상세내역 pageIndex 초기화
+  refreshPageDetail() {
+    if (
+      this.detailDatagridRef &&
+      this.detailDatagridRef.current &&
+      this.detailDatagridRef.current.instance &&
+      this.detailDatagridRef.current.instance.pageIndex
+    ) {
+      this.detailDatagridRef.current.instance.pageIndex(0);
+    }
   }
 
   // 하위실 콤보 변경
@@ -105,6 +145,7 @@ class VacationStore {
   // 연간 휴가 조회
   @action
   searchYearList() {
+    this.refreshPageYear();
     const appStore = this.rootStore.appStore;
     const profile = appStore.profile;
     const selectedSilDeptKey = this.selectedSilDeptKey;
@@ -134,8 +175,8 @@ class VacationStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('vacations/year/list.do', apiParam).then(
@@ -158,6 +199,7 @@ class VacationStore {
   // 연간 휴가 조회
   @action
   searchDetailList(detailUserId) {
+    this.refreshPageDetail();
     let apiParam = {};
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
     apiParam.userId = detailUserId;
@@ -170,8 +212,8 @@ class VacationStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('vacations/detail/list.do', apiParam).then(

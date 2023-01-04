@@ -10,7 +10,6 @@ import Helper from 'util/Helper';
 import CommuteDayModal from './CommuteDayModal';
 import CommuteDaySubmitModal from './CommuteDaySubmitModal';
 import Code from 'config/Code';
-import moment from 'moment';
 import ReactHelper from 'util/ReactHelper';
 
 @inject(
@@ -804,6 +803,7 @@ class CommuteDeptApp extends Component {
                 />
                 <Paging defaultPageSize={10} />
                 <Pager
+                  visible={true}
                   showPageSizeSelector={true}
                   allowedPageSizes={[5, 10, 'all']}
                 />

@@ -15,6 +15,9 @@ import _ from 'lodash';
 */
 
 class VacationStatsStore {
+  // datagridRef
+  dataGridRef = null;
+
   // 전체 휴가관리 grid store
   @observable
   datagridStore = null;
@@ -35,6 +38,23 @@ class VacationStatsStore {
   @action
   initSearchDateAll() {
     this.searchYear = moment().toDate();
+  }
+
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
+  }
+
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
   }
 
   /* 년 datepicker 처리 start */
@@ -76,6 +96,8 @@ class VacationStatsStore {
   // [조회]
   @action
   search() {
+    this.refreshPage();
+
     let apiParam = {};
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
 
@@ -87,8 +109,8 @@ class VacationStatsStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post(

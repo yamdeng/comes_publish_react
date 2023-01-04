@@ -17,6 +17,7 @@ class WorkReportDeptApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -51,6 +52,7 @@ class WorkReportDeptApp extends Component {
     const { workReportStore } = this.props;
     workReportStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_MONTH);
     workReportStore.initSearchDateAll();
+    workReportStore.initDataGridComponent(this.dataGridRef);
     this.search();
   }
 
@@ -383,6 +385,7 @@ class WorkReportDeptApp extends Component {
           <div class="grid_area">
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -451,6 +454,7 @@ class WorkReportDeptApp extends Component {
                 />
                 <Paging defaultPageSize={10} />
                 <Pager
+                  visible={true}
                   showPageSizeSelector={true}
                   allowedPageSizes={[5, 10, 'all']}
                 />

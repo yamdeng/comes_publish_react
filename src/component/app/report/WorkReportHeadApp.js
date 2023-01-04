@@ -17,6 +17,7 @@ class WorkReportHeadApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -51,6 +52,7 @@ class WorkReportHeadApp extends Component {
     const { workReportStore } = this.props;
     workReportStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
     workReportStore.initSearchDateAll();
+    workReportStore.initDataGridComponent(this.dataGridRef);
     this.search();
   }
 
@@ -418,6 +420,7 @@ class WorkReportHeadApp extends Component {
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -473,7 +476,11 @@ class WorkReportHeadApp extends Component {
                   }}
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  visible={true}
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

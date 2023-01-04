@@ -15,6 +15,9 @@ import _ from 'lodash';
 */
 
 class HolidayManageStore {
+  // datagridRef
+  dataGridRef = null;
+
   // 개인_출퇴근 목록 grid
   @observable
   datagridStore = null;
@@ -40,9 +43,27 @@ class HolidayManageStore {
     this.searchYear = moment().toDate();
   }
 
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
+  }
+
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
+  }
+
   // [조회] 공통
   @action
   search() {
+    this.refreshPage();
     let apiParam = {};
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
 
@@ -55,8 +76,8 @@ class HolidayManageStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('holiday/list.do', apiParam).then((response) => {

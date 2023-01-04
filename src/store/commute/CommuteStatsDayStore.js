@@ -72,8 +72,8 @@ class CommuteStatsDayStore extends CommutePrivateStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('commutes/list.do', apiParam).then(

@@ -16,6 +16,9 @@ import _ from 'lodash';
 */
 
 class DeptTimeSettingStore {
+  // datagridRef
+  dataGridRef = null;
+
   // 개인_출퇴근 목록 grid
   @observable
   datagridStore = null;
@@ -68,11 +71,28 @@ class DeptTimeSettingStore {
   @action
   handleAddButton() {}
 
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
+  }
+
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
+  }
+
   // [조회] 공통
   @action
   search() {
+    this.refreshPage();
     const apiParam = {};
-
     const store = new CustomStore({
       load: (loadOptions) => {
         if (loadOptions) {
@@ -81,8 +101,8 @@ class DeptTimeSettingStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('work-time-settings/list.do', apiParam).then(

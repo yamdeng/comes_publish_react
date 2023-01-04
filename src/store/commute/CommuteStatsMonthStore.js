@@ -16,15 +16,24 @@ import _ from 'lodash';
 */
 
 class CommuteStatsMonthStore {
-  // 주간 목록 grid
+  // 주간 목록 grid ref
+  weekDataGridRef = null;
+
+  // 월간(주별) grid ref
+  monthWorkDatagridRef = null;
+
+  // 월간(휴일) grid ref
+  monthHolidyDatagridRef = null;
+
+  // 주간 목록 grid stroe
   @observable
   weekDatagridStore = null;
 
-  // 월간(주별)
+  // 월간(주별) grid store
   @observable
   monthWorkDatagridStore = null;
 
-  // 월간(휴일)
+  // 월간(휴일) grid store
   @observable
   monthHolidyDatagridStore = null;
 
@@ -58,6 +67,57 @@ class CommuteStatsMonthStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  // 주간 datagrid 컴포넌트 셋팅
+  initWeekDataGridComponent(weekDataGridRef) {
+    this.weekDataGridRef = weekDataGridRef;
+  }
+
+  // 월간(주별) datagrid 컴포넌트 셋팅
+  initMonthWorkDataGridComponent(monthWorkDatagridRef) {
+    this.monthWorkDatagridRef = monthWorkDatagridRef;
+  }
+
+  // 월간(공휴일) datagrid 컴포넌트 셋팅
+  initMonthHolidyDataGridComponent(monthHolidyDatagridRef) {
+    this.monthHolidyDatagridRef = monthHolidyDatagridRef;
+  }
+
+  // pageIndex 초기화 : 주간
+  refreshPageWeek() {
+    if (
+      this.weekDataGridRef &&
+      this.weekDataGridRef.current &&
+      this.weekDataGridRef.current.instance &&
+      this.weekDataGridRef.current.instance.pageIndex
+    ) {
+      this.weekDataGridRef.current.instance.pageIndex(0);
+    }
+  }
+
+  // pageIndex 초기화 : 월간(주별)
+  refreshPageMonthWork() {
+    if (
+      this.monthWorkDatagridRef &&
+      this.monthWorkDatagridRef.current &&
+      this.monthWorkDatagridRef.current.instance &&
+      this.monthWorkDatagridRef.current.instance.pageIndex
+    ) {
+      this.monthWorkDatagridRef.current.instance.pageIndex(0);
+    }
+  }
+
+  // pageIndex 초기화 : 월간(휴일)
+  refreshPageMonthHoliday() {
+    if (
+      this.monthHolidyDatagridRef &&
+      this.monthHolidyDatagridRef.current &&
+      this.monthHolidyDatagridRef.current.instance &&
+      this.monthHolidyDatagridRef.current.instance.pageIndex
+    ) {
+      this.monthHolidyDatagridRef.current.instance.pageIndex(0);
+    }
   }
 
   // datepicker 초기화
@@ -160,6 +220,7 @@ class CommuteStatsMonthStore {
   // 주간 통계 조회
   @action
   searchWeek() {
+    this.refreshPageWeek();
     const mondayStartDate = this.mondayStartDate;
     const workWeekTimeKind = this.workWeekTimeKind;
     const apiParam = {};
@@ -188,8 +249,8 @@ class CommuteStatsMonthStore {
               apiParam.pageSize = take;
               apiParam.offset = skip;
             } else {
-              apiParam.pageSize = 10;
-              apiParam.offset = 0;
+              apiParam.pageSize = null;
+              apiParam.offset = null;
             }
           }
           return ApiService.post('commute-stats/week.do', apiParam).then(
@@ -215,6 +276,7 @@ class CommuteStatsMonthStore {
   // 월간(주별) 통계 조회
   @action
   searchMonthWork() {
+    this.refreshPageMonthWork();
     const searchMonth = this.searchMonth;
     const workWeekTimeKind = this.workWeekTimeKind;
     const apiParam = {};
@@ -230,8 +292,8 @@ class CommuteStatsMonthStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('commute-stats/month.do', apiParam).then(
@@ -254,6 +316,7 @@ class CommuteStatsMonthStore {
   // 월간(휴일) 통계 조회
   @action
   searchMonthHolidy() {
+    this.refreshPageMonthHoliday();
     const searchMonth = this.searchMonth;
     const workWeekTimeKind = this.workWeekTimeKind;
     const apiParam = {};
@@ -279,8 +342,8 @@ class CommuteStatsMonthStore {
               apiParam.pageSize = take;
               apiParam.offset = skip;
             } else {
-              apiParam.pageSize = 10;
-              apiParam.offset = 0;
+              apiParam.pageSize = null;
+              apiParam.offset = null;
             }
           }
           return ApiService.post('commute-stats/holiday.do', apiParam).then(

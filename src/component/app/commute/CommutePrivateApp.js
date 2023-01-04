@@ -606,6 +606,7 @@ class CommutePrivateApp extends Component {
                 />
                 <Paging defaultPageSize={10} />
                 <Pager
+                  visible={true}
                   showPageSizeSelector={true}
                   allowedPageSizes={[5, 10, 'all']}
                 />

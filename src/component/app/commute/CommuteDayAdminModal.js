@@ -439,6 +439,7 @@ class CommuteDayAdminModal extends Component {
                   <Export enabled={true} allowExportSelectedData={true} />
                   <Paging defaultPageSize={10} />
                   <Pager
+                    visible={true}
                     showPageSizeSelector={true}
                     allowedPageSizes={[5, 10, 'all']}
                   />

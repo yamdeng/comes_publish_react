@@ -17,6 +17,8 @@ class VacationAdminApp extends Component {
     super(props);
     this.state = {};
 
+    this.dataGridRef = React.createRef();
+
     this.init = this.init.bind(this);
     this.search = this.search.bind(this);
     this.openYearDatepicker = this.openYearDatepicker.bind(this);
@@ -28,6 +30,7 @@ class VacationAdminApp extends Component {
   init() {
     const { vacationStatsStore } = this.props;
     vacationStatsStore.initSearchDateAll();
+    vacationStatsStore.initDataGridComponent(this.dataGridRef);
     vacationStatsStore.search();
   }
 
@@ -157,6 +160,7 @@ class VacationAdminApp extends Component {
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -273,7 +277,11 @@ class VacationAdminApp extends Component {
                   }}
                 />
                 <Paging defaultPageSize={15} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  visible={true}
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

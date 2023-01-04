@@ -16,6 +16,8 @@ class VacationPrivateApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.yearDataGridRef = React.createRef();
+    this.detailDataGridRef = React.createRef();
     this.init = this.init.bind(this);
     this.search = this.search.bind(this);
     this.changeSilDept = this.changeSilDept.bind(this);
@@ -28,6 +30,8 @@ class VacationPrivateApp extends Component {
   init() {
     const { vacationStore } = this.props;
     vacationStore.initSearchDateAll();
+    vacationStore.initYearDataGridComponent(this.yearDataGridRef);
+    vacationStore.initDetailDataGridComponent(this.detailDataGridRef);
     vacationStore.search();
   }
 
@@ -145,6 +149,7 @@ class VacationPrivateApp extends Component {
           <div class="grid_area">
             <div class="mgtop10">
               <DataGrid
+                ref={this.yearDataGridRef}
                 dataSource={yearDatagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -195,7 +200,11 @@ class VacationPrivateApp extends Component {
                   }}
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  visible={true}
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>
@@ -206,6 +215,7 @@ class VacationPrivateApp extends Component {
           <div class="grid_area">
             <div class="mgtop10">
               <DataGrid
+                ref={this.detailDataGridRef}
                 dataSource={detailDatagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -268,7 +278,11 @@ class VacationPrivateApp extends Component {
                   caption="결재상태"
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  visible={true}
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

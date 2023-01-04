@@ -18,6 +18,9 @@ import _ from 'lodash';
 const basePath = '/office6/engine/we/xfree';
 
 class WorkReportStore {
+  // datagridRef
+  dataGridRef = null;
+
   // 에디터
   xfe = null;
   // 개인_출퇴근 목록 grid
@@ -117,10 +120,28 @@ class WorkReportStore {
     this.startDate = moment().subtract(1, 'months').toDate();
   }
 
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
+  }
+
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
+  }
+
   // [조회] 공통
   @action
   search() {
     // 초기화 조회시 모든 경우에 통계 정보 재조회
+    this.refreshPage();
     this.getStatsSearch();
     const searchDateType = this.searchDateType;
     const appStore = this.rootStore.appStore;
@@ -166,8 +187,8 @@ class WorkReportStore {
             apiParam.pageSize = take;
             apiParam.offset = skip;
           } else {
-            apiParam.pageSize = 10;
-            apiParam.offset = 0;
+            apiParam.pageSize = null;
+            apiParam.offset = null;
           }
         }
         return ApiService.post('work-reports/list.do', apiParam).then(

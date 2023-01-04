@@ -14,6 +14,7 @@ class DeptTimeSettingApp extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
     this.init = this.init.bind(this);
     this.search = this.search.bind(this);
     this.openFormPopup = this.openFormPopup.bind(this);
@@ -21,6 +22,8 @@ class DeptTimeSettingApp extends Component {
   }
 
   init() {
+    const { deptTimeSettingStore } = this.props;
+    deptTimeSettingStore.initDataGridComponent(this.dataGridRef);
     this.search();
   }
 
@@ -83,6 +86,7 @@ class DeptTimeSettingApp extends Component {
             </div>
             <div class="mgtop10">
               <DataGrid
+                ref={this.dataGridRef}
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
@@ -136,7 +140,11 @@ class DeptTimeSettingApp extends Component {
                   format="yyyy-MM-dd hh:mm"
                 />
                 <Paging defaultPageSize={10} />
-                <Pager showPageSizeSelector={true} />
+                <Pager
+                  visible={true}
+                  showPageSizeSelector={true}
+                  allowedPageSizes={[5, 10, 'all']}
+                />
               </DataGrid>
             </div>
           </div>

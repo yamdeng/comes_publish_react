@@ -429,8 +429,6 @@ class PortalStore {
       apiParam.childDeptIdList = childDeptList.map(
         (deptInfo) => deptInfo.deptKey
       );
-      // apiParam.offset = 0;
-      // apiParam.pageSize = 5;
       apiParam.searchDateStr = moment().format('YYYYMMDD');
     } else if (profile.userType === Constant.USER_TYPE_ADNIN) {
     }

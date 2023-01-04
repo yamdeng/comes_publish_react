@@ -26,6 +26,9 @@ class CommuteStatsTabMonth extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.weekDataGridRef = React.createRef();
+    this.monthWorkDatagridRef = React.createRef();
+    this.monthHolidyDatagridRef = React.createRef();
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
     this.search = this.search.bind(this);
@@ -49,6 +52,13 @@ class CommuteStatsTabMonth extends Component {
 
   init() {
     const { commuteStatsMonthStore } = this.props;
+    commuteStatsMonthStore.initWeekDataGridComponent(this.weekDataGridRef);
+    commuteStatsMonthStore.initMonthWorkDataGridComponent(
+      this.monthWorkDatagridRef
+    );
+    commuteStatsMonthStore.initMonthHolidyDataGridComponent(
+      this.monthHolidyDatagridRef
+    );
     commuteStatsMonthStore.initSearchDateAll();
     this.search();
   }
@@ -283,6 +293,7 @@ class CommuteStatsTabMonth extends Component {
             }}
           >
             <DataGrid
+              ref={this.weekDataGridRef}
               dataSource={weekDatagridStore}
               showBorders={true}
               remoteOperations={true}
@@ -342,7 +353,11 @@ class CommuteStatsTabMonth extends Component {
                 );
               })}
               <Paging defaultPageSize={10} />
-              <Pager showPageSizeSelector={true} />
+              <Pager
+                visible={true}
+                showPageSizeSelector={true}
+                allowedPageSizes={[5, 10, 'all']}
+              />
             </DataGrid>
           </div>
           {/* 월간(주별))  */}
@@ -357,6 +372,7 @@ class CommuteStatsTabMonth extends Component {
             }}
           >
             <DataGrid
+              ref={this.monthWorkDatagridRef}
               dataSource={monthWorkDatagridStore}
               showBorders={true}
               remoteOperations={true}
@@ -399,7 +415,11 @@ class CommuteStatsTabMonth extends Component {
                 );
               })}
               <Paging defaultPageSize={10} />
-              <Pager showPageSizeSelector={true} />
+              <Pager
+                visible={true}
+                showPageSizeSelector={true}
+                allowedPageSizes={[5, 10, 'all']}
+              />
             </DataGrid>
           </div>
           {/* 월간(휴일) 통계 */}
@@ -415,6 +435,7 @@ class CommuteStatsTabMonth extends Component {
           >
             {/* datagrid */}
             <DataGrid
+              ref={this.monthHolidyDatagridRef}
               dataSource={monthHolidyDatagridStore}
               showBorders={true}
               remoteOperations={true}
@@ -468,7 +489,11 @@ class CommuteStatsTabMonth extends Component {
                 }
               )}
               <Paging defaultPageSize={10} />
-              <Pager showPageSizeSelector={true} />
+              <Pager
+                visible={true}
+                showPageSizeSelector={true}
+                allowedPageSizes={[5, 10, 'all']}
+              />
             </DataGrid>
           </div>
         </div>
