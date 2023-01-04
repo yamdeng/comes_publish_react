@@ -18,6 +18,7 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import moment from 'moment';
 import Code from 'config/Code';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commuteDayUpdateModalStore')
 @observer
@@ -175,19 +176,14 @@ class CommuteDayModal extends Component {
                   remoteOperations={true}
                   noDataText={'출근 정보가 존재하지 않습니다.'}
                   height={450}
-                  columnAutoWidth={true}
+                  columnAutoWidth={false}
                   cacheEnabled={false}
                   onToolbarPreparing={(e) => {
                     e.toolbarOptions.visible = false;
                   }}
-                  onEditingStart={(e) => {
-                    if (e && e.data) {
-                      const { vacationKindCode } = e.data;
-                      if (Helper.getIsAllDayVacation(vacationKindCode)) {
-                        e.cancel = true;
-                      }
-                    }
-                  }}
+                  onEditingStart={ReactHelper.onEditingStartCommuteDay}
+                  onCellPrepared={ReactHelper.onCellPreparedCommuteDay}
+                  onRowPrepared={ReactHelper.onRowPreparedCommuteDayUpdate}
                 >
                   <Editing
                     mode="batch"
@@ -205,6 +201,7 @@ class CommuteDayModal extends Component {
                     caption="부서명"
                     allowSorting={false}
                     allowEditing={false}
+                    width={100}
                   />
                   <Column
                     dataField="userName"
@@ -212,6 +209,7 @@ class CommuteDayModal extends Component {
                     caption="이름"
                     allowSorting={false}
                     allowEditing={false}
+                    width={100}
                   />
                   <Column
                     dataField="positionTitle"
@@ -219,6 +217,7 @@ class CommuteDayModal extends Component {
                     caption="직급명"
                     allowSorting={false}
                     allowEditing={false}
+                    width={100}
                   />
                   <Column
                     dataField="startWorkIp"
@@ -226,42 +225,25 @@ class CommuteDayModal extends Component {
                     caption="출근아이피"
                     allowSorting={false}
                     allowEditing={false}
+                    width={120}
                   />
                   {/* 출근시간 변경 */}
                   <Column
                     dataField="finalStartWorkDate"
                     dataType="datetime"
                     caption="출근시간"
-                    format="yyyy-MM-dd HH:mm"
+                    format="HH:mm"
                     width={200}
                     allowSorting={false}
-                    calculateDisplayValue={function (rowData) {
-                      const { startWorkDate, finalStartWorkDate } = rowData;
-                      let startWorkDateCellResult = '';
-                      if (!startWorkDate && !finalStartWorkDate) {
-                        return '';
-                      } else if (startWorkDate) {
-                        if (finalStartWorkDate) {
-                          startWorkDateCellResult =
-                            moment(finalStartWorkDate).format('HH:mm') +
-                            '(' +
-                            moment(startWorkDate).format('HH:mm') +
-                            ')';
-                        } else {
-                          startWorkDateCellResult =
-                            moment(startWorkDate).format('HH:mm');
-                        }
-                      } else if (finalStartWorkDate) {
-                        startWorkDateCellResult =
-                          moment(finalStartWorkDate).format('HH:mm') + '()';
-                      }
-                      return startWorkDateCellResult;
-                    }}
+                    calculateDisplayValue={
+                      ReactHelper.finalStartWorkDateColumDisplayValue
+                    }
                   />
                   <Column
                     dataField="outWorkIp"
                     dataType="string"
                     caption="퇴근아이피"
+                    width={120}
                     allowSorting={false}
                     allowEditing={false}
                   />
@@ -273,64 +255,16 @@ class CommuteDayModal extends Component {
                     format="HH:mm"
                     width={200}
                     allowSorting={false}
-                    calculateDisplayValue={function (rowData) {
-                      const { baseDateStr, outWorkDate, finalOutWorkDate } =
-                        rowData;
-                      let outWorkDateFormat = 'HH:mm';
-                      let finalOutWorkDateFormat = 'HH:mm';
-                      if (outWorkDate) {
-                        if (
-                          moment(baseDateStr).diff(
-                            moment(outWorkDate),
-                            'days'
-                          ) < 0
-                        ) {
-                          outWorkDateFormat = 'M/D/YYYY H:mm a';
-                        }
-                      }
-
-                      if (finalOutWorkDate) {
-                        if (
-                          moment(baseDateStr).diff(
-                            moment(finalOutWorkDate),
-                            'days'
-                          ) < 0
-                        ) {
-                          finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
-                        }
-                      }
-
-                      let outWorkDateCellResult = '';
-
-                      if (!outWorkDate && !finalOutWorkDate) {
-                        return '';
-                      } else if (outWorkDate) {
-                        if (finalOutWorkDate) {
-                          outWorkDateCellResult =
-                            moment(finalOutWorkDate).format(
-                              finalOutWorkDateFormat
-                            ) +
-                            '(' +
-                            moment(outWorkDate).format(outWorkDateFormat) +
-                            ')';
-                        } else {
-                          outWorkDateCellResult =
-                            moment(outWorkDate).format(outWorkDateFormat);
-                        }
-                      } else if (finalOutWorkDate) {
-                        outWorkDateCellResult =
-                          moment(finalOutWorkDate).format(
-                            finalOutWorkDateFormat
-                          ) + '()';
-                      }
-                      return outWorkDateCellResult;
-                    }}
+                    calculateDisplayValue={
+                      ReactHelper.finalOutWorkDateColumDisplayValue
+                    }
                   />
                   {/* 외근여부 변경 */}
                   <Column
                     dataField="outsideWorkYn"
                     dataType="string"
                     caption="외근여부"
+                    width={70}
                     allowSorting={false}
                   >
                     <Lookup
@@ -354,6 +288,9 @@ class CommuteDayModal extends Component {
                     caption="근태결과"
                     allowSorting={false}
                     width={150}
+                    calculateDisplayValue={
+                      ReactHelper.workResultcodeColumDisplayValue
+                    }
                   >
                     <Lookup
                       dataSource={Code.workResultCodeList}

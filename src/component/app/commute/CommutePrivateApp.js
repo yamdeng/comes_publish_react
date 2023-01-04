@@ -9,6 +9,7 @@ import Constant from 'config/Constant';
 import classnames from 'classnames';
 import moment from 'moment';
 import Code from 'config/Code';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -119,7 +120,6 @@ class CommutePrivateApp extends Component {
   }
 
   workOutNextDay(commuteDayInfo) {
-    debugger;
     const { commutePrivateStore } = this.props;
     commutePrivateStore.workOutNextDay(commuteDayInfo);
   }
@@ -460,22 +460,16 @@ class CommutePrivateApp extends Component {
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
                 cacheEnabled={false}
+                onRowPrepared={ReactHelper.onRowPreparedCommuteDayUpdate}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.baseDateStrColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="deptName"
@@ -495,37 +489,9 @@ class CommutePrivateApp extends Component {
                   caption="출근시간"
                   format="HH:mm"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    const { startWorkDate, finalStartWorkDate } = rowData;
-                    // YYYY-MM-DD HH:mm:ss
-
-                    // 1.출근시간
-                    // 1-1.출근시간, 출근수정시간 존재하지 않으면 : ''
-                    // 1-2.출근시간 존재시
-                    //   1-2-1.출근수정시간 존재시 : 출근수정시간(최초출근시간)
-                    //   1-2-2.출근수정시간 존재 않할 경우 : 출근시간만
-                    // 1-3.출근수정시간 존재시
-                    //   -출근수정시간만
-                    let startWorkDateCellResult = '';
-                    if (!startWorkDate && !finalStartWorkDate) {
-                      return '';
-                    } else if (startWorkDate) {
-                      if (finalStartWorkDate) {
-                        startWorkDateCellResult =
-                          moment(finalStartWorkDate).format('HH:mm') +
-                          '(' +
-                          moment(startWorkDate).format('HH:mm') +
-                          ')';
-                      } else {
-                        startWorkDateCellResult =
-                          moment(startWorkDate).format('HH:mm');
-                      }
-                    } else if (finalStartWorkDate) {
-                      startWorkDateCellResult =
-                        moment(finalStartWorkDate).format('HH:mm') + '()';
-                    }
-                    return startWorkDateCellResult;
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.finalStartWorkDateColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="outWorkIp"
@@ -541,8 +507,13 @@ class CommutePrivateApp extends Component {
                   allowSorting={false}
                   cellRender={function (columnInfo) {
                     const { data } = columnInfo;
-                    const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
-                    // YYYY-MM-DD HH:mm:ss
+                    const {
+                      baseDateStr,
+                      startWorkDate,
+                      outWorkDate,
+                      finalOutWorkDate
+                    } = data;
+                    // 퇴근일시 정보가 시작일 다음날인 경우 format을 변경해줘야 함
                     let outWorkDateFormat = 'HH:mm';
                     let finalOutWorkDateFormat = 'HH:mm';
                     if (outWorkDate) {
@@ -576,9 +547,10 @@ class CommutePrivateApp extends Component {
                     }
 
                     let outWorkDateCellResult = '';
-
+                    // 사용자 퇴근일시와 수정 퇴근일시 모두 존재하는 경우
                     if (!outWorkDate && !finalOutWorkDate) {
-                      if (isNextDay) {
+                      //철야인 경우 퇴근 처리 : 사용자 출근일시가 존재한 경우만 해당
+                      if (isNextDay && startWorkDate) {
                         outWorkDateCellResult = (
                           <a
                             href="javascript:void(0);"
@@ -594,7 +566,9 @@ class CommutePrivateApp extends Component {
                         return '';
                       }
                     } else if (outWorkDate) {
+                      // 사용자 퇴근일시가 존재하고
                       if (finalOutWorkDate) {
+                        // 수정 퇴근일시가 존재하는 경우
                         outWorkDateCellResult =
                           moment(finalOutWorkDate).format(
                             finalOutWorkDateFormat
@@ -603,10 +577,12 @@ class CommutePrivateApp extends Component {
                           moment(outWorkDate).format(outWorkDateFormat) +
                           ')';
                       } else {
+                        // 사용자 퇴근일시만 존재하는 경우
                         outWorkDateCellResult =
                           moment(outWorkDate).format(outWorkDateFormat);
                       }
                     } else if (finalOutWorkDate) {
+                      // 수정 퇴근일시만 존재하는 경우
                       outWorkDateCellResult =
                         moment(finalOutWorkDate).format(
                           finalOutWorkDateFormat
@@ -624,16 +600,9 @@ class CommutePrivateApp extends Component {
                   dataField="workResultCodeName"
                   dataType="date"
                   caption="근무결과"
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.workResultCodeName) {
-                      if (rowData.resultModYn === 'Y') {
-                        return '*' + rowData.workResultCodeName;
-                      } else {
-                        return rowData.workResultCodeName;
-                      }
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.workResultcodeColumDisplayValue
+                  }
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

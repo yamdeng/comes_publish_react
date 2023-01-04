@@ -270,6 +270,7 @@ class CommuteDayUpdateModalStore {
   @computed
   get isUpdateAvailable() {
     let available = false;
+    const totalCount = this.totalCount;
     const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
     if (!commuteDeptSubmitInfo) {
       // 출퇴근 정보가 존재하지 않으면 수정 가능
@@ -288,6 +289,9 @@ class CommuteDayUpdateModalStore {
         available = true;
       }
     }
+    if (!totalCount) {
+      available = false;
+    }
     return available;
   }
 
@@ -295,6 +299,7 @@ class CommuteDayUpdateModalStore {
   @computed
   get isSubmitAvailable() {
     let available = false;
+    const totalCount = this.totalCount;
     const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
     if (!commuteDeptSubmitInfo) {
       // 출퇴근 정보가 존재하지 않으면 제출 가능
@@ -312,6 +317,9 @@ class CommuteDayUpdateModalStore {
         // 상태 자체가 존재하지 않으면 제출 가능
         available = true;
       }
+    }
+    if (!totalCount) {
+      available = false;
     }
     return available;
   }

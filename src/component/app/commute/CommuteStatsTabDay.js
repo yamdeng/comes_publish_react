@@ -7,6 +7,7 @@ import Constant from 'config/Constant';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import Code from 'config/Code';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commuteStatsDayStore')
 @observer
@@ -14,6 +15,7 @@ class CommuteStatsTabDay extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.dataGridRef = React.createRef();
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
     this.search = this.search.bind(this);
@@ -45,6 +47,7 @@ class CommuteStatsTabDay extends Component {
 
   init() {
     const { commuteStatsDayStore } = this.props;
+    commuteStatsDayStore.initDataGridComponent(this.dataGridRef);
     commuteStatsDayStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_DAY);
     commuteStatsDayStore.initSearchDateAll();
     this.search();
@@ -470,62 +473,80 @@ class CommuteStatsTabDay extends Component {
           </div>
           <div class="mgtop10">
             <DataGrid
+              ref={this.dataGridRef}
               dataSource={datagridStore}
               showBorders={true}
               remoteOperations={true}
               noDataText={'출근 정보가 존재하지 않습니다.'}
               height={450}
+              cacheEnabled={false}
+              onRowPrepared={ReactHelper.onRowPreparedCommuteDayUpdate}
             >
               <Column
                 dataField="baseDateStr"
                 dataType="string"
                 caption="날짜"
-                calculateCellValue={function (rowData) {
-                  if (rowData && rowData.baseDateStr) {
-                    return Helper.convertDate(
-                      rowData.baseDateStr,
-                      'YYYYMMDD',
-                      'YYYY-MM-DD'
-                    );
-                  }
-                  return '';
-                }}
+                allowSorting={false}
+                calculateDisplayValue={ReactHelper.baseDateStrColumDisplayValue}
               />
-              <Column dataField="deptName" dataType="string" caption="부서명" />
+              <Column
+                dataField="deptName"
+                dataType="string"
+                caption="부서명"
+                allowSorting={false}
+              />
               <Column
                 dataField="startWorkIp"
                 dataType="string"
                 caption="출근아이피"
+                allowSorting={false}
               />
               <Column
-                dataField="startWorkDate"
+                dataField="finalStartWorkDate"
                 dataType="datetime"
                 caption="출근시간"
                 format="HH:mm"
+                allowSorting={false}
+                calculateDisplayValue={
+                  ReactHelper.finalStartWorkDateColumDisplayValue
+                }
               />
               <Column
                 dataField="outWorkIp"
                 dataType="string"
                 caption="퇴근아이피"
+                allowSorting={false}
               />
               <Column
-                dataField="outWorkDate"
+                dataField="finalOutWorkDate"
                 dataType="datetime"
                 caption="퇴근시간"
                 format="HH:mm"
+                allowSorting={false}
+                calculateDisplayValue={
+                  ReactHelper.finalOutWorkDateColumDisplayValue
+                }
               />
               <Column
                 dataField="workStatusCodeName"
                 dataType="date"
                 caption="근무상태"
+                allowSorting={false}
               />
               <Column
                 dataField="workResultCodeName"
                 dataType="date"
                 caption="근무결과"
+                allowSorting={false}
+                calculateDisplayValue={
+                  ReactHelper.workResultcodeColumDisplayValue
+                }
               />
               <Paging defaultPageSize={10} />
-              <Pager showPageSizeSelector={true} />
+              <Pager
+                showPageSizeSelector={true}
+                allowedPageSizes={[5, 10, 'all']}
+              />
             </DataGrid>
           </div>
         </div>

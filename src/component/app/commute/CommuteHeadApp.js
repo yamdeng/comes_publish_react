@@ -8,6 +8,7 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import moment from 'moment';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -691,22 +692,16 @@ class CommuteHeadApp extends Component {
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
                 cacheEnabled={false}
+                onRowPrepared={ReactHelper.onRowPreparedCommuteDayUpdate}
               >
                 <Column
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.baseDateStrColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="deptName"
@@ -733,33 +728,14 @@ class CommuteHeadApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="startWorkDate"
+                  dataField="finalStartWorkDate"
                   dataType="datetime"
                   caption="출근시간"
                   format="HH:mm"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    const { startWorkDate, finalStartWorkDate } = rowData;
-                    let startWorkDateCellResult = '';
-                    if (!startWorkDate && !finalStartWorkDate) {
-                      return '';
-                    } else if (startWorkDate) {
-                      if (finalStartWorkDate) {
-                        startWorkDateCellResult =
-                          moment(finalStartWorkDate).format('HH:mm') +
-                          '(' +
-                          moment(startWorkDate).format('HH:mm') +
-                          ')';
-                      } else {
-                        startWorkDateCellResult =
-                          moment(startWorkDate).format('HH:mm');
-                      }
-                    } else if (finalStartWorkDate) {
-                      startWorkDateCellResult =
-                        moment(finalStartWorkDate).format('HH:mm') + '()';
-                    }
-                    return startWorkDateCellResult;
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.finalStartWorkDateColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="outWorkIp"
@@ -768,72 +744,14 @@ class CommuteHeadApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="outWorkDate"
+                  dataField="finalOutWorkDate"
                   dataType="datetime"
                   caption="퇴근시간"
                   format="HH:mm"
                   allowSorting={false}
-                  cellRender={function (columnInfo) {
-                    const { data } = columnInfo;
-                    const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
-                    // YYYY-MM-DD HH:mm:ss
-                    let outWorkDateFormat = 'HH:mm';
-                    let finalOutWorkDateFormat = 'HH:mm';
-                    if (outWorkDate) {
-                      if (
-                        moment(baseDateStr).diff(moment(outWorkDate), 'days') <
-                        0
-                      ) {
-                        outWorkDateFormat = 'M/D/YYYY H:mm a';
-                      }
-                    }
-
-                    if (finalOutWorkDate) {
-                      if (
-                        moment(baseDateStr).diff(
-                          moment(finalOutWorkDate),
-                          'days'
-                        ) < 0
-                      ) {
-                        finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
-                      }
-                    }
-                    // 현재날짜 기준으로 기준날짜보다 초과하였는지 체크
-                    let isNextDay = false;
-                    if (
-                      moment(baseDateStr).diff(
-                        moment(moment().format('YYYYMMDD')),
-                        'days'
-                      ) < 0
-                    ) {
-                      isNextDay = true;
-                    }
-
-                    let outWorkDateCellResult = '';
-
-                    if (!outWorkDate && !finalOutWorkDate) {
-                      return '';
-                    } else if (outWorkDate) {
-                      if (finalOutWorkDate) {
-                        outWorkDateCellResult =
-                          moment(finalOutWorkDate).format(
-                            finalOutWorkDateFormat
-                          ) +
-                          '(' +
-                          moment(outWorkDate).format(outWorkDateFormat) +
-                          ')';
-                      } else {
-                        outWorkDateCellResult =
-                          moment(outWorkDate).format(outWorkDateFormat);
-                      }
-                    } else if (finalOutWorkDate) {
-                      outWorkDateCellResult =
-                        moment(finalOutWorkDate).format(
-                          finalOutWorkDateFormat
-                        ) + '()';
-                    }
-                    return outWorkDateCellResult;
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.finalOutWorkDateColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="workStatusCodeName"
@@ -846,16 +764,9 @@ class CommuteHeadApp extends Component {
                   dataType="date"
                   caption="근무결과"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.workResultCodeName) {
-                      if (rowData.resultModYn === 'Y') {
-                        return '*' + rowData.workResultCodeName;
-                      } else {
-                        return rowData.workResultCodeName;
-                      }
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.workResultcodeColumDisplayValue
+                  }
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

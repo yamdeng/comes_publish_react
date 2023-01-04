@@ -1,6 +1,7 @@
 import update from 'immutability-helper';
 import Helper from 'util/Helper';
 import _ from 'lodash';
+import moment from 'moment';
 
 // 개행 분자를 <br/> 태그로 변환
 const convertEnterStringToBrTag = function (value) {
@@ -138,6 +139,147 @@ const getApiParamToState = function () {
   return apiParam;
 };
 
+// 이하는 newoffice 전용 함수
+
+// 일일_출퇴근 grid 전체 30분, 120분 색깔 반영
+const onRowPreparedCommuteDayUpdate = function (row) {
+  if (row) {
+    if (row.rowType !== 'header') {
+      if (row.data) {
+        if (row.data.tardy120Minute) {
+          row.rowElement.style.backgroundColor = '#f96464';
+        } else if (row.data.tardy30Minute) {
+          row.rowElement.style.backgroundColor = 'yellow';
+        }
+      }
+    }
+  }
+};
+
+// 일일_출퇴근 수정 datagrid에서 수정 disable하기 위한 이벤트 핸들러
+const onEditingStartCommuteDay = function (e) {
+  if (e && e.data) {
+    const { vacationKindCode } = e.data;
+    if (Helper.getIsAllDayVacation(vacationKindCode)) {
+      e.cancel = true;
+    }
+  }
+};
+
+// 일일_출퇴근 수정 datagrid에서 수정 반영해야하는 헤더에 color 반영
+const onCellPreparedCommuteDay = function (e) {
+  if (e.rowType === 'header') {
+    if (e.column) {
+      const dataField = e.column.dataField;
+      if (
+        dataField === 'finalStartWorkDate' ||
+        dataField === 'finalOutWorkDate' ||
+        dataField === 'outsideWorkYn' ||
+        dataField === 'etcDescription' ||
+        dataField === 'workResultCode'
+      ) {
+        e.cellElement.style.color = '#4176fa';
+      }
+    }
+  }
+};
+
+// 출근일시 column display custom
+const finalStartWorkDateColumDisplayValue = function (rowData) {
+  const { startWorkDate, finalStartWorkDate } = rowData;
+  // 1.출근시간
+  // 1-1.출근시간, 출근수정시간 존재하지 않으면 : ''
+  // 1-2.출근시간 존재시
+  //   1-2-1.출근수정시간 존재시 : 출근수정시간(최초출근시간)
+  //   1-2-2.출근수정시간 존재 않할 경우 : 출근시간만
+  // 1-3.출근수정시간 존재시
+  //   -출근수정시간만
+  let startWorkDateCellResult = '';
+  if (!startWorkDate && !finalStartWorkDate) {
+    return '';
+  } else if (startWorkDate) {
+    if (finalStartWorkDate) {
+      startWorkDateCellResult =
+        moment(finalStartWorkDate).format('HH:mm') +
+        '(' +
+        moment(startWorkDate).format('HH:mm') +
+        ')';
+    } else {
+      startWorkDateCellResult = moment(startWorkDate).format('HH:mm');
+    }
+  } else if (finalStartWorkDate) {
+    startWorkDateCellResult = moment(finalStartWorkDate).format('HH:mm') + '()';
+  }
+  return startWorkDateCellResult;
+};
+
+// 퇴근일시 column display custom
+const finalOutWorkDateColumDisplayValue = function (rowData) {
+  const { baseDateStr, outWorkDate, finalOutWorkDate } = rowData;
+  // 퇴근일시 정보가 시작일 다음날인 경우 format을 변경해줘야 함
+  let outWorkDateFormat = 'HH:mm';
+  let finalOutWorkDateFormat = 'HH:mm';
+  if (outWorkDate) {
+    if (moment(baseDateStr).diff(moment(outWorkDate), 'days') < 0) {
+      outWorkDateFormat = 'M/D/YYYY H:mm a';
+    }
+  }
+
+  if (finalOutWorkDate) {
+    if (moment(baseDateStr).diff(moment(finalOutWorkDate), 'days') < 0) {
+      finalOutWorkDateFormat = 'M/D/YYYY H:mm a';
+    }
+  }
+
+  let outWorkDateCellResult = '';
+  // 사용자 퇴근일시와 수정 퇴근일시 모두 존재하는 경우
+  if (!outWorkDate && !finalOutWorkDate) {
+    return '';
+  } else if (outWorkDate) {
+    // 사용자 퇴근일시가 존재하고
+    if (finalOutWorkDate) {
+      // 수정 퇴근일시가 존재하는 경우
+      outWorkDateCellResult =
+        moment(finalOutWorkDate).format(finalOutWorkDateFormat) +
+        '(' +
+        moment(outWorkDate).format(outWorkDateFormat) +
+        ')';
+    } else {
+      // 사용자 퇴근일시만 존재하는 경우
+      outWorkDateCellResult = moment(outWorkDate).format(outWorkDateFormat);
+    }
+  } else if (finalOutWorkDate) {
+    // 수정 퇴근일시만 존재하는 경우
+    outWorkDateCellResult =
+      moment(finalOutWorkDate).format(finalOutWorkDateFormat) + '()';
+  }
+  return outWorkDateCellResult;
+};
+
+// 근무결과 column display custom
+const workResultcodeColumDisplayValue = function (rowData) {
+  if (rowData && rowData.workResultCodeName) {
+    if (rowData.resultModYn === 'Y') {
+      return '*' + rowData.workResultCodeName;
+    } else {
+      return rowData.workResultCodeName;
+    }
+  }
+  return '';
+};
+
+// 기준일자 column display custom
+const baseDateStrColumDisplayValue = function (rowData) {
+  if (rowData && rowData.workResultCodeName) {
+    if (rowData.resultModYn === 'Y') {
+      return '*' + rowData.workResultCodeName;
+    } else {
+      return rowData.workResultCodeName;
+    }
+  }
+  return '';
+};
+
 export default {
   convertEnterStringToBrTag,
   handleInputOnChange,
@@ -147,5 +289,12 @@ export default {
   isFormValidToState,
   validateToState,
   saveToState,
-  getApiParamToState
+  getApiParamToState,
+  onRowPreparedCommuteDayUpdate,
+  onEditingStartCommuteDay,
+  onCellPreparedCommuteDay,
+  finalStartWorkDateColumDisplayValue,
+  finalOutWorkDateColumDisplayValue,
+  workResultcodeColumDisplayValue,
+  baseDateStrColumDisplayValue
 };
