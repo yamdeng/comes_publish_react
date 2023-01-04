@@ -230,7 +230,7 @@ class CommuteDayUpdateModalStore {
             info.deptKey = deptId;
             info.baseDateStr = baseDateStr;
             info.userId = rowInfo.key;
-            if (info.startWorkDate) {
+            if (info.finalStartWorkDate) {
               info.finalStartWorkDate = moment(info.finalStartWorkDate).format(
                 'YYYY-MM-DD HH:mm:ss'
               );

@@ -731,7 +731,7 @@ class CommuteDeptApp extends Component {
                     if (row.rowType !== 'header') {
                       if (row.data) {
                         if (row.data.tardy120Minute) {
-                          row.rowElement.style.backgroundColor = 'red';
+                          row.rowElement.style.backgroundColor = '#f96464';
                         } else if (row.data.tardy30Minute) {
                           row.rowElement.style.backgroundColor = 'yellow';
                         }
