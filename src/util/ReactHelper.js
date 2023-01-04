@@ -276,6 +276,22 @@ const baseDateStrColumDisplayValue = function (rowData) {
   return '';
 };
 
+// 업무보고 댓글여부 column display custom
+const commentYnColumDisplayValue = function (rowData) {
+  if (rowData && rowData.commentCount) {
+    return 'Y';
+  }
+  return 'N';
+};
+
+// 업무보고 미제출 column display custom
+const reportNotSubmitColumDisplayValue = function (rowData) {
+  if (!rowData || !rowData.reportDate) {
+    return '미제출';
+  }
+  return moment(rowData.reportDate).format('YYYY-MM-DD');
+};
+
 export default {
   convertEnterStringToBrTag,
   handleInputOnChange,
@@ -292,5 +308,7 @@ export default {
   finalStartWorkDateColumDisplayValue,
   finalOutWorkDateColumDisplayValue,
   workResultcodeColumDisplayValue,
-  baseDateStrColumDisplayValue
+  baseDateStrColumDisplayValue,
+  commentYnColumDisplayValue,
+  reportNotSubmitColumDisplayValue
 };

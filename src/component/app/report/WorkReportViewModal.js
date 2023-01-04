@@ -122,11 +122,12 @@ class WorkReportViewModal extends Component {
     commentDetailInfo = commentDetailInfo || {};
 
     let commentComponent = null;
-    // 실장인 경우만 댓글 등록 가능
+    // 업무보고 상세정보가 없으면 댓글 정보 않보이게
     // 실장이 아닌 경우 view, 이미 등록되었고 등록자가 내가 아닌 경우 view
-    // comment 정보가 존재하지 않고
-
-    if (
+    // 그외에는 등록/수정 가능하게끔
+    if (!reportDetailInfo.reportId) {
+      commentComponent = null;
+    } else if (
       userType !== Constant.USER_TYPE_HEADER ||
       (commentDetailInfo &&
         commentDetailInfo.userId &&
@@ -296,7 +297,11 @@ class WorkReportViewModal extends Component {
                 </a>
                 <div
                   class="mgtop10 modal_grid_area"
-                  style={{ height: 400, border: '1px solid #d6d6d6' }}
+                  style={{
+                    height: 400,
+                    border: '1px solid #d6d6d6',
+                    padding: 5
+                  }}
                   dangerouslySetInnerHTML={{
                     __html: reportDetailInfo.reportContent
                   }}

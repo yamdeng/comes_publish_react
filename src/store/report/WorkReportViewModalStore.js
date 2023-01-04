@@ -83,6 +83,10 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
           this.currentDeptIndex = 0;
           this.currentDeptId = data[0].deptId;
           this.getReportDetailInfo();
+        } else {
+          this.currentDeptIndex = 0;
+          this.currentDeptId = null;
+          this.reportDetailInfo = null;
         }
       });
     });

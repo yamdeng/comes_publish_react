@@ -10,6 +10,7 @@ import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
 import moment from 'moment';
 import WorkReportViewModal from './WorkReportViewModal';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'workReportStore', 'workReportViewModalStore')
 @observer
@@ -46,6 +47,13 @@ class WorkReportHeadApp extends Component {
 
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
     this.openViewModal = this.openViewModal.bind(this);
+    this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+  }
+
+  changeSearchDeptName(event) {
+    const value = event.target.value;
+    const { workReportStore } = this.props;
+    workReportStore.changeSearchDeptName(value);
   }
 
   init() {
@@ -167,7 +175,8 @@ class WorkReportHeadApp extends Component {
       statsInfo,
       datagridStore,
       searchDashBoardKind,
-      selectedSilDeptKey
+      selectedSilDeptKey,
+      searchDeptName
     } = workReportStore;
     let { profile } = appStore;
     let { silDeptList } = profile;
@@ -405,17 +414,34 @@ class WorkReportHeadApp extends Component {
             </ul>
           </div>
           <div class="grid_area">
-            <div
-              class="grid_top flex_sb mgtop20"
-              style={{
-                display:
-                  searchDateType === Constant.SEARCH_DATE_TYPE_DAY ? '' : 'none'
-              }}
-            >
-              <div class="number">
+            <div class="grid_top flex_sb mgtop20">
+              <div
+                class="number"
+                style={{
+                  visibility:
+                    searchDateType === Constant.SEARCH_DATE_TYPE_DAY
+                      ? 'visible'
+                      : 'hidden'
+                }}
+              >
                 <p onClick={this.openViewModal}>
                   <b class="blue">{totalCount}</b> 팀
                 </p>
+              </div>
+              <div class="search_right">
+                <input
+                  type="text"
+                  class="w100"
+                  placeholder="부서명을 입력해주세요."
+                  value={searchDeptName}
+                  onChange={this.changeSearchDeptName}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                    }
+                  }}
+                  style={{ height: 30 }}
+                />{' '}
               </div>
             </div>
             <div class="mgtop10">
@@ -433,16 +459,9 @@ class WorkReportHeadApp extends Component {
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.baseDateStrColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="deptName"
@@ -456,12 +475,9 @@ class WorkReportHeadApp extends Component {
                   caption="작성일시"
                   allowSorting={false}
                   format="yyyy-MM-dd HH:mm"
-                  calculateCellValue={function (rowData) {
-                    if (!rowData || !rowData.reportDate) {
-                      return '미제출';
-                    }
-                    return moment(rowData.reportDate).format('YYYY-MM-DD');
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.reportNotSubmitColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="managerName"
@@ -474,12 +490,7 @@ class WorkReportHeadApp extends Component {
                   dataField="commentCount"
                   caption="댓글"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.commentCount) {
-                      return 'Y';
-                    }
-                    return 'N';
-                  }}
+                  calculateDisplayValue={ReactHelper.commentYnColumDisplayValue}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

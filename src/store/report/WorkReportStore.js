@@ -95,6 +95,15 @@ class WorkReportStore {
   @observable
   workDetailInfo = null;
 
+  // 부서이름
+  @observable
+  searchDeptName = '';
+
+  @action
+  changeSearchDeptName(searchDeptName) {
+    this.searchDeptName = searchDeptName;
+  }
+
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -148,8 +157,10 @@ class WorkReportStore {
     const profile = appStore.profile;
     const searchDashBoardKind = this.searchDashBoardKind;
     const selectedSilDeptKey = this.selectedSilDeptKey;
-
-    const apiParam = {};
+    const deptName = this.searchDeptName;
+    const apiParam = {
+      deptName: deptName ? deptName : null
+    };
 
     // 페이지 타입에 따라 기본 파라미터값 적용
     if (reactPageType === 'WorkReportDeptApp') {

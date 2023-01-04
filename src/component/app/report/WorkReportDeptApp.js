@@ -10,6 +10,7 @@ import Helper from 'util/Helper';
 import WorkReportSubMenu from 'component/submenu/WorkReportSubMenu';
 import moment from 'moment';
 import WorkReportFormModal from './WorkReportFormModal';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'workReportStore', 'workReportFormModalStore')
 @observer
@@ -399,16 +400,9 @@ class WorkReportDeptApp extends Component {
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.baseDateStrColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="deptName"
@@ -422,12 +416,9 @@ class WorkReportDeptApp extends Component {
                   caption="작성일시"
                   format="YYYY-MM-DD HH:mm"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (!rowData || !rowData.reportDate) {
-                      return '미제출';
-                    }
-                    return moment(rowData.reportDate).format('YYYY-MM-DD');
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.reportNotSubmitColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="managerName"
@@ -445,12 +436,7 @@ class WorkReportDeptApp extends Component {
                   dataField="commentCount"
                   caption="댓글"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.commentCount) {
-                      return 'Y';
-                    }
-                    return 'N';
-                  }}
+                  calculateDisplayValue={ReactHelper.commentYnColumDisplayValue}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager
