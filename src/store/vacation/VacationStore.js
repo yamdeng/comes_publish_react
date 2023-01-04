@@ -41,8 +41,17 @@ class VacationStore {
   @observable
   selectedSilDeptKey = 'ALL';
 
+  // 사용자 이름
+  @observable
+  searchUserName = '';
+
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  @action
+  changeSearchUserName(searchUserName) {
+    this.searchUserName = searchUserName;
   }
 
   // datepicker 초기화
@@ -131,15 +140,6 @@ class VacationStore {
   @action
   search() {
     this.searchYearList();
-    const appStore = this.rootStore.appStore;
-    const profile = appStore.profile;
-    // 페이지 타입에 따라 기본 파라미터값 적용
-    if (reactPageType === 'VacationPrivateApp') {
-      // 개인 출퇴근
-      this.searchDetailList(profile.user_key);
-    } else {
-      this.searchDetailList(null);
-    }
   }
 
   // 연간 휴가 조회
@@ -149,7 +149,11 @@ class VacationStore {
     const appStore = this.rootStore.appStore;
     const profile = appStore.profile;
     const selectedSilDeptKey = this.selectedSilDeptKey;
-    let apiParam = {};
+    const userName = this.searchUserName;
+    let apiParam = {
+      userName: userName ? userName : null
+    };
+
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
     // 페이지 타입에 따라 기본 파라미터값 적용
     if (reactPageType === 'VacationPrivateApp') {
@@ -203,6 +207,24 @@ class VacationStore {
     let apiParam = {};
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
     apiParam.userId = detailUserId;
+    const appStore = this.rootStore.appStore;
+    const profile = appStore.profile;
+    const selectedSilDeptKey = this.selectedSilDeptKey;
+    // 페이지 타입에 따라 기본 파라미터값 적용
+    if (reactPageType === 'VacationPrivateApp') {
+      // 개인 출퇴근
+      apiParam.userId = profile.user_key;
+    } else if (reactPageType === 'VacationDeptApp') {
+      // 팀원 출퇴근
+      apiParam.deptKey = profile.dept_key;
+    } else if (reactPageType === 'VacationHeadApp') {
+      // 실원 출퇴근
+      const selectedChildDeptIdList =
+        appStore.getChildDeptListByUpperKey(selectedSilDeptKey);
+      apiParam.childDeptIdList = selectedChildDeptIdList.map(
+        (deptInfo) => deptInfo.deptKey
+      ) || ['xxx'];
+    }
 
     const store = new CustomStore({
       load: (loadOptions) => {

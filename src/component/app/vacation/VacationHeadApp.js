@@ -5,10 +5,12 @@ import Api from 'util/Api';
 import VacationSubMenu from 'component/submenu/VacationSubMenu';
 import 'devextreme/data/odata/store';
 import DatePicker from 'react-datepicker';
-import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
-import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
-import Constant from 'config/Constant';
-import classnames from 'classnames';
+import DataGrid, {
+  Column,
+  Paging,
+  Pager,
+  Selection
+} from 'devextreme-react/data-grid';
 import Helper from 'util/Helper';
 import moment from 'moment';
 
@@ -28,6 +30,13 @@ class VacationHeadApp extends Component {
     this.nextYear = this.nextYear.bind(this);
     this.prevYear = this.prevYear.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { vacationStore } = this.props;
+    vacationStore.changeSearchUserName(value);
   }
 
   init() {
@@ -94,7 +103,8 @@ class VacationHeadApp extends Component {
       detailDatagridStore,
       searchYear,
       yearDatepickerOpend,
-      selectedSilDeptKey
+      selectedSilDeptKey,
+      searchUserName
     } = vacationStore;
     return (
       <div id="contents_sub" class="">
@@ -178,8 +188,23 @@ class VacationHeadApp extends Component {
             </a>
           </div>
 
-          <div class="title_area">
+          <div class="title_area grid_top flex_sb">
             <h3>휴가/휴직 현황</h3>
+            <div class="search_right">
+              <input
+                type="text"
+                class="w100"
+                placeholder="사용자이름을 입력해주세요."
+                value={searchUserName}
+                onChange={this.changeSearchUserName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                  }
+                }}
+                style={{ height: 30 }}
+              />{' '}
+            </div>
           </div>
           <div class="grid_area">
             <div class="mgtop10">
@@ -192,7 +217,16 @@ class VacationHeadApp extends Component {
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={250}
                 onRowClick={this.handleRowClick}
+                hoverStateEnabled={true}
+                keyExpr="userId"
               >
+                <Selection mode="single" />
+                <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="이름"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="userName"
                   dataType="string"
@@ -203,6 +237,12 @@ class VacationHeadApp extends Component {
                   dataField="positionTitle"
                   dataType="string"
                   caption="직급"
+                  allowSorting={false}
+                />
+                <Column
+                  dataField="dutyTitle"
+                  dataType="string"
+                  caption="직책"
                   allowSorting={false}
                 />
                 <Column
@@ -269,6 +309,12 @@ class VacationHeadApp extends Component {
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={350}
               >
+                <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="부서명"
+                  allowSorting={false}
+                />
                 <Column dataField="userName" dataType="string" caption="이름" />
                 <Column
                   dataField="positionTitle"
@@ -277,9 +323,9 @@ class VacationHeadApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="deptName"
+                  dataField="dutyTitle"
                   dataType="string"
-                  caption="부서명"
+                  caption="직책"
                   allowSorting={false}
                 />
                 <Column
@@ -324,12 +370,6 @@ class VacationHeadApp extends Component {
                   dataField="vacationDescription"
                   dataType="string"
                   caption="휴가/휴직 사유"
-                  allowSorting={false}
-                />
-                <Column
-                  dataField="vacationDescription"
-                  dataType="string"
-                  caption="결재상태"
                   allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />

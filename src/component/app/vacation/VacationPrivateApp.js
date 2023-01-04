@@ -37,7 +37,8 @@ class VacationPrivateApp extends Component {
 
   search() {
     const { vacationStore } = this.props;
-    vacationStore.search();
+    vacationStore.searchYearList();
+    vacationStore.searchDetailList();
   }
 
   changeSilDept(event) {
@@ -212,7 +213,7 @@ class VacationPrivateApp extends Component {
                 />
                 <Paging defaultPageSize={10} />
                 <Pager
-                  visible={true}
+                  visible={false}
                   showPageSizeSelector={true}
                   allowedPageSizes={[5, 10, 'all']}
                 />
@@ -293,12 +294,6 @@ class VacationPrivateApp extends Component {
                   dataField="vacationDescription"
                   dataType="string"
                   caption="휴가/휴직 사유"
-                  allowSorting={false}
-                />
-                <Column
-                  dataField="vacationDescription"
-                  dataType="string"
-                  caption="결재상태"
                   allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import VacationSubMenu from 'component/submenu/VacationSubMenu';
 import 'devextreme/data/odata/store';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver-es';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 import DatePicker from 'react-datepicker';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
@@ -25,6 +28,39 @@ class VacationAdminApp extends Component {
     this.changeSearchYear = this.changeSearchYear.bind(this);
     this.nextYear = this.nextYear.bind(this);
     this.prevYear = this.prevYear.bind(this);
+    this.changeSearchUserName = this.changeSearchUserName.bind(this);
+    this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+
+    this.downloadExcel = this.downloadExcel.bind(this);
+  }
+
+  changeSearchUserName(event) {
+    const value = event.target.value;
+    const { vacationStatsStore } = this.props;
+    vacationStatsStore.changeSearchUserName(value);
+  }
+
+  changeSearchDeptName(event) {
+    const value = event.target.value;
+    const { vacationStatsStore } = this.props;
+    vacationStatsStore.changeSearchDeptName(value);
+  }
+
+  downloadExcel() {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Main sheet');
+
+    exportDataGrid({
+      component: this.dataGridRef.current.instance,
+      worksheet: worksheet
+    }).then(function () {
+      workbook.xlsx.writeBuffer().then(function (buffer) {
+        saveAs(
+          new Blob([buffer], { type: 'application/octet-stream' }),
+          'DataGrid.xlsx'
+        );
+      });
+    });
   }
 
   init() {
@@ -65,8 +101,13 @@ class VacationAdminApp extends Component {
 
   render() {
     const { vacationStatsStore } = this.props;
-    const { datagridStore, searchYear, yearDatepickerOpend } =
-      vacationStatsStore;
+    const {
+      datagridStore,
+      searchYear,
+      yearDatepickerOpend,
+      searchUserName,
+      searchDeptName
+    } = vacationStatsStore;
     const searchYearStr = Helper.dateToString(searchYear, 'YYYY');
     let searchYearBeforeStr = '';
     if (searchYear) {
@@ -146,15 +187,38 @@ class VacationAdminApp extends Component {
                 </label>
               </div>
               <div class="search_right">
-                <a href="javascript:void(0);" class="btn_ico">
-                  <i class="ico_download"></i>엑셀다운로드
-                </a>
+                <input
+                  type="text"
+                  class="w100"
+                  placeholder="부서명을 입력해주세요."
+                  value={searchDeptName}
+                  onChange={this.changeSearchDeptName}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                    }
+                  }}
+                  style={{ height: 30 }}
+                />{' '}
+                <input
+                  type="text"
+                  class="w100"
+                  placeholder="사용자이름을 입력해주세요."
+                  value={searchUserName}
+                  onChange={this.changeSearchUserName}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                    }
+                  }}
+                  style={{ height: 30 }}
+                />{' '}
                 <a
                   href="javascript:void(0);"
                   class="btn_ico"
-                  onClick={this.search}
+                  onClick={this.downloadExcel}
                 >
-                  <i class="ico_refresh"></i>새로고침
+                  <i class="ico_download"></i>엑셀다운로드
                 </a>
               </div>
             </div>
@@ -315,7 +379,7 @@ class VacationAdminApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[5, 10, 15, 'all']}
                 />
               </DataGrid>
             </div>

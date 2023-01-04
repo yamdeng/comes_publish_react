@@ -456,6 +456,45 @@ class CommuteStatsTabMonth extends Component {
               cacheEnabled={false}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
+              onRowPrepared={(row) => {
+                if (row) {
+                  if (row.rowType !== 'header') {
+                    if (row.data) {
+                      const {
+                        firstWeekTimeValue,
+                        secondWeekTimeValue,
+                        threeWeekTimeValue,
+                        fourWeekTimeValue,
+                        fiveWeekTimeValue,
+                        sixWeekTimeValue
+                      } = row.data;
+                      let check52TimeWork = false;
+                      if (firstWeekTimeValue && firstWeekTimeValue > 52) {
+                        check52TimeWork = true;
+                      } else if (
+                        secondWeekTimeValue &&
+                        secondWeekTimeValue > 52
+                      ) {
+                        check52TimeWork = true;
+                      } else if (
+                        threeWeekTimeValue &&
+                        threeWeekTimeValue > 52
+                      ) {
+                        check52TimeWork = true;
+                      } else if (fourWeekTimeValue && fourWeekTimeValue > 52) {
+                        check52TimeWork = true;
+                      } else if (fiveWeekTimeValue && fiveWeekTimeValue > 52) {
+                        check52TimeWork = true;
+                      } else if (sixWeekTimeValue && sixWeekTimeValue > 52) {
+                        check52TimeWork = true;
+                      }
+                      if (check52TimeWork) {
+                        row.rowElement.style.backgroundColor = 'yellow';
+                      }
+                    }
+                  }
+                }
+              }}
             >
               <Column
                 dataField="deptName"

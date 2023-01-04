@@ -30,8 +30,26 @@ class VacationStatsStore {
   @observable
   yearDatepickerOpend = false;
 
+  // 사용자 이름
+  @observable
+  searchUserName = '';
+
+  // 부서명
+  @observable
+  searchDeptName = '';
+
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  @action
+  changeSearchUserName(searchUserName) {
+    this.searchUserName = searchUserName;
+  }
+
+  @action
+  changeSearchDeptName(searchDeptName) {
+    this.searchDeptName = searchDeptName;
   }
 
   // datepicker 초기화
@@ -98,7 +116,12 @@ class VacationStatsStore {
   search() {
     this.refreshPage();
 
-    let apiParam = {};
+    const userName = this.searchUserName;
+    const deptName = this.searchDeptName;
+    let apiParam = {
+      userName: userName ? userName : null,
+      deptName: deptName ? deptName : null
+    };
     apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
 
     const store = new CustomStore({
