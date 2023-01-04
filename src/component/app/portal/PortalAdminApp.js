@@ -123,8 +123,10 @@ class PortalAdminApp extends Component {
       outWorkDate,
       startWorkIp,
       workStatusCodeName,
-      startWorkDeviceType
+      startWorkDeviceType,
+      vacationKindCode
     } = todayCommuteDayInfo;
+    const isAllDayVacation = Helper.getIsAllDayVacation(vacationKindCode);
 
     let startWorkDeviceTypeText = '';
     if (startWorkDeviceType) {
@@ -295,7 +297,12 @@ class PortalAdminApp extends Component {
                 </p>
                 <div>
                   <ul class="flex_sb mgtop40">
-                    <li onClick={this.startWork}>
+                    <li
+                      onClick={this.startWork}
+                      style={{
+                        visibility: isAllDayVacation ? 'hidden' : 'visible'
+                      }}
+                    >
                       <a
                         href="javascript:void(0);"
                         className={classnames({
@@ -315,7 +322,12 @@ class PortalAdminApp extends Component {
                         </span>
                       </a>
                     </li>
-                    <li onClick={this.outWork}>
+                    <li
+                      onClick={this.outWork}
+                      style={{
+                        visibility: isAllDayVacation ? 'hidden' : 'visible'
+                      }}
+                    >
                       <a
                         href="javascript:void(0);"
                         className={classnames({

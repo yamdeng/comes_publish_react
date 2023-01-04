@@ -150,9 +150,11 @@ class CommutePrivateApp extends Component {
       startWorkDate,
       outWorkDate,
       startWorkIp,
+      vacationKindCode,
       workStatusCodeName,
       startWorkDeviceType
     } = todayCommuteDayInfo;
+    const isAllDayVacation = Helper.getIsAllDayVacation(vacationKindCode);
 
     let tardyFilterList = privateMonthStatsList.filter(
       (info) => info.kind === 'tardy'
@@ -163,7 +165,6 @@ class CommutePrivateApp extends Component {
     let notOutWorkFilterList = privateMonthStatsList.filter(
       (info) => info.kind === 'not_out_work'
     );
-    // debugger;
     const tardyCount = tardyFilterList.length ? tardyFilterList[0].aggCount : 0;
     const notStartWorkCount = notStartWorkFilterList.length
       ? notStartWorkFilterList[0].aggCount
@@ -310,12 +311,21 @@ class CommutePrivateApp extends Component {
                 </div>
                 <div class="wo_con2 flex_center">
                   <p>
+                    <span class="user">{user_name}</span> 님{' '}
+                    {workStatusCodeName ? '(' + workStatusCodeName + ')' : ''}
+                  </p>
+                  <p>
                     접속 IP : {startWorkDate ? startWorkDeviceTypeText : ''}
                     {Helper.convertEmptyValue(startWorkIp)}{' '}
                   </p>
                   <div>
                     <ul class="flex_sb mgtop40">
-                      <li onClick={this.startWork}>
+                      <li
+                        onClick={this.startWork}
+                        style={{
+                          visibility: isAllDayVacation ? 'hidden' : 'visible'
+                        }}
+                      >
                         <a
                           href="javascript:void(0);"
                           className={classnames({
@@ -335,7 +345,12 @@ class CommutePrivateApp extends Component {
                           </span>
                         </a>
                       </li>
-                      <li onClick={this.outWork}>
+                      <li
+                        onClick={this.outWork}
+                        style={{
+                          visibility: isAllDayVacation ? 'hidden' : 'visible'
+                        }}
+                      >
                         <a
                           href="javascript:void(0);"
                           className={classnames({

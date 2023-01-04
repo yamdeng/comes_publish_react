@@ -87,8 +87,10 @@ class PortalPrivateApp extends Component {
       outWorkDate,
       startWorkIp,
       workStatusCodeName,
+      vacationKindCode,
       startWorkDeviceType
     } = todayCommuteDayInfo;
+    const isAllDayVacation = Helper.getIsAllDayVacation(vacationKindCode);
     const { annualCount, plusVacationCount, usedCount, restVacationCount } =
       todayVacationYearInfo;
     todayVacationYearInfo = todayVacationYearInfo || {};
@@ -261,7 +263,12 @@ class PortalPrivateApp extends Component {
                 </p>
                 <div>
                   <ul class="flex_sb mgtop40">
-                    <li onClick={this.startWork}>
+                    <li
+                      onClick={this.startWork}
+                      style={{
+                        visibility: isAllDayVacation ? 'hidden' : 'visible'
+                      }}
+                    >
                       <a
                         href="javascript:void(0);"
                         className={classnames({
@@ -281,7 +288,12 @@ class PortalPrivateApp extends Component {
                         </span>
                       </a>
                     </li>
-                    <li onClick={this.outWork}>
+                    <li
+                      onClick={this.outWork}
+                      style={{
+                        visibility: isAllDayVacation ? 'hidden' : 'visible'
+                      }}
+                    >
                       <a
                         href="javascript:void(0);"
                         className={classnames({

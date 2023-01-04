@@ -726,6 +726,19 @@ class CommuteDeptApp extends Component {
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
                 cacheEnabled={false}
+                onRowPrepared={(row) => {
+                  if (row) {
+                    if (row.rowType !== 'header') {
+                      if (row.data) {
+                        if (row.data.tardy120Minute) {
+                          row.rowElement.style.backgroundColor = 'red';
+                        } else if (row.data.tardy30Minute) {
+                          row.rowElement.style.backgroundColor = 'yellow';
+                        }
+                      }
+                    }
+                  }
+                }}
               >
                 <Column
                   dataField="baseDateStr"
