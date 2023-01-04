@@ -8,6 +8,7 @@ import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 import _ from 'lodash';
 import CommutePrivateStore from './CommutePrivateStore';
+import moment from 'moment';
 
 /*
   
@@ -81,8 +82,31 @@ class CommuteStatsDayStore extends CommutePrivateStore {
             runInAction(() => {
               this.totalCount = data.totalCount;
             });
+            let searchList = data.list || [];
+            searchList.forEach((searchInfo) => {
+              if (searchInfo.startWorkDate) {
+                searchInfo.startWorkDate = moment(
+                  searchInfo.startWorkDate
+                ).toDate();
+              }
+              if (searchInfo.outWorkDate) {
+                searchInfo.outWorkDate = moment(
+                  searchInfo.outWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalStartWorkDate) {
+                searchInfo.finalStartWorkDate = moment(
+                  searchInfo.finalStartWorkDate
+                ).toDate();
+              }
+              if (searchInfo.finalOutWorkDate) {
+                searchInfo.finalOutWorkDate = moment(
+                  searchInfo.finalOutWorkDate
+                ).toDate();
+              }
+            });
             return {
-              data: data.list,
+              data: searchList,
               totalCount: data.totalCount
             };
           }

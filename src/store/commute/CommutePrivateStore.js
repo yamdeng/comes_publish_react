@@ -169,6 +169,7 @@ class CommutePrivateStore {
     this.monthDatepickerOpend = false;
     this.startDatepickerOpend = false;
     this.endDatepickerOpend = false;
+    this.searchDashBoardKind = '';
     this.search();
   }
 

@@ -750,6 +750,12 @@ class CommuteDeptApp extends Component {
                   allowSorting={false}
                 />
                 <Column
+                  dataField="positionTitle"
+                  dataType="string"
+                  caption="직급"
+                  allowSorting={false}
+                />
+                <Column
                   dataField="startWorkIp"
                   dataType="string"
                   caption="출근아이피"
@@ -783,13 +789,13 @@ class CommuteDeptApp extends Component {
                 />
                 <Column
                   dataField="workStatusCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무상태"
                   allowSorting={false}
                 />
                 <Column
                   dataField="workResultCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무결과"
                   allowSorting={false}
                   calculateDisplayValue={

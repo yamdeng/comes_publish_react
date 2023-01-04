@@ -755,13 +755,13 @@ class CommuteHeadApp extends Component {
                 />
                 <Column
                   dataField="workStatusCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무상태"
                   allowSorting={false}
                 />
                 <Column
                   dataField="workResultCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무결과"
                   allowSorting={false}
                   calculateDisplayValue={

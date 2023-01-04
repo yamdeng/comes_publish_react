@@ -496,6 +496,18 @@ class CommuteStatsTabDay extends Component {
                 allowSorting={false}
               />
               <Column
+                dataField="userName"
+                dataType="string"
+                caption="이름"
+                allowSorting={false}
+              />
+              <Column
+                dataField="positionTitle"
+                dataType="string"
+                caption="직급"
+                allowSorting={false}
+              />
+              <Column
                 dataField="startWorkIp"
                 dataType="string"
                 caption="출근아이피"
@@ -528,14 +540,32 @@ class CommuteStatsTabDay extends Component {
                 }
               />
               <Column
+                dataField="workedTimeValue"
+                dataType="number"
+                caption="근무시간"
+                allowSorting={false}
+              />
+              <Column
+                dataField="outsideWorkYn"
+                dataType="string"
+                caption="외근여부"
+                allowSorting={false}
+              />
+              <Column
+                dataField="etcDescription"
+                dataType="string"
+                caption="기타설명"
+                allowSorting={false}
+              />
+              <Column
                 dataField="workStatusCodeName"
-                dataType="date"
+                dataType="string"
                 caption="근무상태"
                 allowSorting={false}
               />
               <Column
                 dataField="workResultCodeName"
-                dataType="date"
+                dataType="string"
                 caption="근무결과"
                 allowSorting={false}
                 calculateDisplayValue={

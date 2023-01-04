@@ -186,7 +186,7 @@ class CommuteDaySubmitModal extends Component {
                   <Column
                     dataField="positionTitle"
                     dataType="string"
-                    caption="직급명"
+                    caption="직급"
                     allowSorting={false}
                     allowEditing={false}
                     width={100}

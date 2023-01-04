@@ -593,12 +593,12 @@ class CommutePrivateApp extends Component {
                 />
                 <Column
                   dataField="workStatusCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무상태"
                 />
                 <Column
                   dataField="workResultCodeName"
-                  dataType="date"
+                  dataType="string"
                   caption="근무결과"
                   calculateDisplayValue={
                     ReactHelper.workResultcodeColumDisplayValue
