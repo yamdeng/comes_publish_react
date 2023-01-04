@@ -180,6 +180,14 @@ class CommuteDayModal extends Component {
                   onToolbarPreparing={(e) => {
                     e.toolbarOptions.visible = false;
                   }}
+                  onEditingStart={(e) => {
+                    if (e && e.data) {
+                      const { vacationKindCode } = e.data;
+                      if (Helper.getIsAllDayVacation(vacationKindCode)) {
+                        e.cancel = true;
+                      }
+                    }
+                  }}
                 >
                   <Editing
                     mode="batch"
