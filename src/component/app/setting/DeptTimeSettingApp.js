@@ -90,6 +90,7 @@ class DeptTimeSettingApp extends Component {
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
               >
@@ -97,47 +98,56 @@ class DeptTimeSettingApp extends Component {
                   dataField="timeName"
                   dataType="string"
                   caption="근무시간명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="workLocation"
                   dataType="string"
                   caption="근무지"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="timeDescription"
                   dataType="string"
                   caption="근무시간설명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="workStartTime"
                   dataType="string"
                   caption="근무시간"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="lunchEndTime"
                   dataType="string"
                   caption="점심시간"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="applyStartDateStr"
                   dataType="string"
                   caption="적용 시작일"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="applyStartDateStr"
                   dataType="string"
                   caption="적용 예정일"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="deptName"
                   dataType="string"
                   caption="적용 부서"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="regDate"
                   dataType="datetime"
                   caption="등록일"
-                  format="yyyy-MM-dd hh:mm"
+                  format="yyyy-MM-dd HH:mm"
+                  allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

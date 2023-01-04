@@ -153,19 +153,27 @@ class VacationPrivateApp extends Component {
                 dataSource={yearDatagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={250}
               >
-                <Column dataField="userName" dataType="string" caption="이름" />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="이름"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="positionTitle"
                   dataType="string"
                   caption="직급"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="baseYear"
                   dataType="string"
                   caption="사용기간"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseYear) {
                       return (
@@ -182,16 +190,19 @@ class VacationPrivateApp extends Component {
                   dataField="annualCount"
                   dataType="number"
                   caption="총연차"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="usedCount"
                   dataType="number"
                   caption="사용연차"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="useableCount"
                   dataType="number"
                   caption="잔여연차"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData) {
                       return rowData.annualCount - rowData.usedCount;
@@ -222,33 +233,43 @@ class VacationPrivateApp extends Component {
                 noDataText={'휴가 정보가 존재하지 않습니다.'}
                 height={350}
               >
-                <Column dataField="userName" dataType="string" caption="이름" />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="이름"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="positionTitle"
                   dataType="string"
                   caption="직급"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="submitDate"
                   dataType="datetime"
                   caption="신청일"
                   format="yyyy-MM-dd"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="vacationKindCodeName"
                   dataType="string"
                   caption="휴가/휴직 구분"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="vacationStartDateStr"
                   dataType="datetime"
                   caption="휴가/휴직 기간"
                   format="YYYY-MM-DD"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData) {
                       return (
@@ -266,16 +287,19 @@ class VacationPrivateApp extends Component {
                   dataField="useCount"
                   dataType="number"
                   caption="사용연차"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="vacationDescription"
                   dataType="string"
                   caption="휴가/휴직 사유"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="vacationDescription"
                   dataType="string"
                   caption="결재상태"
+                  allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

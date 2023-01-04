@@ -148,6 +148,7 @@ class HolidayManageApp extends Component {
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'공휴일 정보가 존재하지 않습니다.'}
                 height={450}
               >
@@ -155,6 +156,7 @@ class HolidayManageApp extends Component {
                   dataField="holiDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.holiDateStr) {
                       return Helper.convertDate(
@@ -166,22 +168,30 @@ class HolidayManageApp extends Component {
                     return '';
                   }}
                 />
-                <Column dataField="name" dataType="string" caption="명칭" />
+                <Column
+                  dataField="name"
+                  dataType="string"
+                  caption="명칭"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="weekdayCodeName"
                   dataType="string"
                   caption="요일 구분"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="weekendCodeName"
                   dataType="string"
                   caption="주중/주말 구분"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="regDate"
                   dataType="datetime"
                   caption="등록일"
                   format="yyyy-MM-dd hh:mm"
+                  allowSorting={false}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

@@ -378,6 +378,7 @@ class WorkReportAdminApp extends Component {
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
               >
@@ -385,6 +386,7 @@ class WorkReportAdminApp extends Component {
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -400,10 +402,12 @@ class WorkReportAdminApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="reportDate"
                   caption="작성일시"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (!rowData || !rowData.reportDate) {
                       return '미제출';
@@ -415,11 +419,18 @@ class WorkReportAdminApp extends Component {
                   dataField="managerName"
                   dataType="string"
                   caption="작성자"
+                  allowSorting={false}
                 />
-                <Column dataField="issueYn" dataType="string" caption="이슈" />
+                <Column
+                  dataField="issueYn"
+                  dataType="string"
+                  caption="이슈"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="commentCount"
                   caption="댓글"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.commentCount) {
                       return 'Y';

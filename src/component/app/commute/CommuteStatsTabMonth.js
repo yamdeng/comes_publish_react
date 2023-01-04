@@ -297,21 +297,34 @@ class CommuteStatsTabMonth extends Component {
               dataSource={weekDatagridStore}
               showBorders={true}
               remoteOperations={true}
+              cacheEnabled={false}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
               scrolling={{ showScrollbar: 'never' }}
             >
-              <Column dataField="deptName" dataType="string" caption="부서명" />
-              <Column dataField="userName" dataType="string" caption="이름" />
+              <Column
+                dataField="deptName"
+                dataType="string"
+                caption="부서명"
+                allowSorting={false}
+              />
+              <Column
+                dataField="userName"
+                dataType="string"
+                caption="이름"
+                allowSorting={false}
+              />
               <Column
                 dataField="positionTitle"
                 dataType="string"
                 caption="직급"
+                allowSorting={false}
               />
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
                 caption="누적근무시간"
+                allowSorting={false}
               />
               {weekGridLabelList.map((weekGridLabelInfo, index) => {
                 const { dateStr, holiday, saturday } = weekGridLabelInfo;
@@ -335,6 +348,7 @@ class CommuteStatsTabMonth extends Component {
                   <Column
                     dataField={dateField}
                     dataType="number"
+                    allowSorting={false}
                     caption={moment(dateStr).format('D일(ddd)')}
                     cellRender={cellRenderWeekTimeValue}
                     headerCellRender={() => {
@@ -376,20 +390,33 @@ class CommuteStatsTabMonth extends Component {
               dataSource={monthWorkDatagridStore}
               showBorders={true}
               remoteOperations={true}
+              cacheEnabled={false}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
             >
-              <Column dataField="deptName" dataType="string" caption="부서명" />
-              <Column dataField="userName" dataType="string" caption="이름" />
+              <Column
+                dataField="deptName"
+                dataType="string"
+                caption="부서명"
+                allowSorting={false}
+              />
+              <Column
+                dataField="userName"
+                dataType="string"
+                caption="이름"
+                allowSorting={false}
+              />
               <Column
                 dataField="positionTitle"
                 dataType="string"
                 caption="직급"
+                allowSorting={false}
               />
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
                 caption="누적근무시간"
+                allowSorting={false}
               />
               {[1, 2, 3, 4, 5, 6].map((weekIndex) => {
                 let dateField = 'monWorkTimeValue';
@@ -411,6 +438,7 @@ class CommuteStatsTabMonth extends Component {
                     dataField={dateField}
                     dataType="number"
                     caption={weekIndex + '주'}
+                    allowSorting={false}
                   />
                 );
               })}
@@ -439,21 +467,34 @@ class CommuteStatsTabMonth extends Component {
               dataSource={monthHolidyDatagridStore}
               showBorders={true}
               remoteOperations={true}
+              cacheEnabled={false}
               scrolling={{ showScrollbar: 'never' }}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
             >
-              <Column dataField="deptName" dataType="string" caption="부서명" />
-              <Column dataField="userName" dataType="string" caption="이름" />
+              <Column
+                dataField="deptName"
+                dataType="string"
+                caption="부서명"
+                allowSorting={false}
+              />
+              <Column
+                dataField="userName"
+                dataType="string"
+                caption="이름"
+                allowSorting={false}
+              />
               <Column
                 dataField="positionTitle"
                 dataType="string"
                 caption="직급"
+                allowSorting={false}
               />
               <Column
                 dataField="sumWorkTimeValue"
                 dataType="number"
                 caption="누적근무시간"
+                allowSorting={false}
               />
               {monthHolidayGridLabelList.map(
                 (monthHolidayGridLabelInfo, index) => {
@@ -465,6 +506,7 @@ class CommuteStatsTabMonth extends Component {
                       dataField={dateField}
                       dataType="number"
                       caption={moment(dateStr).format('D일(ddd)')}
+                      allowSorting={false}
                       cellRender={(columnInfo) => {
                         if (holiday) {
                           return <span class="red">{columnInfo.value}</span>;

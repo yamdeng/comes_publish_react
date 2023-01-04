@@ -424,6 +424,7 @@ class WorkReportHeadApp extends Component {
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
               >
@@ -431,6 +432,7 @@ class WorkReportHeadApp extends Component {
                   dataField="baseDateStr"
                   dataType="string"
                   caption="날짜"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.baseDateStr) {
                       return Helper.convertDate(
@@ -446,12 +448,14 @@ class WorkReportHeadApp extends Component {
                   dataField="deptName"
                   dataType="string"
                   caption="부서명"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="reportDate"
                   dataType="datetime"
                   caption="작성일시"
-                  format="yyyy-MM-dd"
+                  allowSorting={false}
+                  format="yyyy-MM-dd HH:mm"
                   calculateCellValue={function (rowData) {
                     if (!rowData || !rowData.reportDate) {
                       return '미제출';
@@ -463,11 +467,13 @@ class WorkReportHeadApp extends Component {
                   dataField="managerName"
                   dataType="string"
                   caption="작성자"
+                  allowSorting={false}
                 />
                 <Column dataField="issueYn" dataType="string" caption="이슈" />
                 <Column
                   dataField="commentCount"
                   caption="댓글"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.commentCount) {
                       return 'Y';

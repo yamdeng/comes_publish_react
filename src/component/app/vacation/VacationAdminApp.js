@@ -164,29 +164,43 @@ class VacationAdminApp extends Component {
                 dataSource={datagridStore}
                 showBorders={true}
                 remoteOperations={true}
+                cacheEnabled={false}
                 noDataText={'통계 정보가 존재하지 않습니다.'}
                 columnResizingMode={true}
                 columnAutoWidth={true}
                 width={1650}
                 height={650}
               >
-                <Column dataField="deptName" dataType="string" caption="부서" />
+                <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="부서"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="positionTitle"
                   dataType="string"
                   caption="직급"
+                  allowSorting={false}
                 />
-                <Column dataField="userName" dataType="string" caption="성명" />
+                <Column
+                  dataField="userName"
+                  dataType="string"
+                  caption="성명"
+                  allowSorting={false}
+                />
                 <Column
                   dataField="joinDate"
                   dataType="datetime"
                   caption="입사일"
                   format="yyyy-MM-dd"
+                  allowSorting={false}
                 />
                 <Column
                   dataField="outWorkIp"
                   dataType="string"
                   caption="회계년수"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData && rowData.joinDate) {
                       return (
@@ -201,16 +215,26 @@ class VacationAdminApp extends Component {
                 <Column
                   dataField="outWorkDate"
                   caption="초년월수"
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     return 0;
                   }}
                 />
-                <Column dataField="annualCount" caption="발생연차" />
-                <Column dataField="monthCount" caption="금년월차" />
+                <Column
+                  dataField="annualCount"
+                  caption="발생연차"
+                  allowSorting={false}
+                />
+                <Column
+                  dataField="monthCount"
+                  caption="금년월차"
+                  allowSorting={false}
+                />
                 <Column caption="과년월차">
                   <Column
                     dataField="monthCount"
                     caption="발생"
+                    allowSorting={false}
                     calculateCellValue={function (rowData) {
                       return 0;
                     }}
@@ -218,6 +242,7 @@ class VacationAdminApp extends Component {
                   <Column
                     dataField="monthCount"
                     caption="사용"
+                    allowSorting={false}
                     calculateCellValue={function (rowData) {
                       return 0;
                     }}
@@ -226,6 +251,7 @@ class VacationAdminApp extends Component {
                 <Column
                   dataField="annualCount"
                   caption={searchYearStr + '년 발생일수'}
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData) {
                       return rowData.annualCount + rowData.plusVacationCount;
@@ -236,10 +262,12 @@ class VacationAdminApp extends Component {
                 <Column
                   dataField="usedCount"
                   caption={searchYearBeforeStr + '년 사용일수'}
+                  allowSorting={false}
                 />
                 <Column
                   dataField="usedCount"
                   caption={searchYearStr + '년 가능일수'}
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData) {
                       return rowData.annualCount + rowData.plusVacationCount;
@@ -254,18 +282,25 @@ class VacationAdminApp extends Component {
                       <Column
                         dataField={'use' + monthIndex + 'monthCount'}
                         caption={monthIndex}
+                        allowSorting={false}
                       />
                     );
                   })}
-                  <Column dataField="sumUseMonthCount" caption="합계" />
+                  <Column
+                    dataField="sumUseMonthCount"
+                    caption="합계"
+                    allowSorting={false}
+                  />
                 </Column>
                 <Column
                   dataField="plusVacationCount"
                   caption={'창립기념 포상휴가'}
+                  allowSorting={false}
                 />
                 <Column
                   dataField="useableCount"
                   caption={searchYearStr + '년 잔여일수'}
+                  allowSorting={false}
                   calculateCellValue={function (rowData) {
                     if (rowData) {
                       return rowData.annualCount - rowData.usedCount;
