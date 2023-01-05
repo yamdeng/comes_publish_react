@@ -266,6 +266,27 @@ Code.outsideWorkYnCodeList = [
   }
 ];
 
+const timeSettingCodeList = [];
+for (let index = 0; index < 24; index++) {
+  // 00:00, 00:30, 01:00 ~
+  let timeStr = '';
+  if (index > 10) {
+    timeStr = index + '';
+  } else {
+    timeStr = '0' + index;
+  }
+  timeSettingCodeList.push({
+    name: timeStr + ':00',
+    value: timeStr + ':00'
+  });
+  timeSettingCodeList.push({
+    name: timeStr + ':30',
+    value: timeStr + ':30'
+  });
+}
+
+Code.timeSettingCodeList = timeSettingCodeList;
+
 // 코드명 가져오기 : value 기준
 Code.getCodeNameByValue = function (codeCategory, codeValue) {
   let codeName = null;

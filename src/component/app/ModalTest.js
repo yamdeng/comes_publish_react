@@ -590,29 +590,40 @@ class ModalTest extends Component {
               </div>
               <div class="flex_sb mgtop10">
                 <p class="con_title2">적용기간</p>
-                <div class="con_box2 relative">
+                <div class="con_box2">
                   <div>
                     <input type="checkbox" id="check1" />
                     <label for="check1" class="mglt10">
                       종료일 미정
                     </label>
                   </div>
+                  <div style={{ display: 'inline-block' }}>
+                    <DatePicker
+                      selected={null}
+                      onChange={(date) => {}}
+                      className="w90"
+                    />
+                  </div>{' '}
+                  <a href="javascript:void(0);" class="btn_calen mgrg10">
+                    <img
+                      src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
+                      alt=""
+                    />
+                  </a>
+                  <span>~</span>
+                  <div style={{ display: 'inline-block' }}>
+                    <DatePicker
+                      selected={null}
+                      onChange={(date) => {}}
+                      className="w90"
+                    />
+                  </div>{' '}
                   <a href="javascript:void(0);" class="btn_calen">
                     <img
                       src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
                       alt=""
                     />
-                  </a>{' '}
-                  <DatePicker selected={null} onChange={(date) => {}} />
-                  <br />
-                  <br />
-                  <a href="javascript:void(0);" class="btn_calen">
-                    <img
-                      src={`${process.env.PUBLIC_URL}/images/calen_sel_ico.png`}
-                      alt=""
-                    />
-                  </a>{' '}
-                  <DatePicker selected={null} onChange={(date) => {}} />
+                  </a>
                 </div>
               </div>
               <div class="flex_sb mgtop10">

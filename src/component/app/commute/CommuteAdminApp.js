@@ -8,6 +8,7 @@ import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import classnames from 'classnames';
 import Helper from 'util/Helper';
 import CommuteDayAdminModal from './CommuteDayAdminModal';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'commuteDeptStore', 'commuteDayAdminModalStore')
 @observer
@@ -517,16 +518,9 @@ class CommuteAdminApp extends Component {
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseDateStr) {
-                      return Helper.convertDate(
-                        rowData.baseDateStr,
-                        'YYYYMMDD',
-                        'YYYY-MM-DD'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.baseDateStrColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="deptName"
