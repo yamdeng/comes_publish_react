@@ -156,7 +156,6 @@ class DeptTimeSettingFormModalStore {
     this.isFormPopupOpen = true;
     this.formType = formType;
     this.currentDeptId = currentDeptId;
-    debugger;
     this.getCommuteDeptTargetList();
     if (formType === 'EDIT') {
       this.getDeptTimeWorkSettingInfo(currentDeptId);
