@@ -114,7 +114,7 @@ class VacationManageBatchTab extends Component {
       searchUserName
     } = vacationManageStore;
     return (
-      <div id="tab01" style={{ display: visible ? '' : 'none' }}>
+      <div style={{ display: visible ? '' : 'none' }}>
         <div class="">
           <ul class="search_area">
             <li>
@@ -137,7 +137,7 @@ class VacationManageBatchTab extends Component {
                       <input
                         type="radio"
                         id="option1"
-                        name="option"
+                        name="yearTargetOption"
                         value="ALL"
                         checked={yearApplyTarget === 'ALL'}
                         onChange={this.changeYearApplyTarget}
@@ -150,7 +150,7 @@ class VacationManageBatchTab extends Component {
                       <input
                         type="radio"
                         id="option2"
-                        name="option"
+                        name="yearTargetOption"
                         value="NOVACATION"
                         checked={yearApplyTarget === 'NOVACATION'}
                         onChange={this.changeYearApplyTarget}
@@ -182,6 +182,19 @@ class VacationManageBatchTab extends Component {
               </p>
             </div>
             <div class="search_right">
+              <input
+                type="text"
+                class="w100"
+                placeholder="사용자이름을 입력해주세요."
+                value={searchUserName}
+                onChange={this.changeSearchUserName}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    this.search(); // Enter 입력이 되면 클릭 이벤트 실행
+                  }
+                }}
+                style={{ height: 30 }}
+              />{' '}
               <a
                 href="javascript:void(0);"
                 class="btn_ico"
@@ -193,11 +206,13 @@ class VacationManageBatchTab extends Component {
           </div>
           <div class="mgtop10">
             <DataGrid
+              keyExpr="userId"
+              key="userId"
               ref={this.dataGridRef}
               dataSource={datagridStore}
               showBorders={true}
               remoteOperations={true}
-              noDataText={'출근 정보가 존재하지 않습니다.'}
+              noDataText={'휴가생성 정보가 존재하지 않습니다.'}
               height={450}
               cacheEnabled={false}
               onToolbarPreparing={(e) => {
@@ -329,9 +344,13 @@ class VacationManageBatchTab extends Component {
         </div>
         <div class="btn_area relative mgtop10">
           <div class="btn_right">
-            {/* <a class="btn_normal btn_blue" href="javascript:void(0);">
-              미리보기생성
-            </a> */}
+            <a
+              class="btn_normal btn_blue"
+              href="javascript:void(0);"
+              onClick={this.createPreview}
+            >
+              미리보기일괄생성
+            </a>
             <a
               class="btn_normal btn_blue"
               href="javascript:void(0);"

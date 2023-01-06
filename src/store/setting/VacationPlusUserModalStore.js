@@ -9,6 +9,7 @@ import Helper from 'util/Helper';
 import Constant from 'config/Constant';
 import _ from 'lodash';
 import VacationNotApplyUserModalStore from './VacationNotApplyUserModalStore';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -25,23 +26,46 @@ class VacationPlusUserModalStore extends VacationNotApplyUserModalStore {
   // [미리보기] 생성
   @action
   createPreviewVacation() {
-    const selectedRows = this.selectedRows;
-    // TODO
-    let apiParam = {};
-    ApiService.post('', apiParam).then((response) => {
-      runInAction((resoponse) => {
-        const data = response.data;
-        // this.baseYear = baseYear;
-      });
+    const vacationManagePlusStore = this.rootStore.vacationManagePlusStore;
+    const { plusVacationName, plusVacationCount } = vacationManagePlusStore;
+    if (!plusVacationCount) {
+      alert('휴가일수는 필수값입니다.');
+      return;
+    }
+    const selectedRows = toJS(this.selectedRows);
+    const baseYear = this.baseYear;
+    let apiParam = { baseYear };
+    apiParam.vacationName = plusVacationName;
+    apiParam.vacationCount = plusVacationCount;
+    apiParam.userIdList = selectedRows.map((info) => info.userKey);
+    ModalService.confirm({
+      content: `선택한 직원의 ${plusVacationName}(${plusVacationCount})를 생성하시겠습니까?`,
+      ok: () => {
+        ApiService.post(
+          'vacation-preview/plus/create-preview-select-user.do',
+          apiParam
+        ).then((response) => {
+          Helper.toastMessage('미리보기가 생성되었습니다.');
+          runInAction(() => {
+            this.search();
+            this.rootStore.vacationManagePlusStore.search();
+          });
+        });
+      }
     });
   }
 
   // 조회
   @action
   search() {
+    this.refreshPage();
     const baseYear = this.baseYear;
-    let apiParam = {};
+    const userName = this.searchUserName;
+    let apiParam = {
+      userName: userName ? userName : null
+    };
     apiParam.baseYear = baseYear;
+    apiParam.onlyVacationTargetYn = 'Y';
     const store = new CustomStore({
       load: (loadOptions) => {
         if (loadOptions) {
@@ -54,7 +78,7 @@ class VacationPlusUserModalStore extends VacationNotApplyUserModalStore {
             apiParam.offset = null;
           }
         }
-        return ApiService.post('vacation-preview/year/list.do', apiParam).then(
+        return ApiService.post('office-users/list.do', apiParam).then(
           (response) => {
             const data = response.data;
             runInAction(() => {

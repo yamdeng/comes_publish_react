@@ -287,6 +287,18 @@ for (let index = 0; index < 24; index++) {
 
 Code.timeSettingCodeList = timeSettingCodeList;
 
+// 외근 여부
+Code.plusTargetConditionCodeList = [
+  {
+    name: '1년이상',
+    value: '1YEAR'
+  },
+  {
+    name: '10년이상',
+    value: '10YEAR'
+  }
+];
+
 // 코드명 가져오기 : value 기준
 Code.getCodeNameByValue = function (codeCategory, codeValue) {
   let codeName = null;

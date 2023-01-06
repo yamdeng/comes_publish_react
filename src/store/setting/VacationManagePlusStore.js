@@ -1,11 +1,12 @@
 /* global reactPageType */
 
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, toJS } from 'mobx';
 import 'devextreme/data/odata/store';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import VacationManageStore from './VacationManageStore';
 import Helper from 'util/Helper';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -16,15 +17,14 @@ import Helper from 'util/Helper';
 class VacationManagePlusStore extends VacationManageStore {
   // 포상휴가 발생대상 (조건 : CONDITION, 직원 선택 : SELECT)
   @observable
-  plusApplyTarget = 'ALL';
+  plusApplyTarget = 'CONDITION';
 
   // 포상휴가 발생대상 조건 상세 : 1YEAR(1년 이상인 직원), 10YEAR(10년 이상인 직원)
   @observable
   plusTargetConditionValue = '1YEAR';
-
   // 포상휴가 이름
   @observable
-  plusVacationName = '';
+  plusVacationName = '포상휴가';
 
   // 포상 휴가 일수
   @observable
@@ -76,19 +76,65 @@ class VacationManagePlusStore extends VacationManageStore {
     let apiParam = {
       baseYear: baseYear
     };
-    // TODO
-    ApiService.post('', apiParam).then((response) => {
-      runInAction((resoponse) => {
-        Helper.toastMessage('휴가가 발생되었습니다.');
-      });
+    ModalService.confirm({
+      content:
+        '[휴가발생]을 통해 반영된 포상휴가는 삭제할 수 없습니다.\n휴가발생을 하시겠습니까?(미리보기 발생대상 전체)',
+      ok: () => {
+        ApiService.post('vacation-preview/plus/apply.do', apiParam).then(
+          (response) => {
+            runInAction(() => {
+              Helper.toastMessage('포상휴가가 발생되었습니다.');
+              this.search();
+            });
+          }
+        );
+      }
+    });
+  }
+
+  // [미리보기생성]
+  @action
+  createPreview() {
+    const baseYear = this.baseYear;
+    const searchKind = this.plusTargetConditionValue;
+    const vacationName = this.plusVacationName;
+    const vacationCount = this.plusVacationCount;
+    if (!vacationName) {
+      alert('휴가명은 필수값입니다.');
+      return;
+    }
+    if (!vacationCount) {
+      alert('휴가일수는 필수값입니다.');
+      return;
+    }
+    let apiParam = {
+      baseYear: baseYear,
+      searchKind: searchKind,
+      vacationName,
+      vacationCount: Number(vacationCount)
+    };
+    const searchKindName = searchKind === '1YEAR' ? '1년이상' : '10년이상';
+    ModalService.confirm({
+      content: `${searchKindName} 조건의 ${vacationName}(${vacationCount})를 생성하시겠습니까?`,
+      ok: () => {
+        ApiService.post(
+          'vacation-preview/plus/create-preview-search-kind.do',
+          apiParam
+        ).then((response) => {
+          Helper.toastMessage('포상휴가 미리보기가 생성되었습니다.');
+          this.search();
+        });
+      }
     });
   }
 
   // [조회] : 포상휴가 미리보기
   @action
-  searchPlusPreviewVacation() {
-    let apiParam = {};
-    apiParam.baseYear = this.baseYear;
+  search() {
+    this.refreshPage();
+    const userName = this.searchUserName;
+    const baseYear = this.baseYear;
+    let apiParam = { baseYear: baseYear, userName: userName ? userName : null };
     const store = new CustomStore({
       load: (loadOptions) => {
         if (loadOptions) {
@@ -122,14 +168,21 @@ class VacationManagePlusStore extends VacationManageStore {
   @action
   deleteSelect() {
     const baseYear = this.baseYear;
-    const selectedRows = this.selectedRows;
+    const selectedRows = toJS(this.selectedRows);
     let apiParam = {
-      baseYear: baseYear,
-      deletePlusVacationList: selectedRows
+      baseYear: baseYear
     };
-    // TODO
-    ApiService.post('', apiParam).then((response) => {
-      Helper.toastMessage('조건발생 휴가가 삭제되었습니다.');
+    apiParam.previewIdList = selectedRows.map((info) => info.previewId);
+    ModalService.confirm({
+      content: `선택한 포상휴가 미리보기를 삭제하시겠습니까?`,
+      ok: () => {
+        ApiService.post('vacation-preview/plus/delete.do', apiParam).then(
+          (response) => {
+            Helper.toastMessage('삭제되었습니다.');
+            this.search();
+          }
+        );
+      }
     });
   }
 
@@ -140,9 +193,16 @@ class VacationManagePlusStore extends VacationManageStore {
     let apiParam = {
       baseYear: baseYear
     };
-    // TODO
-    ApiService.post('', apiParam).then((response) => {
-      Helper.toastMessage('조건발생 휴가가 삭제되었습니다.');
+    ModalService.confirm({
+      content: `포상휴가 미리보기를 전체 삭제하시겠습니까?`,
+      ok: () => {
+        ApiService.post('vacation-preview/plus/delete.do', apiParam).then(
+          (response) => {
+            Helper.toastMessage('삭제되었습니다.');
+            this.search();
+          }
+        );
+      }
     });
   }
 

@@ -102,11 +102,11 @@ class VacationManageStore {
     const baseYear = this.baseYear;
     let apiParam = { baseYear };
     ModalService.confirm({
-      content: '휴가발생을 하시겠습니까?(미리보기 생성된 전체대상)',
+      content: '휴가발생을 하시겠습니까?(미리보기 발생대상 전체)',
       ok: () => {
         ApiService.post('vacation-preview/year/apply.do', apiParam).then(
           (response) => {
-            Helper.toastMessage('휴가가 발생되었습니다.');
+            Helper.toastMessage('연간휴가가 발생되었습니다.');
             runInAction(() => {
               this.search();
             });
@@ -119,17 +119,28 @@ class VacationManageStore {
   // [일괄수정]
   @action
   updateBatch() {
-    const baseYear = this.baseYear;
     const updateRows = toJS(this.updateRows) || [];
-    let updateVacationList = [];
-    let apiParam = {
-      baseYear: baseYear,
-      updateVacationList: updateVacationList
-    };
-    // TODO
-    ApiService.post('', apiParam).then((response) => {
-      Helper.toastMessage('미리보기 휴가가 수정정되었습니다');
-      this.search();
+    let apiParam = {};
+    const updatePreviewList = updateRows.map((rowInfo) => {
+      let apiParamRowInfo = {};
+      Object.assign(apiParamRowInfo, rowInfo.data);
+      apiParamRowInfo.userId = rowInfo.key.userId;
+      apiParamRowInfo.baseYear = rowInfo.key.baseYear;
+      return apiParamRowInfo;
+    });
+    apiParam.updatePreviewList = updatePreviewList;
+    ModalService.confirm({
+      content: '미리보기 휴가정보를 수정하시겠습니까?',
+      ok: () => {
+        ApiService.post('vacation-preview/year/update.do', apiParam).then(
+          (response) => {
+            Helper.toastMessage('미리보기 휴가정보가 수정되었습니다.');
+            runInAction(() => {
+              this.search();
+            });
+          }
+        );
+      }
     });
   }
 
@@ -140,9 +151,19 @@ class VacationManageStore {
     let apiParam = {
       baseYear: baseYear
     };
-    // TODO
-    ApiService.post('', apiParam).then((response) => {
-      Helper.toastMessage(baseYear + '년 미리보기가 생성되었습니다.');
+    ModalService.confirm({
+      content:
+        baseYear +
+        '년 미리보기를 생성하시겠습니까?\n(기존에 저장된 미리보기 정보는 초기화됩니다.)',
+      ok: () => {
+        ApiService.post(
+          'vacation-preview/year/create-preview-save-manual.do',
+          apiParam
+        ).then((response) => {
+          Helper.toastMessage(baseYear + '년 미리보기가 생성되었습니다.');
+          this.search();
+        });
+      }
     });
   }
 
@@ -153,7 +174,8 @@ class VacationManageStore {
     this.updateRows = [];
     const baseYear = this.baseYear;
     const yearApplyTarget = this.yearApplyTarget;
-    let apiParam = {};
+    const userName = this.searchUserName;
+    let apiParam = { userName: userName ? userName : null };
     apiParam.baseYear = baseYear;
     if (yearApplyTarget === 'NOVACATION') {
       apiParam.newEmployeeYn = 'Y';
