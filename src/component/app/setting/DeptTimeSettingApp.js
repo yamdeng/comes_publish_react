@@ -97,6 +97,12 @@ class DeptTimeSettingApp extends Component {
                 height={450}
               >
                 <Column
+                  dataField="deptName"
+                  dataType="string"
+                  caption="적용부서명"
+                  allowSorting={false}
+                />
+                <Column
                   dataField="timeName"
                   dataType="string"
                   caption="근무시간명"

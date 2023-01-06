@@ -18,14 +18,7 @@ class VacationManageApp extends Component {
     this.changeTabIndex = this.changeTabIndex.bind(this);
   }
 
-  init() {
-    const { vacationManageStore } = this.props;
-    ApiService.post('vacation-preview/baseYear.do').then((response) => {
-      let baseYear = response.data;
-      vacationManageStore.changeBaseYear(baseYear);
-      vacationManageStore.searchYearPreviewVacation();
-    });
-  }
+  init() {}
 
   changeTabIndex(tabIndex) {
     this.setState({ tabIndex: tabIndex });

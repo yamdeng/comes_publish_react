@@ -16,7 +16,6 @@ import CommuteStatsMonthStore from './commute/CommuteStatsMonthStore';
 import VacationStore from './vacation/VacationStore';
 import VacationStatsStore from './vacation/VacationStatsStore';
 import WorkReportStore from './report/WorkReportStore';
-import VacationManageStore from './setting/VacationManageStore';
 import HolidayManageStore from './setting/HolidayManageStore';
 import DeptTimeSettingStore from './setting/DeptTimeSettingStore';
 import CommuteDaySubmitModalStore from './commute/CommuteDaySubmitModalStore';
@@ -25,6 +24,10 @@ import CommuteDayAdminModalStore from './commute/CommuteDayAdminModalStore';
 import WorkReportFormModalStore from './report/WorkReportFormModalStore';
 import WorkReportViewModalStore from './report/WorkReportViewModalStore';
 import DeptTimeSettingFormModalStore from './setting/DeptTimeSettingFormModalStore';
+import VacationManageStore from './setting/VacationManageStore';
+import VacationManagePlusStore from './setting/VacationManagePlusStore';
+import VacationNotApplyUserModalStore from './setting/VacationNotApplyUserModalStore';
+import VacationPlusUserModalStore from './setting/VacationPlusUserModalStore';
 
 /*
 
@@ -68,7 +71,6 @@ class RootStore {
     this.vacationStatsStore = new VacationStatsStore(this);
     this.workReportStore = new WorkReportStore(this);
 
-    this.vacationManageStore = new VacationManageStore(this);
     this.holidayManageStore = new HolidayManageStore(this);
     this.deptTimeSettingStore = new DeptTimeSettingStore(this);
     this.commuteDaySubmitModalStore = new CommuteDaySubmitModalStore(this);
@@ -79,6 +81,12 @@ class RootStore {
     this.deptTimeSettingFormModalStore = new DeptTimeSettingFormModalStore(
       this
     );
+    this.vacationManageStore = new VacationManageStore(this);
+    this.vacationManagePlusStore = new VacationManagePlusStore(this);
+    this.vacationNotApplyUserModalStore = new VacationNotApplyUserModalStore(
+      this
+    );
+    this.vacationPlusUserModalStore = new VacationPlusUserModalStore(this);
   }
 }
 

@@ -1,12 +1,13 @@
 /* global reactPageType */
 
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, toJS } from 'mobx';
 import 'devextreme/data/odata/store';
 import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import moment from 'moment';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
+import ModalService from 'service/ModalService';
 import _ from 'lodash';
 
 /*
@@ -16,13 +17,12 @@ import _ from 'lodash';
 */
 
 class VacationManageStore {
-  // 연간 휴가 미리보기 grid store
-  @observable
-  previewYearDatagridStore = null;
+  // datagridRef
+  dataGridRef = null;
 
-  // 포상 휴가 미리보기 grid store
+  // 개인_출퇴근 목록 grid
   @observable
-  previewPlusDatagridStore = null;
+  datagridStore = null;
 
   // 발생연도
   @observable
@@ -32,75 +32,132 @@ class VacationManageStore {
   @observable
   yearApplyTarget = 'ALL';
 
-  // 포상휴가 발생대상 (조건 : CONDITION, 직원 선택 : SELECT)
+  // grid totalCount
   @observable
-  plusApplyTarget = 'ALL';
+  totalCount = 0;
 
-  // 포상휴가 발생대상 조건 상세 : 1YEAR(1년 이상인 직원), 10YEAR(10년 이상인 직원)
+  // 변경된 grid row
   @observable
-  plusTargetConditionValue = '1YEAR';
+  updateRows = [];
 
-  // 포상휴가 이름
+  // 검색 이름
   @observable
-  plusVacationName = '';
-
-  // 포상 휴가 일수
-  @observable
-  plusVacationCount = 1;
+  searchUserName = '';
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
+  // 이름 변경
   @action
-  changeBaseYear(baseYear) {
-    this.baseYear = baseYear;
+  changeSearchUserName(searchUserName) {
+    this.searchUserName = searchUserName;
   }
 
-  // 포상휴가 발생대상 조건 상세 변경
-  @action
-  changePlusTargetConditionValue(plusTargetConditionValue) {
-    this.plusTargetConditionValue = plusTargetConditionValue;
+  // datagrid 컴포넌트 셋팅
+  initDataGridComponent(dataGridRef) {
+    this.dataGridRef = dataGridRef;
   }
 
-  // 포상휴가 이름 변경
-  @action
-  changePlusVacationName(plusVacationName) {
-    this.plusVacationName = plusVacationName;
+  // pageIndex 초기화
+  refreshPage() {
+    if (
+      this.dataGridRef &&
+      this.dataGridRef.current &&
+      this.dataGridRef.current.instance &&
+      this.dataGridRef.current.instance.pageIndex
+    ) {
+      this.dataGridRef.current.instance.pageIndex(0);
+    }
   }
 
-  // 포상 휴가 일수 변경
+  // 휴가기준 년 조회
   @action
-  changePlusVacationCount(plusVacationCount) {
-    this.plusVacationCount = plusVacationCount;
+  getVacationBaseYear() {
+    ApiService.post('vacation-preview/baseYear.do').then((response) => {
+      const baseYear = response.data;
+      runInAction(() => {
+        this.baseYear = baseYear;
+        this.search();
+      });
+    });
   }
 
   // 연간 휴가 미리보기 발생대상 변경
   @action
   changeYearApplyTarget(yearApplyTarget) {
     this.yearApplyTarget = yearApplyTarget;
+    this.search();
   }
 
-  // 포상 휴가 미리보기 발생대상 변경
+  // grid 변경 내역
   @action
-  changePlusApplyTarget(plusApplyTarget) {
-    this.plusApplyTarget = plusApplyTarget;
+  changeUpdateRows(changes) {
+    this.updateRows = changes;
   }
 
   // [휴가발생] : 연간휴가
   @action
-  applyYearVacation() {}
+  applyYearVacation() {
+    const baseYear = this.baseYear;
+    let apiParam = { baseYear };
+    ModalService.confirm({
+      content: '휴가발생을 하시겠습니까?(미리보기 생성된 전체대상)',
+      ok: () => {
+        ApiService.post('vacation-preview/year/apply.do', apiParam).then(
+          (response) => {
+            Helper.toastMessage('휴가가 발생되었습니다.');
+            runInAction(() => {
+              this.search();
+            });
+          }
+        );
+      }
+    });
+  }
 
-  // [휴가발생] : 포상휴가
+  // [일괄수정]
   @action
-  applyPlusVacation() {}
+  updateBatch() {
+    const baseYear = this.baseYear;
+    const updateRows = toJS(this.updateRows) || [];
+    let updateVacationList = [];
+    let apiParam = {
+      baseYear: baseYear,
+      updateVacationList: updateVacationList
+    };
+    // TODO
+    ApiService.post('', apiParam).then((response) => {
+      Helper.toastMessage('미리보기 휴가가 수정정되었습니다');
+      this.search();
+    });
+  }
+
+  // [미리보기생성]
+  @action
+  createPreview() {
+    const baseYear = this.baseYear;
+    let apiParam = {
+      baseYear: baseYear
+    };
+    // TODO
+    ApiService.post('', apiParam).then((response) => {
+      Helper.toastMessage(baseYear + '년 미리보기가 생성되었습니다.');
+    });
+  }
 
   // [조회] : 연간휴가 미리보기
   @action
-  searchYearPreviewVacation() {
+  search() {
+    this.refreshPage();
+    this.updateRows = [];
+    const baseYear = this.baseYear;
+    const yearApplyTarget = this.yearApplyTarget;
     let apiParam = {};
-    apiParam.baseYear = this.baseYear;
-
+    apiParam.baseYear = baseYear;
+    if (yearApplyTarget === 'NOVACATION') {
+      apiParam.newEmployeeYn = 'Y';
+    }
     const store = new CustomStore({
       load: (loadOptions) => {
         if (loadOptions) {
@@ -127,42 +184,7 @@ class VacationManageStore {
         );
       }
     });
-    this.previewYearDatagridStore = store;
-  }
-
-  // [조회] : 포상휴가 미리보기
-  @action
-  searchPlusPreviewVacation() {
-    let apiParam = {};
-    apiParam.baseYear = this.baseYear;
-
-    const store = new CustomStore({
-      load: (loadOptions) => {
-        if (loadOptions) {
-          const { skip, take } = loadOptions;
-          if (take) {
-            apiParam.pageSize = take;
-            apiParam.offset = skip;
-          } else {
-            apiParam.pageSize = null;
-            apiParam.offset = null;
-          }
-        }
-        return ApiService.post('vacation-preview/plus/list.do', apiParam).then(
-          (response) => {
-            const data = response.data;
-            runInAction(() => {
-              this.totalCount = data.totalCount;
-            });
-            return {
-              data: data.list,
-              totalCount: data.totalCount
-            };
-          }
-        );
-      }
-    });
-    this.previewPlusDatagridStore = store;
+    this.datagridStore = store;
   }
 
   @action
