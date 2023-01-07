@@ -6,7 +6,7 @@ import CustomStore from 'devextreme/data/custom_store';
 import ApiService from 'service/ApiService';
 import moment from 'moment';
 import Helper from 'util/Helper';
-import _ from 'lodash';
+import ModalService from 'service/ModalService';
 
 /*
   
@@ -32,6 +32,94 @@ class HolidayManageStore {
   // 년 datepicker 오픈 여부
   @observable
   yearDatepickerOpend = false;
+
+  /* 이하는 모달 속성 */
+
+  @observable
+  visibleModal = false;
+
+  // 휴일명
+  @observable
+  name = '';
+
+  // 휴일날짜
+  @observable
+  holiDate = null;
+
+  @action
+  openFormModal() {
+    this.visibleModal = true;
+  }
+
+  @action
+  closeFormModal() {
+    this.visibleModal = false;
+    this.name = '';
+    this.holiDate = null;
+  }
+
+  // 등록
+  @action
+  saveHolidate() {
+    const name = this.name;
+    const holiDate = this.holiDate;
+    if (!name) {
+      alert('휴일명은 필수입니다.');
+      return;
+    }
+    if (!holiDate) {
+      alert('날짜를 선택해주세요.');
+      return;
+    }
+
+    const apiParam = { name };
+    const holiDateStr = moment(holiDate).format('YYYYMMDD');
+    apiParam.holiDateStr = holiDateStr;
+    apiParam.baseYear = Helper.dateToString(this.searchYear, 'YYYY');
+
+    ApiService.post('holiday/detail.do', { holiDateStr }).then((response) => {
+      let detailInfo = response.data;
+      if (detailInfo) {
+        alert(holiDateStr + ' 날짜는 이미 등록되어있습니다.');
+      } else {
+        ApiService.post('holiday/add.do', apiParam).then((response) => {
+          runInAction(() => {
+            Helper.toastMessage('휴일이 등록되었습니다.');
+            this.closeFormModal();
+            this.search();
+          });
+        });
+      }
+    });
+  }
+
+  // 삭제
+  @action
+  delete(holiDateStr) {
+    ModalService.confirm({
+      content: `삭제하시겠습니까?`,
+      ok: () => {
+        ApiService.post('holiday/delete.do', { holiDateStr: holiDateStr }).then(
+          (response) => {
+            runInAction(() => {
+              Helper.toastMessage('삭제되었습니다.');
+              this.search();
+            });
+          }
+        );
+      }
+    });
+  }
+
+  @action
+  changeName(name) {
+    this.name = name;
+  }
+
+  @action
+  changeHoliDate(holiDate) {
+    this.holiDate = holiDate;
+  }
 
   constructor(rootStore) {
     this.rootStore = rootStore;
