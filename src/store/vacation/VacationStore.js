@@ -119,6 +119,7 @@ class VacationStore {
   changeSearchYear(searchYear) {
     this.searchYear = searchYear;
     this.yearDatepickerOpend = false;
+    this.search();
   }
 
   // 다음년

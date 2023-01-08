@@ -188,7 +188,7 @@ class CommutePrivateStore {
     this.searchMonth = moment().toDate();
     this.searchDate = moment().toDate();
     this.endDate = moment().toDate();
-    this.startDate = moment().subtract(1, 'months').toDate();
+    this.startDate = moment().subtract(30, 'days').toDate();
   }
 
   @action
@@ -590,15 +590,19 @@ class CommutePrivateStore {
   // 시작일 datepicker 변경
   @action
   changeStartDate(startDate) {
-    this.startDate = startDate;
     let startDiffDays = moment(moment(startDate).format('YYYYMMDD')).diff(
       moment(moment(this.endDate).format('YYYYMMDD')),
       'days'
     );
+    if (Math.abs(startDiffDays) > 31) {
+      alert('조회 기간은 1개월을 초과할 수 없습니다.');
+      return;
+    }
+    this.startDate = startDate;
+    // 종료일이 시작일보다 작으면 시작일로 변경
     if (startDiffDays > 0) {
       this.endDate = startDate;
     }
-    // 종료일이 시작일보다 작으면 시작일로 변경
     this.startDatepickerOpend = false;
   }
   /* 시작일 datepicker 처리 end */
@@ -620,11 +624,15 @@ class CommutePrivateStore {
   // 종료일 datepicker 변경
   @action
   changeEndDate(endDate) {
-    this.endDate = endDate;
     let endDiffDays = moment(moment(endDate).format('YYYYMMDD')).diff(
       moment(moment(this.startDate).format('YYYYMMDD')),
       'days'
     );
+    if (Math.abs(endDiffDays) > 31) {
+      alert('조회 기간은 1개월을 초과할 수 없습니다.');
+      return;
+    }
+    this.endDate = endDate;
     if (endDiffDays < 0) {
       this.startDate = endDate;
     }
