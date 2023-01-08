@@ -49,10 +49,16 @@ class WorkReportForm extends Component {
                   </label>
                 </div>
                 <a href="javascript:void(0);" class="btn_ico">
-                  <img src="images/btn_list.png" />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/btn_list.png`}
+                    alt=""
+                  />
                 </a>
                 <a href="javascript:void(0);" class="btn_ico">
-                  <img src="images/btn_save.png" />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/btn_save.png`}
+                    alt=""
+                  />
                 </a>
               </div>
             </div>

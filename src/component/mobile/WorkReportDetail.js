@@ -45,10 +45,16 @@ class WorkReportDetail extends Component {
                   </label>
                 </div>
                 <a href="javascript:void(0);" class="btn_ico">
-                  <img src="images/btn_copy.png" />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/btn_copy.png`}
+                    alt=""
+                  />
                 </a>
                 <a href="javascript:void(0);" class="btn_ico">
-                  <img src="images/btn_modify.png" />
+                  <img
+                    src={`${process.env.PUBLIC_URL}/images/btn_modify.png`}
+                    alt=""
+                  />
                 </a>
               </div>
             </div>
