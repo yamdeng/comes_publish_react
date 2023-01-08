@@ -64,7 +64,7 @@ class WorkReportFormModal extends Component {
     reportDetailInfo = reportDetailInfo || {};
     commentDetailInfo = commentDetailInfo || {};
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_850'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
         <ModalHeader
           className="popup_head"
           close={

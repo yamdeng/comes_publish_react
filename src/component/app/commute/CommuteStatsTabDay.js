@@ -597,6 +597,7 @@ class CommuteStatsTabDay extends Component {
                 dataType="string"
                 caption="출근아이피"
                 allowSorting={false}
+                calculateDisplayValue={ReactHelper.startWorkIpColumDisplayValue}
               />
               <Column
                 dataField="finalStartWorkDate"
@@ -613,6 +614,7 @@ class CommuteStatsTabDay extends Component {
                 dataType="string"
                 caption="퇴근아이피"
                 allowSorting={false}
+                calculateDisplayValue={ReactHelper.outWorkIpColumDisplayValue}
               />
               <Column
                 dataField="finalOutWorkDate"
@@ -661,7 +663,10 @@ class CommuteStatsTabDay extends Component {
               <Pager
                 visible={true}
                 showPageSizeSelector={true}
-                allowedPageSizes={[5, 10, 'all']}
+                allowedPageSizes={[10, 20, 'all']}
+                showNavigationButtons={true}
+                showInfo={true}
+                infoText="{0} 페이지 / 전체 {1}"
               />
             </DataGrid>
           </div>

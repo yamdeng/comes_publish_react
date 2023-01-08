@@ -91,7 +91,7 @@ class CommuteDaySubmitModal extends Component {
       isSubmitAvailable
     } = commuteDaySubmitModalStore;
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_1000'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
         <ModalHeader
           className="popup_head"
           close={
@@ -173,7 +173,7 @@ class CommuteDaySubmitModal extends Component {
                     caption="부서명"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={90}
                   />
                   <Column
                     dataField="userName"
@@ -181,7 +181,7 @@ class CommuteDaySubmitModal extends Component {
                     caption="이름"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={90}
                   />
                   <Column
                     dataField="positionTitle"
@@ -189,7 +189,7 @@ class CommuteDaySubmitModal extends Component {
                     caption="직급"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={80}
                   />
                   <Column
                     dataField="startWorkIp"
@@ -198,6 +198,9 @@ class CommuteDaySubmitModal extends Component {
                     allowSorting={false}
                     allowEditing={false}
                     width={120}
+                    calculateDisplayValue={
+                      ReactHelper.startWorkIpColumDisplayValue
+                    }
                   />
                   {/* 출근시간 변경 */}
                   <Column
@@ -205,7 +208,7 @@ class CommuteDaySubmitModal extends Component {
                     dataType="datetime"
                     caption="출근시간"
                     format="yyyy-MM-dd HH:mm"
-                    width={200}
+                    width={160}
                     allowSorting={false}
                     calculateDisplayValue={
                       ReactHelper.finalStartWorkDateColumDisplayValue
@@ -218,6 +221,9 @@ class CommuteDaySubmitModal extends Component {
                     allowSorting={false}
                     allowEditing={false}
                     width={120}
+                    calculateDisplayValue={
+                      ReactHelper.outWorkIpColumDisplayValue
+                    }
                   />
                   {/* 퇴근시간 변경 */}
                   <Column
@@ -225,7 +231,7 @@ class CommuteDaySubmitModal extends Component {
                     dataType="datetime"
                     caption="퇴근시간"
                     format="HH:mm"
-                    width={200}
+                    width={160}
                     allowSorting={false}
                     calculateDisplayValue={
                       ReactHelper.finalOutWorkDateColumDisplayValue
@@ -274,7 +280,7 @@ class CommuteDaySubmitModal extends Component {
                   <Pager
                     visible={true}
                     showPageSizeSelector={true}
-                    allowedPageSizes={[5, 10, 'all']}
+                    allowedPageSizes={[10, 20, 'all']}
                   />
                 </DataGrid>
               </div>

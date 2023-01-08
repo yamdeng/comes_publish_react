@@ -116,10 +116,23 @@ class VacationHeadApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">휴가/휴직</a>&gt;
-            <a href="javascript:void(0);">팀원 휴가/휴직</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/vacation-head.do')}
+            >
+              휴가/휴직
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/vacation-head.do')}
+            >
+              실원 휴가/휴직
+            </a>
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
@@ -224,7 +237,7 @@ class VacationHeadApp extends Component {
                 <Column
                   dataField="deptName"
                   dataType="string"
-                  caption="이름"
+                  caption="부서명"
                   allowSorting={false}
                 />
                 <Column
@@ -284,7 +297,10 @@ class VacationHeadApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>
@@ -370,7 +386,10 @@ class VacationHeadApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

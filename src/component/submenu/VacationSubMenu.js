@@ -11,7 +11,7 @@ import Constant from 'config/Constant';
 class VacationSubMenu extends Component {
   render() {
     const { appStore } = this.props;
-    const { profile } = appStore;
+    const { profile, isManager } = appStore;
     const { userType } = profile;
     const pageType = reactPageType;
     let isHeadMenuVisible = false;
@@ -35,6 +35,7 @@ class VacationSubMenu extends Component {
           <li
             class={pageType === 'VacationDeptApp' ? 'on' : ''}
             onClick={() => Helper.goUrl('newoffice/view/vacation-dept.do')}
+            style={{ display: isManager ? '' : 'none' }}
           >
             <a href="javascript:void(0);">팀원 휴가/휴직</a>
           </li>

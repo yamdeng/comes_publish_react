@@ -168,7 +168,7 @@ class CommuteDayAdminModal extends Component {
     commuteDeptSubmitInfo = commuteDeptSubmitInfo || {};
     const { commuteSubmitStatusCode } = commuteDeptSubmitInfo;
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_1000'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
         <ModalHeader
           className="popup_head"
           close={
@@ -339,7 +339,7 @@ class CommuteDayAdminModal extends Component {
                     caption="부서명"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={90}
                   />
                   <Column
                     dataField="userName"
@@ -347,7 +347,7 @@ class CommuteDayAdminModal extends Component {
                     caption="이름"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={90}
                   />
                   <Column
                     dataField="positionTitle"
@@ -355,7 +355,7 @@ class CommuteDayAdminModal extends Component {
                     caption="직급"
                     allowSorting={false}
                     allowEditing={false}
-                    width={100}
+                    width={80}
                   />
                   <Column
                     dataField="startWorkIp"
@@ -364,6 +364,9 @@ class CommuteDayAdminModal extends Component {
                     allowSorting={false}
                     allowEditing={false}
                     width={120}
+                    calculateDisplayValue={
+                      ReactHelper.startWorkIpColumDisplayValue
+                    }
                   />
                   {/* 출근시간 변경 */}
                   <Column
@@ -371,7 +374,7 @@ class CommuteDayAdminModal extends Component {
                     dataType="datetime"
                     caption="출근시간"
                     format="yyyy-MM-dd HH:mm"
-                    width={200}
+                    width={160}
                     allowSorting={false}
                     calculateDisplayValue={
                       ReactHelper.finalStartWorkDateColumDisplayValue
@@ -384,6 +387,9 @@ class CommuteDayAdminModal extends Component {
                     allowSorting={false}
                     allowEditing={false}
                     width={120}
+                    calculateDisplayValue={
+                      ReactHelper.outWorkIpColumDisplayValue
+                    }
                   />
                   {/* 퇴근시간 변경 */}
                   <Column
@@ -391,7 +397,7 @@ class CommuteDayAdminModal extends Component {
                     dataType="datetime"
                     caption="퇴근시간"
                     format="HH:mm"
-                    width={200}
+                    width={160}
                     allowSorting={false}
                     calculateDisplayValue={
                       ReactHelper.finalOutWorkDateColumDisplayValue
@@ -441,7 +447,10 @@ class CommuteDayAdminModal extends Component {
                   <Pager
                     visible={true}
                     showPageSizeSelector={true}
-                    allowedPageSizes={[5, 10, 'all']}
+                    allowedPageSizes={[10, 20, 'all']}
+                    showNavigationButtons={true}
+                    showInfo={true}
+                    infoText="{0} 페이지 / 전체 {1}"
                   />
                 </DataGrid>
                 <a

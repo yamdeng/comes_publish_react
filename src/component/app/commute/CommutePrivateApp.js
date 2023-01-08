@@ -421,9 +421,7 @@ class CommutePrivateApp extends Component {
           <div class="">
             <div class="grid_top flex_sb mgtop20">
               <div class="number">
-                <p>
-                  <b class="blue">{totalCount}</b> 명
-                </p>
+                <p>{/* <b class="blue">{totalCount}</b> 명 */}</p>
               </div>
               <div class="search_right">
                 <input
@@ -482,6 +480,9 @@ class CommutePrivateApp extends Component {
                   dataType="string"
                   caption="출근아이피"
                   allowSorting={false}
+                  calculateDisplayValue={
+                    ReactHelper.startWorkIpColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="finalStartWorkDate"
@@ -498,6 +499,7 @@ class CommutePrivateApp extends Component {
                   dataType="string"
                   caption="퇴근아이피"
                   allowSorting={false}
+                  calculateDisplayValue={ReactHelper.outWorkIpColumDisplayValue}
                 />
                 <Column
                   dataField="finalOutWorkDate"
@@ -610,7 +612,7 @@ class CommutePrivateApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
                 />
               </DataGrid>
             </div>

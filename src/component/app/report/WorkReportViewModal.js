@@ -176,7 +176,7 @@ class WorkReportViewModal extends Component {
       );
     }
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_1000'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
         <ModalHeader
           className="popup_head"
           close={
@@ -260,15 +260,17 @@ class WorkReportViewModal extends Component {
                       <span>작성일시</span>
                       <span class="sel_relt_text">
                         {reportDetailInfo.reportDate
-                          ? reportDetailInfo.reportDate
+                          ? moment(reportDetailInfo.reportDate).format(
+                              'YYYY-MM-DD HH:mm'
+                            )
                           : '-'}
                       </span>
                     </li>
                     <li>
                       <span>작성자</span>
                       <span class="sel_relt_text">
-                        {reportDetailInfo.userName
-                          ? reportDetailInfo.userName
+                        {reportDetailInfo.managerName
+                          ? reportDetailInfo.managerName
                           : '-'}
                       </span>
                     </li>
@@ -296,11 +298,12 @@ class WorkReportViewModal extends Component {
                   <span>이전</span>
                 </a>
                 <div
-                  class="mgtop10 modal_grid_area"
+                  class="mgtop10 modal_grid_area scroll-minimum"
                   style={{
                     height: 400,
                     border: '1px solid #d6d6d6',
-                    padding: 5
+                    padding: 5,
+                    overflow: 'scroll'
                   }}
                   dangerouslySetInnerHTML={{
                     __html: reportDetailInfo.reportContent

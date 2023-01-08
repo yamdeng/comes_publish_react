@@ -283,11 +283,7 @@ class WorkReportStore {
   // 대시보드 선택시 바로 조회되게끔
   @action
   changeSearchDashBoardKind(searchDashBoardKind) {
-    if (this.searchDashBoardKind === searchDashBoardKind) {
-      this.searchDashBoardKind = '';
-    } else {
-      this.searchDashBoardKind = searchDashBoardKind;
-    }
+    this.searchDashBoardKind = searchDashBoardKind;
     this.search();
   }
 

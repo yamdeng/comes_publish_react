@@ -116,6 +116,10 @@ table {
 
 .modal_box_1000 { max-width:1000px; }
 
+.modal_box_1400 { max-width:1400px; }
+
+.modal_box_1270 { max-width:1270px; }
+
 
 .modal_box div.coment_write a.btn_blue {
     line-height: 100px;
@@ -137,3 +141,10 @@ table {
 }
 
 .wd100 {width:100px;}
+
+
+
+.dx-datagrid-rowsview .dx-selection.dx-row:not(.dx-row-focused):not(.dx-row-removed) > td {
+    background-color: rgb(65, 155, 228);
+    color: unset;
+}

@@ -292,6 +292,40 @@ const reportNotSubmitColumDisplayValue = function (rowData) {
   return moment(rowData.reportDate).format('YYYY-MM-DD');
 };
 
+// 출근아이피 column display custom
+const startWorkIpColumDisplayValue = function (rowData) {
+  if (rowData) {
+    let startWorkDeviceTypeText = '';
+    if (rowData.startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + rowData.startWorkDeviceType + ')';
+    }
+    if (rowData.startWorkIp) {
+      return startWorkDeviceTypeText + ' ' + rowData.startWorkIp;
+    } else {
+      return '';
+    }
+  } else {
+    return '';
+  }
+};
+
+// 퇴근아이피 column display custom
+const outWorkIpColumDisplayValue = function (rowData) {
+  if (rowData) {
+    let startWorkDeviceTypeText = '';
+    if (rowData.startWorkDeviceType) {
+      startWorkDeviceTypeText = '(' + rowData.startWorkDeviceType + ')';
+    }
+    if (rowData.outWorkIp) {
+      return startWorkDeviceTypeText + ' ' + rowData.outWorkIp;
+    } else {
+      return '';
+    }
+  } else {
+    return '';
+  }
+};
+
 export default {
   convertEnterStringToBrTag,
   handleInputOnChange,
@@ -310,5 +344,7 @@ export default {
   workResultcodeColumDisplayValue,
   baseDateStrColumDisplayValue,
   commentYnColumDisplayValue,
-  reportNotSubmitColumDisplayValue
+  reportNotSubmitColumDisplayValue,
+  startWorkIpColumDisplayValue,
+  outWorkIpColumDisplayValue
 };

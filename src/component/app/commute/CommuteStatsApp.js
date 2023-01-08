@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
 import CommuteStatsTabDay from './CommuteStatsTabDay';
 import CommuteStatsTabMonth from './CommuteStatsTabMonth';
+import Helper from 'util/Helper';
 
 @inject('appStore', 'uiStore')
 @observer
@@ -31,10 +32,23 @@ class CommuteStatsApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">전체출퇴근통계</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-stats.do')}
+            >
+              출퇴근
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-stats.do')}
+            >
+              전체출퇴근통계
+            </a>
           </div>
 
           <div class="tab_sub">

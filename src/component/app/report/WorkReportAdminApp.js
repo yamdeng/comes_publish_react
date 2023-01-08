@@ -46,6 +46,7 @@ class WorkReportAdminApp extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
     this.openViewModal = this.openViewModal.bind(this);
     this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
   }
 
   changeSearchDeptName(event) {
@@ -147,6 +148,14 @@ class WorkReportAdminApp extends Component {
     workReportViewModalStore.openModal(searchDate);
   }
 
+  handleRowClick(e) {
+    if (e.data) {
+      const baseDateStr = e.data.baseDateStr;
+      const { workReportViewModalStore } = this.props;
+      workReportViewModalStore.openModal(moment(baseDateStr).toDate());
+    }
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -180,10 +189,23 @@ class WorkReportAdminApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">업무보고</a>&gt;
-            <a href="javascript:void(0);">전체 업무보고</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/report-admin.do')}
+            >
+              업무보고
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/report-admin.do')}
+            >
+              전체 업무보고
+            </a>
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
@@ -421,6 +443,7 @@ class WorkReportAdminApp extends Component {
                 cacheEnabled={false}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
+                onRowClick={this.handleRowClick}
               >
                 <Column
                   dataField="baseDateStr"
@@ -467,7 +490,10 @@ class WorkReportAdminApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

@@ -48,6 +48,7 @@ class WorkReportHeadApp extends Component {
     this.changeSearchDashBoardKind = this.changeSearchDashBoardKind.bind(this);
     this.openViewModal = this.openViewModal.bind(this);
     this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
   }
 
   changeSearchDeptName(event) {
@@ -155,6 +156,14 @@ class WorkReportHeadApp extends Component {
     workReportViewModalStore.openModal(searchDate);
   }
 
+  handleRowClick(e) {
+    if (e.data) {
+      const baseDateStr = e.data.baseDateStr;
+      const { workReportViewModalStore } = this.props;
+      workReportViewModalStore.openModal(moment(baseDateStr).toDate());
+    }
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -197,10 +206,23 @@ class WorkReportHeadApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">업무보고</a>&gt;
-            <a href="javascript:void(0);">실 업무보고</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/report-head.do')}
+            >
+              업무보고
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/report-head.do')}
+            >
+              실 업무보고
+            </a>
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
@@ -382,6 +404,15 @@ class WorkReportHeadApp extends Component {
               </li>
               <li
                 class="flex_center"
+                onClick={() => this.changeSearchDashBoardKind('SUBMIT')}
+              >
+                <div className={searchDashBoardKind === 'SUBMIT' ? 'blue' : ''}>
+                  <span>제출</span>
+                  <b>{statsInfo.submit}</b>
+                </div>
+              </li>
+              <li
+                class="flex_center"
                 onClick={() => this.changeSearchDashBoardKind('NOT_SUBMIT')}
               >
                 <div
@@ -453,6 +484,7 @@ class WorkReportHeadApp extends Component {
                 cacheEnabled={false}
                 noDataText={'업무보고 정보가 존재하지 않습니다.'}
                 height={450}
+                onRowClick={this.handleRowClick}
               >
                 <Column
                   dataField="baseDateStr"
@@ -496,7 +528,10 @@ class WorkReportHeadApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

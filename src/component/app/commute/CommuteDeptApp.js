@@ -284,10 +284,23 @@ class CommuteDeptApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">팀원출퇴근</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}
+            >
+              출퇴근
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}
+            >
+              팀원출퇴근
+            </a>
           </div>
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="grp_cale_option">
@@ -759,6 +772,9 @@ class CommuteDeptApp extends Component {
                   dataType="string"
                   caption="출근아이피"
                   allowSorting={false}
+                  calculateDisplayValue={
+                    ReactHelper.startWorkIpColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="finalStartWorkDate"
@@ -775,6 +791,7 @@ class CommuteDeptApp extends Component {
                   dataType="string"
                   caption="퇴근아이피"
                   allowSorting={false}
+                  calculateDisplayValue={ReactHelper.outWorkIpColumDisplayValue}
                 />
                 <Column
                   dataField="finalOutWorkDate"
@@ -805,7 +822,10 @@ class CommuteDeptApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

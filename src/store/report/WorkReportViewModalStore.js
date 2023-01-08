@@ -94,6 +94,7 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
 
   @action
   saveComment() {
+    const workReportStore = this.rootStore.workReportStore;
     const commentDetailInfo = this.commentDetailInfo;
     const reportDetailInfo = this.reportDetailInfo;
     const commentContent = this.commentContent;
@@ -101,7 +102,7 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
     if (commentDetailInfo) {
       // 존재하는 경우는 update
       // 이슈 여부는 항상 저장
-      ApiService.put('work-reports/update.do', {
+      ApiService.put('work-reports/update-issue.do', {
         reportId: reportDetailInfo.reportId,
         issueYn: issueYn
       }).then(() => {
@@ -110,12 +111,13 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
           commentContent: commentContent
         }).then(() => {
           Helper.toastMessage('댓글이 저장되었습니다.');
-          this.getReportDetailInfo();
+          this.closeModal();
+          workReportStore.search();
         });
       });
     } else {
       // 존재 X insert
-      ApiService.put('work-reports/update.do', {
+      ApiService.put('work-reports/update-issue.do', {
         reportId: reportDetailInfo.reportId,
         issueYn: issueYn
       }).then(() => {
@@ -124,7 +126,8 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
           commentContent: commentContent
         }).then(() => {
           Helper.toastMessage('댓글이 저장되었습니다.');
-          this.getReportDetailInfo();
+          this.closeModal();
+          workReportStore.search();
         });
       });
     }

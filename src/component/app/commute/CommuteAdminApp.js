@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import CommuteDayAdminModal from './CommuteDayAdminModal';
 import ReactHelper from 'util/ReactHelper';
+import moment from 'moment';
 
 @inject('appStore', 'uiStore', 'commuteDeptStore', 'commuteDayAdminModalStore')
 @observer
@@ -46,6 +47,7 @@ class CommuteAdminApp extends Component {
     this.openModal = this.openModal.bind(this);
 
     this.changeSearchDeptName = this.changeSearchDeptName.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
   }
 
   changeSearchDeptName(event) {
@@ -147,6 +149,14 @@ class CommuteAdminApp extends Component {
     commuteDayAdminModalStore.openModal(searchDate);
   }
 
+  handleRowClick(e) {
+    if (e.data) {
+      const baseDateStr = e.data.baseDateStr;
+      const { commuteDayAdminModalStore } = this.props;
+      commuteDayAdminModalStore.openModal(moment(baseDateStr).toDate());
+    }
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -179,10 +189,23 @@ class CommuteAdminApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">전체출퇴근관리</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}
+            >
+              출퇴근
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}
+            >
+              전체출퇴근관리
+            </a>
           </div>
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
             <div class="grp_cale_option">
@@ -512,6 +535,7 @@ class CommuteAdminApp extends Component {
                 noDataText={'출근 정보가 존재하지 않습니다.'}
                 height={450}
                 cacheEnabled={false}
+                onRowClick={this.handleRowClick}
               >
                 <Column
                   dataField="baseDateStr"
@@ -620,7 +644,10 @@ class CommuteAdminApp extends Component {
                 <Pager
                   visible={true}
                   showPageSizeSelector={true}
-                  allowedPageSizes={[5, 10, 'all']}
+                  allowedPageSizes={[10, 20, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

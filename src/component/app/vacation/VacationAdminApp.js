@@ -122,10 +122,23 @@ class VacationAdminApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">휴가/휴직</a>&gt;
-            <a href="javascript:void(0);">전체 휴가관리</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
+            >
+              휴가/휴직
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
+            >
+              전체 휴가관리
+            </a>
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
@@ -356,6 +369,9 @@ class VacationAdminApp extends Component {
                   visible={true}
                   showPageSizeSelector={true}
                   allowedPageSizes={[5, 10, 15, 'all']}
+                  showNavigationButtons={true}
+                  showInfo={true}
+                  infoText="{0} 페이지 / 전체 {1}"
                 />
               </DataGrid>
             </div>

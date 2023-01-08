@@ -73,7 +73,6 @@ class WorkReportFormModalStore {
     const reportDetailInfo = this.reportDetailInfo;
     const workReportStore = this.rootStore.workReportStore;
     const issueYn = this.issueYn;
-    // const baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
     const editerContent = this.xfe.getBodyValue();
     const apiParam = {
       reportContent: editerContent,
@@ -91,6 +90,7 @@ class WorkReportFormModalStore {
             this.reportDetailInfo = detailInfo;
           });
           Helper.toastMessage('업무보고가 저장되었습니다.');
+          this.closeModal();
           workReportStore.search();
         });
       }

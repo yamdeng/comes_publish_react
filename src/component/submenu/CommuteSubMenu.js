@@ -11,7 +11,7 @@ import Constant from 'config/Constant';
 class CommuteSubMenu extends Component {
   render() {
     const { appStore } = this.props;
-    const { profile } = appStore;
+    const { profile, isManager } = appStore;
     const { userType } = profile;
     const pageType = reactPageType;
     let isHeadMenuVisible = false;
@@ -35,6 +35,7 @@ class CommuteSubMenu extends Component {
           <li
             class={pageType === 'CommuteDeptApp' ? 'on' : ''}
             onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}
+            style={{ display: isManager ? '' : 'none' }}
           >
             <a href="javascript:void(0);">팀원출퇴근</a>
           </li>

@@ -446,7 +446,10 @@ class CommuteStatsTabMonth extends Component {
               <Pager
                 visible={true}
                 showPageSizeSelector={true}
-                allowedPageSizes={[5, 10, 'all']}
+                allowedPageSizes={[10, 20, 'all']}
+                showNavigationButtons={true}
+                showInfo={true}
+                infoText="{0} 페이지 / 전체 {1}"
               />
             </DataGrid>
           </div>
@@ -561,7 +564,10 @@ class CommuteStatsTabMonth extends Component {
               <Pager
                 visible={true}
                 showPageSizeSelector={true}
-                allowedPageSizes={[5, 10, 'all']}
+                allowedPageSizes={[10, 20, 'all']}
+                showNavigationButtons={true}
+                showInfo={true}
+                infoText="{0} 페이지 / 전체 {1}"
               />
             </DataGrid>
           </div>
@@ -648,7 +654,10 @@ class CommuteStatsTabMonth extends Component {
               <Pager
                 visible={true}
                 showPageSizeSelector={true}
-                allowedPageSizes={[5, 10, 'all']}
+                allowedPageSizes={[10, 20, 'all']}
+                showNavigationButtons={true}
+                showInfo={true}
+                infoText="{0} 페이지 / 전체 {1}"
               />
             </DataGrid>
           </div>

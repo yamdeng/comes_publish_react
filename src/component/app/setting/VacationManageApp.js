@@ -7,6 +7,7 @@ import ApiService from 'service/ApiService';
 import SettingSubMenu from 'component/submenu/SettingSubMenu';
 import VacationManageBatchTab from './VacationManageBatchTab';
 import VacationManageConditionTab from './VacationManageConditionTab';
+import Helper from 'util/Helper';
 
 @inject('appStore', 'uiStore', 'vacationManageStore')
 @observer
@@ -39,10 +40,27 @@ class VacationManageApp extends Component {
               <img
                 src={`${process.env.PUBLIC_URL}/images/ico_location.png`}
                 alt="홈으로 가기"
+                onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">설정</a>&gt;
-            <a href="javascript:void(0);">휴가발생관리</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() =>
+                Helper.goUrl('siteadmin/config/setting-vacation.adm')
+              }
+            >
+              설정
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() =>
+                Helper.goUrl('siteadmin/config/setting-vacation.adm')
+              }
+            >
+              휴가발생관리
+            </a>
           </div>
 
           <div class="tab_sub">
