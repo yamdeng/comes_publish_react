@@ -397,3 +397,8 @@ table.tbl_blue td div.flex_bw2 input[type="text"] {width:calc(100% / 2); } */
     #m_header a.hamburger_menu.active .line:nth-child(1) { margin-top:-2.2rem; }
     #m_header a.hamburger_menu.active .line:nth-child(3) { margin-top:-2.2rem; }
 }
+
+
+.wd100 {width:100px;}
+.wd110 {width:110px;}
+.wd120 {width:120px;}

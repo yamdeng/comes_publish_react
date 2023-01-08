@@ -1,41 +1,82 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Constant from 'config/Constant';
+import { withRouter } from 'react-router-dom';
+import moment from 'moment';
 
-@inject('appStore', 'uiStore', 'homeStore')
+@withRouter
+@inject('appStore', 'uiStore', 'workReportFormStore')
 @observer
 class WorkReportForm extends Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.init = this.init.bind(this);
+    this.changeIssueYn = this.changeIssueYn.bind(this);
+    this.saveReport = this.saveReport.bind(this);
+  }
+
+  changeIssueYn(event) {
+    let value = event.target.checked;
+    const { workReportFormStore } = this.props;
+    workReportFormStore.changeIssueYn(value ? 'Y' : 'N');
+  }
+
+  saveReport() {
+    const { workReportFormStore } = this.props;
+    workReportFormStore.saveReport();
   }
 
   init() {}
 
+  componentDidMount() {
+    let baseDateStr = this.props.match.params.baseDateStr;
+    let deptId = this.props.match.params.deptId;
+    const { workReportFormStore } = this.props;
+    workReportFormStore.loadEditor(baseDateStr, deptId);
+  }
+
   render() {
-    let { homeStore } = this.props;
+    let { workReportFormStore, uiStore } = this.props;
+    let { reportDetailInfo } = workReportFormStore;
+    reportDetailInfo = reportDetailInfo || {};
     let {
-      searchDateType,
-      searchMonth,
-      startDate,
-      endDate,
-      monthDatepickerOpend,
-      startDatepickerOpend,
-      endDatepickerOpend,
-      totalCount,
-      statsInfo,
-      datagridStore,
-      searchDashBoardKind
-    } = homeStore;
-    statsInfo = statsInfo || {};
+      deptId,
+      baseDateStr,
+      reportContent,
+      issueYn,
+      commentCount,
+      reportDate,
+      reportSubmitStatusCode
+    } = reportDetailInfo;
+
+    const baseYear = moment(baseDateStr).format('YYYY');
+    const postFixDateStr = moment(baseDateStr).format('MM-DD(ddd)');
+    let reportSubmitStatusCodeResultComponent = '-';
+    let reportBaseYear = '';
+    if (!reportDate && reportSubmitStatusCode === 'NOT_SUBMIT') {
+      reportSubmitStatusCodeResultComponent = '미제출';
+    } else if (reportDate) {
+      reportBaseYear = moment(reportDate).format('YYYY');
+      reportSubmitStatusCodeResultComponent = (
+        <>
+          <span class="block">{reportBaseYear}-</span>
+          {moment(reportDate).format('MM-DD HH:mm')}
+        </>
+      );
+    }
+
     return (
       <div class="wrap">
         <div class="m_sub_wrap">
           <header>
             <div id="m_header" class="flex_sb">
               <h1 class="m_title">업무보고 작성</h1>
-              <a class="hamburger_menu active black" href="javascript:void(0);">
+              <a
+                class="hamburger_menu active black"
+                href="javascript:void(0);"
+                onClick={() => uiStore.back()}
+              >
                 <span class="line"></span>
                 <span class="line"></span>
                 <span class="line"></span>
@@ -43,18 +84,27 @@ class WorkReportForm extends Component {
               <div class="right_area flex">
                 <p>이슈</p>
                 <div class="wrapper">
-                  <input type="checkbox" id="switch" />
+                  <input
+                    type="checkbox"
+                    id="switch"
+                    checked2={issueYn === 'Y' ? false : true}
+                    onChange2={this.changeIssueYn}
+                  />
                   <label for="switch" class="switch_label">
                     <span class="onf_btn"></span>
                   </label>
                 </div>
-                <a href="javascript:void(0);" class="btn_ico">
+                {/* <a href="javascript:void(0);" class="btn_ico">
                   <img
                     src={`${process.env.RESOURCE_URL}/images/btn_list.png`}
                     alt=""
                   />
-                </a>
-                <a href="javascript:void(0);" class="btn_ico">
+                </a> */}
+                <a
+                  href="javascript:void(0);"
+                  class="btn_ico"
+                  onClick={this.saveReport}
+                >
                   <img
                     src={`${process.env.RESOURCE_URL}/images/btn_save.png`}
                     alt=""
@@ -68,24 +118,14 @@ class WorkReportForm extends Component {
               <div>
                 <div class="m_sub_top flex_sb">
                   <h4>
-                    <span class="block">2022-</span>07-27(수)
+                    <span class="block">{baseYear}-</span>
+                    {postFixDateStr}
                   </h4>
-                  <p class="result">
-                    <span class="block">2022-</span>07-28 10:01
-                  </p>
+                  <p class="result">{reportSubmitStatusCodeResultComponent}</p>
                 </div>
 
                 <div class="border-top mgtop10">
-                  <p
-                    style={{
-                      height: 300,
-                      fontSize: 15,
-                      lineHeight: 300,
-                      textAlign: 'center'
-                    }}
-                  >
-                    웹 에디터 영역
-                  </p>
+                  <div id="reactEditor"></div>
                 </div>
               </div>
             </div>

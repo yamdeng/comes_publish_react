@@ -87,7 +87,6 @@ class UiStore {
     } else {
       AppHistory.push(url);
     }
-    this.toggleSideMenu();
   }
 
   // 이전 페이지로
@@ -107,9 +106,9 @@ class UiStore {
 
   // 상담사 메인 왼쪽 메뉴 active 반영
   @action
-  selectMenu(menuInfo) {
-    let { routeUrl } = menuInfo;
+  selectMenu(routeUrl) {
     this.goPage(routeUrl);
+    this.toggleSideMenu();
   }
 
   // 현재 시간을 계속 최신화시킴

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import Constant from 'config/Constant';
 import classnames from 'classnames';
+import Helper from 'util/Helper';
+import { withRouter } from 'react-router-dom';
 
+@withRouter
 @inject('appStore', 'uiStore', 'homeStore')
 @observer
 class Home extends Component {
@@ -10,27 +12,58 @@ class Home extends Component {
     super(props);
     this.state = {};
     this.init = this.init.bind(this);
+    this.changeInWorkYn = this.changeInWorkYn.bind(this);
+    this.startWork = this.startWork.bind(this);
+    this.outWork = this.outWork.bind(this);
   }
 
-  init() {}
+  changeInWorkYn(inWorkYn) {
+    const { homeStore } = this.props;
+    homeStore.changeInWorkYn(inWorkYn);
+  }
+
+  startWork() {
+    const { homeStore } = this.props;
+    homeStore.startWork();
+  }
+
+  outWork() {
+    const { homeStore } = this.props;
+    homeStore.outWork();
+  }
+
+  init() {
+    const { homeStore } = this.props;
+    homeStore.getTodayCommuteDayInfo();
+  }
+
+  componentDidMount() {
+    this.init();
+  }
 
   render() {
-    let { homeStore, uiStore } = this.props;
-    let { menuList, displaySideMenu } = uiStore;
-    let {
-      searchDateType,
-      searchMonth,
-      startDate,
-      endDate,
-      monthDatepickerOpend,
-      startDatepickerOpend,
-      endDatepickerOpend,
-      totalCount,
-      statsInfo,
-      datagridStore,
-      searchDashBoardKind
-    } = homeStore;
-    statsInfo = statsInfo || {};
+    let { homeStore, uiStore, appStore } = this.props;
+    const {
+      todayDayTextInfo,
+      todayWeekTextInfo,
+      currentTime,
+      displaySideMenu
+    } = uiStore;
+    let { profile } = appStore;
+    const { userType, user_name, dept_name } = profile;
+    let { todayCommuteDayInfo, inWorkYn } = homeStore;
+    todayCommuteDayInfo = todayCommuteDayInfo || {};
+
+    const {
+      startWorkDate,
+      outWorkDate,
+      startWorkIp,
+      vacationKindCode,
+      workStatusCodeName,
+      startWorkDeviceType
+    } = todayCommuteDayInfo;
+    const isAllDayVacation = Helper.getIsAllDayVacation(vacationKindCode);
+
     return (
       <div class="wrap">
         <div class="m_main_wrap">
@@ -40,6 +73,7 @@ class Home extends Component {
                 <img
                   src={`${process.env.RESOURCE_URL}/images/comeslogo_mobile.png`}
                   alt="COMES INTRANET"
+                  onClick={() => Helper.goUrl('')}
                 />
               </h1>
 
@@ -60,7 +94,7 @@ class Home extends Component {
             <div class="main_content">
               <div class="login_user">
                 <p>
-                  <span class="user_name">조강래</span>님{' '}
+                  <span class="user_name">{user_name}</span>님{' '}
                   <em>좋은 하루 보내세요.</em>
                 </p>
               </div>
@@ -75,22 +109,45 @@ class Home extends Component {
                     </div>
                     <div>
                       <p class="date">
-                        09.02<span>(수)</span>
+                        {todayDayTextInfo}
+                        <span> ({todayWeekTextInfo})</span>
                       </p>
-                      <p class="time">13:22:18</p>
+                      <p class="time">{currentTime}</p>
                     </div>
                   </div>
                   <div class="work_option_wrap flex_sb">
                     <p class="txt">근무 형태를 체크해주세요.</p>
                     <div class="tab-slider--nav">
-                      <ul class="tab-slider--tabs">
+                      <ul
+                        className={classnames('tab-slider--tabs', {
+                          slide: inWorkYn === 'N',
+                          work_option2: inWorkYn === 'N'
+                        })}
+                      >
                         <li
-                          class="tab-slider--trigger work-option1 active"
+                          className={classnames(
+                            'tab-slider--trigger',
+                            'work-option1',
+                            {
+                              active: inWorkYn === 'Y'
+                            }
+                          )}
                           rel="tab1"
+                          onClick={() => this.changeInWorkYn('Y')}
                         >
                           업무
                         </li>
-                        <li class="tab-slider--trigger work-option2" rel="tab2">
+                        <li
+                          className={classnames(
+                            'tab-slider--trigger',
+                            'work-option2',
+                            {
+                              active: inWorkYn === 'N'
+                            }
+                          )}
+                          rel="tab2"
+                          onClick={() => this.changeInWorkYn('N')}
+                        >
                           재택
                         </li>
                       </ul>
@@ -98,42 +155,61 @@ class Home extends Component {
                   </div>
                 </div>
                 <div class="container">
-                  <div class="tab-slider--container">
+                  <div
+                    class="tab-slider--container"
+                    style={{
+                      visibility: isAllDayVacation ? 'hidden' : 'visible'
+                    }}
+                  >
                     <div id="tab1" class="tab-slider--body">
                       <div id="tab01" class="flex_sb">
-                        <a href="#" class="btn_work option1">
+                        <a
+                          href="javascript:void(0);"
+                          className={classnames('btn_work', {
+                            option1: inWorkYn === 'Y',
+                            option2: inWorkYn === 'N',
+                            active: startWorkDate ? true : false
+                          })}
+                          onClick={this.startWork}
+                        >
                           <div class="btn_box">
                             <i class="work_on_ico"></i>
                             <p>
-                              출근 <span>08:50</span>
+                              출근{' '}
+                              <span>
+                                {startWorkDate
+                                  ? Helper.convertDate(
+                                      startWorkDate,
+                                      'YYYY-MM-DD HH:mm:ss',
+                                      'H:mm'
+                                    )
+                                  : '미체크'}
+                              </span>
                             </p>
                           </div>
                         </a>
-                        <a href="#" class="btn_work option1 active">
+                        <a
+                          href="javascript:void(0);"
+                          className={classnames('btn_work', {
+                            option1: inWorkYn === 'Y',
+                            option2: inWorkYn === 'N',
+                            active: false
+                          })}
+                          onClick={this.outWork}
+                        >
                           <div class="btn_box">
                             <i class="work_off_ico"></i>
                             <p>
-                              퇴근 <span>18:10</span>
-                            </p>
-                          </div>
-                        </a>
-                      </div>
-                    </div>
-                    <div id="tab2" class="tab-slider--body">
-                      <div id="tab02" class="flex_sb">
-                        <a href="#" class="btn_work option2 active">
-                          <div class="btn_box">
-                            <i class="work_on_ico"></i>
-                            <p>
-                              출근 <span>08:50</span>
-                            </p>
-                          </div>
-                        </a>
-                        <a href="#" class="btn_work">
-                          <div class="btn_box">
-                            <i class="work_off_ico"></i>
-                            <p>
-                              퇴근 <span>미체크</span>
+                              퇴근{' '}
+                              <span>
+                                {outWorkDate
+                                  ? Helper.convertDate(
+                                      outWorkDate,
+                                      'YYYY-MM-DD HH:mm:ss',
+                                      'H:mm'
+                                    )
+                                  : '미체크'}
+                              </span>
                             </p>
                           </div>
                         </a>

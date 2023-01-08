@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Constant from 'config/Constant';
+import { withRouter } from 'react-router-dom';
 
+@withRouter
 @inject('appStore', 'uiStore', 'homeStore')
 @observer
 class CommuteForm extends Component {

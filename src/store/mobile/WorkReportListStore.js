@@ -12,9 +12,9 @@ class WorkReportListStore {
   @observable
   list = [];
 
-  // 검색일자
+  // 검색 월
   @observable
-  searchDate = moment().toDate();
+  searchMonth = moment().toDate();
 
   // 일 datepicker 오픈 여부
   @observable
@@ -26,14 +26,14 @@ class WorkReportListStore {
 
   // datepicker 초기화
   @action
-  initSearchDateAll() {
-    this.searchDate = moment().toDate();
+  init() {
+    this.searchMonth = moment().toDate();
   }
 
   // 일 datepicker 변경
   @action
-  changeSearchDate(searchDate) {
-    this.searchDate = searchDate;
+  changeSearchMonth(searchMonth) {
+    this.searchMonth = searchMonth;
     this.dayDatepickerOpend = false;
     this.search();
   }
@@ -60,7 +60,7 @@ class WorkReportListStore {
     const profile = appStore.profile;
     const apiParam = {};
     apiParam.deptId = profile.dept_key;
-    apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    apiParam.searchMonthStr = Helper.dateToString(this.searchMonth, 'YYYYMM');
     ApiService.post('work-reports/list.do', apiParam).then((response) => {
       const data = response.data;
       runInAction(() => {

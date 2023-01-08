@@ -338,8 +338,8 @@ class CommutePrivateApp extends Component {
                             {startWorkDate
                               ? Helper.convertDate(
                                   startWorkDate,
-                                  'YYYY-MM-DD Hhmmss',
-                                  'HH:mm'
+                                  'YYYY-MM-DD HH:mm:ss',
+                                  'H:mm'
                                 )
                               : '미체크'}
                           </span>
@@ -360,11 +360,11 @@ class CommutePrivateApp extends Component {
                         >
                           퇴근{' '}
                           <span>
-                            {startWorkDate
+                            {outWorkDate
                               ? Helper.convertDate(
                                   outWorkDate,
-                                  'YYYY-MM-DD Hhmmss',
-                                  'HH:mm'
+                                  'YYYY-MM-DD HH:mm:ss',
+                                  'H:mm'
                                 )
                               : '미체크'}
                           </span>

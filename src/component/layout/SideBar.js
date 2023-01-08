@@ -73,8 +73,8 @@ class SideBar extends Component {
               <div class="u_photo">
                 <img
                   class="profile"
-                  src="images/no_image.png"
                   alt="로그인 유저 사진"
+                  src={`${process.env.RESOURCE_URL}/images/no_image.png`}
                 />
               </div>
               <div class="u_info">
@@ -91,7 +91,7 @@ class SideBar extends Component {
                   <li
                     data-id="con1"
                     class="nav_menu1"
-                    onClick={() => uiStore.goPage('home')}
+                    onClick={() => uiStore.selectMenu('home')}
                   >
                     <div>
                       <i class="nav_ico"></i>
@@ -101,8 +101,11 @@ class SideBar extends Component {
                   <li
                     data-id="con2"
                     class="nav_menu2"
-                    style={{ display: userType === Constant.USER_TYPE_MANAGER }}
-                    onClick={() => uiStore.goPage('reports')}
+                    style={{
+                      display:
+                        userType === Constant.USER_TYPE_MANAGER ? '' : 'none'
+                    }}
+                    onClick={() => uiStore.selectMenu('reports')}
                   >
                     <div>
                       <i class="nav_ico"></i>
@@ -112,8 +115,11 @@ class SideBar extends Component {
                   <li
                     data-id="con3"
                     class="nav_menu3"
-                    style={{ display: userType === Constant.USER_TYPE_MANAGER }}
-                    onClick={() => uiStore.goPage('commute-depts')}
+                    style={{
+                      display:
+                        userType === Constant.USER_TYPE_MANAGER ? '' : 'none'
+                    }}
+                    onClick={() => uiStore.selectMenu('commute-depts')}
                   >
                     <div>
                       <i class="nav_ico"></i>
@@ -123,7 +129,7 @@ class SideBar extends Component {
                   <li
                     data-id="con4"
                     class="nav_menu4"
-                    onClick={() => Helper.goUrl('logout.do?mobileyn=Y')}
+                    onClick={() => Helper.selectMenu('logout.do?mobileyn=Y')}
                   >
                     <div>
                       <i class="nav_ico"></i>
@@ -137,7 +143,7 @@ class SideBar extends Component {
               <a
                 href="javascript:void(0);"
                 class="m_btn_logout"
-                onClick={() => Helper.goUrl('por/main/index.do')}
+                onClick={() => Helper.selectMenu('por/main/index.do')}
               >
                 <i class="ico_pc"></i>PC 버전 보기
               </a>

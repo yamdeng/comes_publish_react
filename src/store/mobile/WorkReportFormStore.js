@@ -50,6 +50,9 @@ class WorkReportFormStore {
       const detailInfo = response.data;
       runInAction(() => {
         this.reportDetailInfo = detailInfo;
+        if (this.xfe && this.xfe.setBodyValue) {
+          this.xfe.setBodyValue(detailInfo.reportContent);
+        }
       });
       ApiService.post('work-reports/comment/detail.do', {
         reportId: detailInfo.reportId
@@ -67,10 +70,6 @@ class WorkReportFormStore {
   changeIssueYn(issueYn) {
     this.issueYn = issueYn;
   }
-
-  // 클립보드 복사
-  @action
-  copyClipBoard() {}
 
   // 저장
   @action

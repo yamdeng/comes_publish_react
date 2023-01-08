@@ -1,56 +1,107 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Constant from 'config/Constant';
+import { withRouter } from 'react-router-dom';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import moment from 'moment';
+import Helper from 'util/Helper';
 
-@inject('appStore', 'uiStore', 'homeStore')
+@withRouter
+@inject('appStore', 'uiStore', 'workReportDetailStore')
 @observer
 class WorkReportDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.init = this.init.bind(this);
+    this.onCopy = this.onCopy.bind(this);
   }
 
   init() {}
 
+  onCopy() {
+    Helper.toastMessage('업무 보고가 복사되었습니다.');
+  }
+
+  componentDidMount() {
+    let baseDateStr = this.props.match.params.baseDateStr;
+    let deptId = this.props.match.params.deptId;
+    const { workReportDetailStore } = this.props;
+    workReportDetailStore.getReportDetailInfo(baseDateStr, deptId);
+  }
+
   render() {
-    let { homeStore } = this.props;
+    let { workReportDetailStore, uiStore } = this.props;
+    let { reportDetailInfo } = workReportDetailStore;
+    reportDetailInfo = reportDetailInfo || {};
     let {
-      searchDateType,
-      searchMonth,
-      startDate,
-      endDate,
-      monthDatepickerOpend,
-      startDatepickerOpend,
-      endDatepickerOpend,
-      totalCount,
-      statsInfo,
-      datagridStore,
-      searchDashBoardKind
-    } = homeStore;
-    statsInfo = statsInfo || {};
+      deptId,
+      baseDateStr,
+      reportContent,
+      issueYn,
+      commentCount,
+      reportDate,
+      reportSubmitStatusCode
+    } = reportDetailInfo;
+
+    const baseYear = moment(baseDateStr).format('YYYY');
+    const postFixDateStr = moment(baseDateStr).format('MM-DD(ddd)');
+    let reportSubmitStatusCodeResultComponent = '-';
+    let reportBaseYear = '';
+    if (!reportDate && reportSubmitStatusCode === 'NOT_SUBMIT') {
+      reportSubmitStatusCodeResultComponent = '미제출';
+    } else if (reportDate) {
+      reportBaseYear = moment(reportDate).format('YYYY');
+      reportSubmitStatusCodeResultComponent = (
+        <>
+          <span class="block">{reportBaseYear}-</span>
+          {moment(reportDate).format('MM-DD HH:mm')}
+        </>
+      );
+    }
+
     return (
       <div class="wrap">
         <div class="m_sub_wrap">
           <header>
             <div id="m_header" class="flex_sb">
               <h1 class="m_title">업무보고 보기</h1>
-              <a class="back" href="javascript:void(0);"></a>
+              <a
+                class="back"
+                href="javascript:void(0);"
+                onClick={() => uiStore.goPage('/reports', true)}
+              ></a>
               <div class="right_area flex">
                 <p>이슈</p>
                 <div class="wrapper">
-                  <input type="checkbox" id="switch" />
+                  <input
+                    type="checkbox"
+                    id="switch"
+                    checked={issueYn === 'Y' ? false : true}
+                    disabled
+                  />
                   <label for="switch" class="switch_label">
                     <span class="onf_btn"></span>
                   </label>
                 </div>
-                <a href="javascript:void(0);" class="btn_ico">
-                  <img
-                    src={`${process.env.RESOURCE_URL}/images/btn_copy.png`}
-                    alt=""
-                  />
-                </a>
-                <a href="javascript:void(0);" class="btn_ico">
+                <CopyToClipboard onCopy={this.onCopy} text={reportContent}>
+                  <a href="javascript:void(0);" class="btn_ico">
+                    <img
+                      src={`${process.env.RESOURCE_URL}/images/btn_list.png`}
+                      alt=""
+                    />
+                  </a>
+                </CopyToClipboard>
+
+                <a
+                  href="javascript:void(0);"
+                  class="btn_ico"
+                  onClick={() =>
+                    uiStore.goPage(
+                      '/reports/' + baseDateStr + '/' + deptId + '/form'
+                    )
+                  }
+                >
                   <img
                     src={`${process.env.RESOURCE_URL}/images/btn_modify.png`}
                     alt=""
@@ -64,34 +115,41 @@ class WorkReportDetail extends Component {
               <div>
                 <div class="m_sub_top flex_sb">
                   <h4>
-                    <span class="block">2022-</span>07-27(수)
+                    <span class="block">{baseYear}-</span>
+                    {postFixDateStr}
                   </h4>
-                  <p class="result">
-                    <span class="block">2022-</span>07-28 10:01
-                  </p>
+                  <p class="result">{reportSubmitStatusCodeResultComponent}</p>
                   <div>
                     <div class="btn_area">
-                      <a class="active btn_is" href="#">
+                      <a
+                        className={commentCount ? 'active btn_is' : ' btn_is'}
+                        href="javascript:void(0);"
+                      >
                         이슈
                       </a>
-                      <a class="active btn_com" href="#">
+                      <a
+                        href="javascript:void(0);"
+                        className={
+                          issueYn === 'Y' ? 'active btn_com' : ' btn_com'
+                        }
+                      >
                         코멘트
                       </a>
                     </div>
                   </div>
                 </div>
-
                 <div class="border-top mgtop10">
                   <p
-                    style={{
-                      height: 300,
-                      fontSize: 15,
-                      lineHeight: 300,
-                      textAlign: 'center'
+                    dangerouslySetInnerHTML={{
+                      __html: reportContent
                     }}
-                  >
-                    팀장 일일 업무 보고 작성 내용 출력 영역
-                  </p>
+                    style={{
+                      height: 500,
+                      border: '1px solid #d6d6d6',
+                      padding: 5,
+                      overflowY: 'scroll'
+                    }}
+                  ></p>
                 </div>
               </div>
             </div>
