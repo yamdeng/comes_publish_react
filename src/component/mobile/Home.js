@@ -38,7 +38,7 @@ class Home extends Component {
             <div id="m_header">
               <h1 class="m_logo">
                 <img
-                  src={`${process.env.PUBLIC_URL}/images/comeslogo_mobile.png`}
+                  src={`${process.env.RESOURCE_URL}/images/comeslogo_mobile.png`}
                   alt="COMES INTRANET"
                 />
               </h1>
@@ -69,7 +69,7 @@ class Home extends Component {
                   <div class="time_box">
                     <div class="img">
                       <img
-                        src={`${process.env.PUBLIC_URL}/images/time_box_img.png`}
+                        src={`${process.env.RESOURCE_URL}/images/time_box_img.png`}
                         alt=""
                       />
                     </div>

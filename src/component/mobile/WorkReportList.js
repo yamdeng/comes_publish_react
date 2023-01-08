@@ -61,7 +61,7 @@ class WorkReportList extends Component {
                     </p>
                     <a href="#" class="btn_calendar">
                       <img
-                        src={`${process.env.PUBLIC_URL}/images/btn_modify_month.png`}
+                        src={`${process.env.RESOURCE_URL}/images/btn_modify_month.png`}
                         alt="월 선택하기"
                       />
                     </a>

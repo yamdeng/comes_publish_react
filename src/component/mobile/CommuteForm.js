@@ -46,7 +46,7 @@ class CommuteForm extends Component {
                 </div>
                 <a href="javascript:void(0);" class="btn_ico">
                   <img
-                    src={`${process.env.PUBLIC_URL}/images/btn_save.png`}
+                    src={`${process.env.RESOURCE_URL}/images/btn_save.png`}
                     alt=""
                   />
                 </a>
