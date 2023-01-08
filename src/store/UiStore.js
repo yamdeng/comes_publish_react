@@ -27,7 +27,7 @@ class UiStore {
 
   // top 헤더, 왼쪽 메뉴 display 여부
   @observable
-  displaySideMenu = true;
+  displaySideMenu = false;
 
   // Side 메뉴 활성화 기준 이름
   @observable
@@ -76,22 +76,7 @@ class UiStore {
   @action
   toggleSideMenu() {
     this.displaySideMenu = !this.displaySideMenu;
-  }
-
-  // 왼쪽 1depth 메뉴 toggle
-  @action
-  toggle1DepthMenu(menuName) {
-    let menuList = toJS(this.menuList);
-    let searchIndex = menuList.findIndex((info) => info.name === menuName);
-    if (searchIndex !== -1) {
-      let selectMenuInfo = menuList[searchIndex];
-      let newMenuList = update(menuList, {
-        [searchIndex]: {
-          isExpend: { $set: !selectMenuInfo.isExpend }
-        }
-      });
-      this.menuList = newMenuList;
-    }
+    $('html, body').toggleClass('shidden');
   }
 
   // 페이지 이동 : replace가 true이면 이전 history replace
@@ -102,6 +87,7 @@ class UiStore {
     } else {
       AppHistory.push(url);
     }
+    this.toggleSideMenu();
   }
 
   // 이전 페이지로
@@ -124,16 +110,6 @@ class UiStore {
   selectMenu(menuInfo) {
     let { routeUrl } = menuInfo;
     this.goPage(routeUrl);
-    if (DeviceUtil.isMobile) {
-      this.displaySideMenu = !this.displaySideMenu;
-    }
-  }
-
-  // 모달 전체 close
-  @action
-  closeModal() {
-    this.rootStore.modalStore.hideAllModal();
-    this.rootStore.alertModalStore.hideModal();
   }
 
   // 현재 시간을 계속 최신화시킴

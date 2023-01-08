@@ -4,13 +4,10 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
+import { Router } from 'react-router';
 import rootStore from 'store/RootStore';
 import 'react-datepicker/dist/react-datepicker.css';
-// import 'bootstrap/dist/css/bootstrap.css';
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
-import 'devextreme/dist/css/dx.light.css';
-
-import Api from 'util/Api';
 import ApiService from 'service/ApiService';
 
 import App from './App';
@@ -39,7 +36,9 @@ ApiService.get('newoffice/profile.do').then((response) => {
   rootStore.appStore.setLoginInfo(profile, '');
   ReactDOM.render(
     <Provider {...rootStore}>
-      <App />
+      <Router history={AppHistory}>
+        <App />
+      </Router>
     </Provider>,
     document.getElementById('root')
   );

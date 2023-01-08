@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import Constant from 'config/Constant';
+import Helper from 'util/Helper';
 
 // import logo from 'resources/images/ktLogo.png';
 // import PROFILE from 'resources/images/profile.jpeg';
@@ -56,87 +58,93 @@ class SideBar extends Component {
   componentDidMount() {}
 
   render() {
-    let { uiStore } = this.props;
-    let { menuList, displaySideMenu } = uiStore;
+    let { uiStore, appStore } = this.props;
+    let { profile } = appStore;
+    const { userType, user_name, dept_name } = profile;
+    let { displaySideMenu } = uiStore;
     return (
-      <React.Fragment>
-        <div className="top_menu_toggle">
-          <button className="toggle_btn" onClick={this.toggleSideMenu}>
-            <i class="fas fa-bars"></i>
-          </button>
-          <h1 className="">
-            <img src={''} alt="" />
-            <span>SAFETY-DOC</span>
-          </h1>
-          <div className="mode_change">
-            <div className="profile">
-              <span className="img">
-                <i class="fas fa-user-circle" style={{ display: 'none' }}></i>
-                <img src={''} alt="" />
-              </span>
-              <span className="txt">안용성님 환영합니다</span>
+      <div
+        class="mobile_nav_wrap"
+        style={{ display: displaySideMenu ? '' : 'none' }}
+      >
+        <div id="mobile_nav">
+          <div class="nav_box">
+            <div class="login_box">
+              <div class="u_photo">
+                <img
+                  class="profile"
+                  src="images/no_image.png"
+                  alt="로그인 유저 사진"
+                />
+              </div>
+              <div class="u_info">
+                <p>{dept_name}</p>
+                <p>
+                  <span class="u_name">{user_name}</span>님
+                </p>
+              </div>
             </div>
-            <input
-              type="checkbox"
-              id="switch"
-              name="switch"
-              className="input_on_off"
-            />
-            {/* <label for="switch" className="label_on_off">
-              <span className="marble"></span> <span className="on">dark</span>
-              <span class="off">light</span>
-            </label> */}
+
+            <nav>
+              <div class="nav">
+                <ul class="m_nav">
+                  <li
+                    data-id="con1"
+                    class="nav_menu1"
+                    onClick={() => uiStore.goPage('home')}
+                  >
+                    <div>
+                      <i class="nav_ico"></i>
+                      <p>출퇴근 체크</p>
+                    </div>
+                  </li>
+                  <li
+                    data-id="con2"
+                    class="nav_menu2"
+                    style={{ display: userType === Constant.USER_TYPE_MANAGER }}
+                    onClick={() => uiStore.goPage('reports')}
+                  >
+                    <div>
+                      <i class="nav_ico"></i>
+                      <p>업무보고</p>
+                    </div>
+                  </li>
+                  <li
+                    data-id="con3"
+                    class="nav_menu3"
+                    style={{ display: userType === Constant.USER_TYPE_MANAGER }}
+                    onClick={() => uiStore.goPage('commute-depts')}
+                  >
+                    <div>
+                      <i class="nav_ico"></i>
+                      <p>출퇴근 제출</p>
+                    </div>
+                  </li>
+                  <li
+                    data-id="con4"
+                    class="nav_menu4"
+                    onClick={() => Helper.goUrl('logout.do?mobileyn=Y')}
+                  >
+                    <div>
+                      <i class="nav_ico"></i>
+                      <p>로그아웃</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+            <div class="logout_wrap">
+              <a
+                href="javascript:void(0);"
+                class="m_btn_logout"
+                onClick={() => Helper.goUrl('por/main/index.do')}
+              >
+                <i class="ico_pc"></i>PC 버전 보기
+              </a>
+            </div>
           </div>
         </div>
-        <div className={displaySideMenu ? 'menu_side' : 'menu_side hide'}>
-          <div className="menu_area">
-            <div className="menu_wrap">
-              <ul className="dep_1">
-                {menuList.map((firstDepthMenuInfo) => {
-                  let childs = firstDepthMenuInfo.childs || [];
-                  let childMenuComponent = null;
-                  if (childs.length) {
-                    childMenuComponent = (
-                      <ul class="dep_2">
-                        {childs.map((childMenuInfo) => {
-                          return (
-                            <li onClick={() => this.selectMenu(childMenuInfo)}>
-                              <p>{childMenuInfo.name}</p>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    );
-                  }
-                  return (
-                    <li className={firstDepthMenuInfo.isExpend ? 'active' : ''}>
-                      <p
-                        onClick={() =>
-                          this.toggle1DepthMenu(firstDepthMenuInfo.name)
-                        }
-                      >
-                        <span className="icon ablc">
-                          <i class={firstDepthMenuInfo.iconClass}></i>
-                        </span>
-                        {firstDepthMenuInfo.name}
-                        {childs.length ? (
-                          <span className="abrc">
-                            <i class="fas fa-chevron-right"></i>
-                          </span>
-                        ) : null}
-                      </p>
-                      {childMenuComponent}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </div>
-        <span className={displaySideMenu ? 'menu_bg' : 'menu_bg active'}>
-          &nbsp;
-        </span>
-      </React.Fragment>
+      </div>
     );
   }
 }

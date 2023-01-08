@@ -1,3 +1,5 @@
+/* global context_path */
+
 import axios from 'axios';
 import Config from 'config/Config';
 import LoadingBar from 'util/LoadingBar';
@@ -10,7 +12,7 @@ import rootStore from 'store/RootStore';
 */
 
 const Api = axios.create({
-  baseURL: `/office6/`,
+  baseURL: `${context_path}`,
   timeout: Config.apiTimeout,
   headers: { 'Content-Type': 'application/json' },
   disableLoadingBar: false
