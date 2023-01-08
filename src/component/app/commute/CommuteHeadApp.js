@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import Helper from 'util/Helper';
 import Code from 'config/Code';
 import ReactHelper from 'util/ReactHelper';
+import { throttle } from 'lodash';
 
 @inject('appStore', 'uiStore', 'commutePrivateStore')
 @observer
@@ -18,6 +19,7 @@ class CommuteHeadApp extends Component {
     this.state = {};
 
     this.dataGridRef = React.createRef();
+    this.scrollRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -55,6 +57,11 @@ class CommuteHeadApp extends Component {
     this.changeSearchWorkResultCode =
       this.changeSearchWorkResultCode.bind(this);
     this.changeSearchUserName = this.changeSearchUserName.bind(this);
+
+    this.handleScrollEvent = this.handleScrollEvent.bind(this);
+    this.onScrollThrottled = throttle(this.handleScrollEvent, 300);
+    this.prevScroll = this.prevScroll.bind(this);
+    this.nextScroll = this.nextScroll.bind(this);
   }
 
   init() {
@@ -180,6 +187,28 @@ class CommuteHeadApp extends Component {
     commutePrivateStore.changeSearchUserName(value);
   }
 
+  prevScroll() {
+    let scrollDom = this.scrollRef.current;
+    let scrollLeft = scrollDom.scrollLeft;
+    Helper.scrollLeftByDivId('commuteScrollDiv', scrollLeft - 500, 100);
+  }
+
+  nextScroll() {
+    let scrollDom = this.scrollRef.current;
+    let scrollLeft = scrollDom.scrollLeft;
+    Helper.scrollLeftByDivId('commuteScrollDiv', scrollLeft + 500, 100);
+  }
+
+  handleScrollEvent() {
+    try {
+      let scrollDom = this.scrollRef.current;
+      let scrollWidth = scrollDom.scrollWidth;
+      let offsetLeft = scrollDom.offsetLeft;
+      let offsetWidth = scrollDom.offsetWidth;
+      let scrollLeft = scrollDom.scrollLeft;
+    } catch (e) {}
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -276,7 +305,9 @@ class CommuteHeadApp extends Component {
           <div
             id="toggle_tip5"
             class="tip_box"
-            style={{ display: visibleGuideText2 ? '' : 'none' }}
+            style={{
+              display: visibleGuideText2 ? '' : 'none'
+            }}
           >
             정상출근 / 지각 / 휴가,휴직 / 평균 근무 시간
           </div>
@@ -287,13 +318,17 @@ class CommuteHeadApp extends Component {
               style={{
                 display: headMonthStatsUserList.length < 7 ? 'none' : ''
               }}
+              onClick={this.prevScroll}
             >
               <span>이전</span>
             </a>
             <div class="flex_ul_box_container_half">
               <ul
+                id="commuteScrollDiv"
                 class="flex_ul_box flex_sb scroll-minimum"
                 style={{ overflowX: 'scroll' }}
+                ref={this.scrollRef}
+                onScroll={this.onScrollThrottled}
               >
                 {headMonthStatsUserList.map((headMonthStatsUserInfo) => {
                   const {
@@ -323,6 +358,7 @@ class CommuteHeadApp extends Component {
               style={{
                 display: headMonthStatsUserList.length < 7 ? 'none' : ''
               }}
+              onClick={this.nextScroll}
             >
               <span>다음</span>
             </a>
