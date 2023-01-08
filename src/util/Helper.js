@@ -1,4 +1,4 @@
-/* global toastr, signVacationWrite, signView */
+/* global toastr, signVacationWrite, signView, context_path */
 import _ from 'lodash';
 import Constant from 'config/Constant';
 import Config from 'config/Config';
@@ -463,7 +463,7 @@ const getQueryStringValue = function (queryString, paramKey) {
 };
 
 const goUrl = function (url) {
-  location.href = '/office6/' + url;
+  location.href = context_path + url;
 };
 
 const toastMessage = function (title, message, level) {

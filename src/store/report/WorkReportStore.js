@@ -15,7 +15,7 @@ import _ from 'lodash';
 
 */
 
-const basePath = '/office6/engine/we/xfree';
+const basePath = Constant.EDITOR_BASE_PATH;
 
 class WorkReportStore {
   // datagridRef

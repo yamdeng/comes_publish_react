@@ -1,3 +1,5 @@
+/* global context_path */
+
 /*
 
   상수 정보
@@ -121,6 +123,6 @@ Constant.CODE_REPORT_STATUS_NOT_SUBMIT = 'NOT_SUBMIT'; /* 미제출 */
 Constant.CODE_REPORT_STATUS_APPROVE = 'APPROVE'; /* 승인 */
 Constant.CODE_REPORT_STATUS_REJECT = 'REJECT'; /* 반려 */
 
-Constant.EDITOR_BASE_PATH = '/office6/engine/we/xfree';
+Constant.EDITOR_BASE_PATH = context_path + 'engine/we/xfree';
 
 export default Constant;
