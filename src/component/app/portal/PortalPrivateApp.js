@@ -91,7 +91,7 @@ class PortalPrivateApp extends Component {
       startWorkDeviceType
     } = todayCommuteDayInfo;
     const isAllDayVacation = Helper.getIsAllDayVacation(vacationKindCode);
-    const { annualCount, plusVacationCount, usedCount, restVacationCount } =
+    const { allAnnualCount, usedCount, restVacationCount } =
       todayVacationYearInfo;
     todayVacationYearInfo = todayVacationYearInfo || {};
 
@@ -333,9 +333,7 @@ class PortalPrivateApp extends Component {
                   <p>
                     총 연차
                     <span>
-                      {!todayVacationYearInfo.userId
-                        ? '-'
-                        : annualCount + plusVacationCount}
+                      {!todayVacationYearInfo.userId ? '-' : allAnnualCount}
                     </span>
                   </p>
                 </div>

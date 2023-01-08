@@ -12,15 +12,21 @@ import Helper from 'util/Helper';
 import Code from 'config/Code';
 import moment from 'moment';
 
-const cellRenderWeekTimeValue = function (columnInfo, v2) {
+const cellRenderWeekTimeValue = function (columnInfo) {
+  let value = columnInfo.value;
+  if (!value) {
+    value = 0;
+  } else {
+    value = Number(value);
+  }
   if (columnInfo.column) {
     if (columnInfo.column.dataField === 'sunWorkTimeValue') {
-      return <span class="red">{columnInfo.value}</span>;
+      return <span class="red">{value.toFixed(1)}</span>;
     } else if (columnInfo.column.dataField === 'satWorkTimeValue') {
-      return <span class="blue">{columnInfo.value}</span>;
+      return <span class="blue">{value.toFixed(1)}</span>;
     }
   }
-  return columnInfo.value;
+  return value.toFixed(1);
 };
 
 @inject('appStore', 'uiStore', 'commuteStatsMonthStore')
@@ -363,7 +369,6 @@ class CommuteStatsTabMonth extends Component {
               cacheEnabled={false}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
-              scrolling={{ showScrollbar: 'never' }}
             >
               <Column
                 dataField="deptName"
@@ -388,6 +393,10 @@ class CommuteStatsTabMonth extends Component {
                 dataType="number"
                 caption="누적근무시간(h)"
                 allowSorting={false}
+                format={{
+                  type: 'decimal',
+                  precision: 0
+                }}
               />
               {weekGridLabelList.map((weekGridLabelInfo, index) => {
                 const { dateStr, holiday, saturday } = weekGridLabelInfo;
@@ -411,6 +420,10 @@ class CommuteStatsTabMonth extends Component {
                   <Column
                     dataField={dateField}
                     dataType="number"
+                    format={{
+                      type: 'decimal',
+                      precision: 0
+                    }}
                     allowSorting={false}
                     caption={moment(dateStr).format('D일(ddd)')}
                     cellRender={cellRenderWeekTimeValue}
@@ -570,7 +583,6 @@ class CommuteStatsTabMonth extends Component {
               showBorders={true}
               remoteOperations={true}
               cacheEnabled={false}
-              scrolling={{ showScrollbar: 'never' }}
               noDataText={'통계 정보가 존재하지 않습니다.'}
               height={550}
             >

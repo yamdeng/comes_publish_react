@@ -7,9 +7,6 @@ import { saveAs } from 'file-saver-es';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import DatePicker from 'react-datepicker';
 import DataGrid, { Column, Paging, Pager } from 'devextreme-react/data-grid';
-import CommuteSubMenu from 'component/submenu/CommuteSubMenu';
-import Constant from 'config/Constant';
-import classnames from 'classnames';
 import Helper from 'util/Helper';
 import moment from 'moment';
 
@@ -277,67 +274,52 @@ class VacationAdminApp extends Component {
                   }}
                 />
                 <Column
-                  dataField="outWorkDate"
+                  dataField="firstYear"
+                  dataType="number"
                   caption="초년월수"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    return 0;
-                  }}
+                  allowEditing={false}
                 />
                 <Column
                   dataField="annualCount"
+                  dataType="number"
                   caption="발생연차"
                   allowSorting={false}
                 />
                 <Column
                   dataField="monthCount"
+                  dataType="number"
                   caption="금년월차"
                   allowSorting={false}
                 />
                 <Column caption="과년월차">
                   <Column
-                    dataField="monthCount"
+                    dataField="pastOccurCount"
                     caption="발생"
                     allowSorting={false}
-                    calculateCellValue={function (rowData) {
-                      return 0;
-                    }}
+                    allowEditing={true}
                   />
                   <Column
-                    dataField="monthCount"
+                    dataField="pastUseCount"
                     caption="사용"
                     allowSorting={false}
-                    calculateCellValue={function (rowData) {
-                      return 0;
-                    }}
+                    allowEditing={false}
                   />
                 </Column>
                 <Column
-                  dataField="annualCount"
+                  dataField="occurVacationCount"
                   caption={searchYearStr + '년 발생일수'}
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData) {
-                      return rowData.annualCount + rowData.plusVacationCount;
-                    }
-                    return 0;
-                  }}
                 />
                 <Column
-                  dataField="usedCount"
+                  dataField="beforeYearUsedCount"
                   caption={searchYearBeforeStr + '년 사용일수'}
                   allowSorting={false}
                 />
                 <Column
-                  dataField="usedCount"
+                  dataField="baseYearUseableCount"
                   caption={searchYearStr + '년 가능일수'}
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData) {
-                      return rowData.annualCount + rowData.plusVacationCount;
-                    }
-                    return 0;
-                  }}
                 />
 
                 <Column caption={searchYearStr + '년 연차휴가 사용 일수'}>
@@ -362,15 +344,9 @@ class VacationAdminApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="useableCount"
+                  dataField="restVacationCount"
                   caption={searchYearStr + '년 잔여일수'}
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData) {
-                      return rowData.annualCount - rowData.usedCount;
-                    }
-                    return 0;
-                  }}
                   cellRender={(columnInfo) => {
                     return <span class="red">{columnInfo.value}</span>;
                   }}

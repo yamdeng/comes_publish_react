@@ -263,7 +263,7 @@ class VacationHeadApp extends Component {
                   }}
                 />
                 <Column
-                  dataField="annualCount"
+                  dataField="allAnnualCount"
                   dataType="number"
                   caption="총연차"
                   allowSorting={false}
@@ -275,16 +275,10 @@ class VacationHeadApp extends Component {
                   allowSorting={false}
                 />
                 <Column
-                  dataField="useableCount"
+                  dataField="restVacationCount"
                   dataType="number"
                   caption="잔여연차"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData) {
-                      return rowData.annualCount - rowData.usedCount;
-                    }
-                    return 0;
-                  }}
                 />
                 <Paging defaultPageSize={10} />
                 <Pager

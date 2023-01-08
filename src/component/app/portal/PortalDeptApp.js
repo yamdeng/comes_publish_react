@@ -100,7 +100,7 @@ class PortalDeptApp extends Component {
       startWorkDeviceTypeText = '(' + startWorkDeviceType + ')';
     }
     todayVacationYearInfo = todayVacationYearInfo || {};
-    const { annualCount, plusVacationCount, usedCount, restVacationCount } =
+    const { allAnnualCount, usedCount, restVacationCount } =
       todayVacationYearInfo;
 
     let commuteDayListComponent = null;
@@ -378,9 +378,7 @@ class PortalDeptApp extends Component {
                   <p>
                     총 연차
                     <span>
-                      {!todayVacationYearInfo.userId
-                        ? '-'
-                        : annualCount + plusVacationCount}
+                      {!todayVacationYearInfo.userId ? '-' : allAnnualCount}
                     </span>
                   </p>
                 </div>
