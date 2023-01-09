@@ -202,8 +202,20 @@ class CommutePrivateApp extends Component {
                 onClick={() => Helper.goUrl('')}
               />
             </a>
-            &gt;<a href="javascript:void(0);">출퇴근</a>&gt;
-            <a href="javascript:void(0);">개인출퇴근</a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
+              출퇴근
+            </a>
+            &gt;
+            <a
+              href="javascript:void(0);"
+              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
+            >
+              개인출퇴근
+            </a>
           </div>
 
           <div class="sub_top" style={{ zIndex: 1, overflow: 'visible' }}>
