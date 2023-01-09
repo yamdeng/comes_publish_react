@@ -69,9 +69,9 @@ class CommuteList extends Component {
           outWorkDate,
           finalOutWorkDate,
           baseDateStr,
-          userId
+          userId,
+          inWorkYn
         } = listInfo;
-        const dateTimeFormat = '';
 
         // 출근시작시간 추출
         let startWorkDateCellResult = '';
@@ -110,6 +110,15 @@ class CommuteList extends Component {
           outWorkDateCellResult =
             moment(finalOutWorkDate).format('HH:mm') + '()';
         }
+
+        let inWorkYnComponent = '';
+        if (inWorkYn) {
+          if (inWorkYn === 'Y') {
+            inWorkYnComponent = <span class="blue">업무</span>;
+          } else if (inWorkYn === 'N') {
+            inWorkYnComponent = <span class="orange">재택</span>;
+          }
+        }
         return (
           <li
             onClick={() =>
@@ -117,7 +126,7 @@ class CommuteList extends Component {
             }
           >
             <div>
-              <span class="blue">{workStatusCodeName}</span>
+              {inWorkYnComponent}
               <span class="block">
                 {userName} {positionTitle}
               </span>

@@ -328,7 +328,7 @@ table.tbl_blue td div.flex_bw2 input[type="text"] {width:calc(100% / 2); } */
     #m_header a.btn_allmenu {position:absolute; top:1.15rem; right:1rem; width:2rem;}
     #m_header a img {width:100%;}
 
-    .block {display: none;}
+    /* .block {display: none;} */
     .right_area { right:20px;}
 
     

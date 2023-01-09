@@ -41,12 +41,8 @@ class HomeStore {
       const detailInfo = response.data;
       runInAction(() => {
         this.todayCommuteDayInfo = detailInfo;
-        if (detailInfo && detailInfo.workStatusCode) {
-          if (detailInfo.workStatusCode === 'HOME_ING') {
-            this.inWorkYn = 'N';
-          } else {
-            this.inWorkYn = 'Y';
-          }
+        if (detailInfo.inWorkYn) {
+          this.inWorkYn = detailInfo.inWorkYn;
         }
       });
     });

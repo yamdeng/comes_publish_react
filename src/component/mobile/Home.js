@@ -166,8 +166,8 @@ class Home extends Component {
                         <a
                           href="javascript:void(0);"
                           className={classnames('btn_work', {
-                            option1: inWorkYn === 'Y',
-                            option2: inWorkYn === 'N',
+                            option1: todayCommuteDayInfo.inWorkYn === 'Y',
+                            option2: todayCommuteDayInfo.inWorkYn === 'N',
                             active: startWorkDate ? true : false
                           })}
                           onClick={this.startWork}
@@ -191,8 +191,8 @@ class Home extends Component {
                         <a
                           href="javascript:void(0);"
                           className={classnames('btn_work', {
-                            option1: inWorkYn === 'Y',
-                            option2: inWorkYn === 'N',
+                            option1: false,
+                            option2: false,
                             active: false
                           })}
                           onClick={this.outWork}

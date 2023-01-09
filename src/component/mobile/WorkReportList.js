@@ -90,13 +90,13 @@ class WorkReportList extends Component {
             </p>
             <div class="btn_area">
               <a
-                className={commentCount ? 'active btn_is' : ' btn_is'}
+                className={issueYn === 'Y' ? 'active btn_is' : ' btn_is'}
                 href="javascript:void(0);"
               >
                 이슈
               </a>
               <a
-                className={issueYn === 'Y' ? 'active btn_com' : ' btn_com'}
+                className={commentCount ? 'active btn_com' : ' btn_com'}
                 href="javascript:void(0);"
               >
                 코멘트

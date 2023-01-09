@@ -101,6 +101,7 @@ class CommuteListStore {
     const apiParam = {};
     apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
     apiParam.deptKey = profile.dept_key;
+    this.getCommuteDeptDetailInfo();
 
     ApiService.post('commutes/list-to-submit.do', apiParam).then((response) => {
       const data = response.data;
@@ -157,7 +158,9 @@ class CommuteListStore {
       if (commuteSubmitStatusCode) {
         // 상태가 존재하고 반려인 경우만 제출 가능
         if (
-          commuteSubmitStatusCode === Constant.CODE_COMMUTE_DEPT_STATUS_REJECT
+          commuteSubmitStatusCode !==
+            Constant.CODE_COMMUTE_DEPT_STATUS_APPROVE &&
+          commuteSubmitStatusCode !== Constant.CODE_COMMUTE_DEPT_STATUS_SUBMIT
         ) {
           available = true;
         }

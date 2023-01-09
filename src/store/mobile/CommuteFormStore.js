@@ -160,6 +160,7 @@ class CommuteFormStore {
         }).then((response) => {
           runInAction(() => {
             Helper.toastMessage('출퇴근 기록이 수정되었습니다.');
+            this.getCommuteDetailInfo(baseDateStr, userId);
           });
         });
       }
@@ -194,7 +195,9 @@ class CommuteFormStore {
       if (commuteSubmitStatusCode) {
         // 상태가 존재하고 반려인 경우만 수정 가능
         if (
-          commuteSubmitStatusCode === Constant.CODE_COMMUTE_DEPT_STATUS_REJECT
+          commuteSubmitStatusCode !==
+            Constant.CODE_COMMUTE_DEPT_STATUS_APPROVE &&
+          commuteSubmitStatusCode !== Constant.CODE_COMMUTE_DEPT_STATUS_SUBMIT
         ) {
           available = true;
         }
@@ -207,7 +210,19 @@ class CommuteFormStore {
   }
 
   @action
-  clear() {}
+  clear() {
+    this.baseDateStr = null;
+    this.userId = null;
+    this.commuteDetailInfo = null;
+    this.commuteDeptSubmitInfo = null;
+    this.isStartWorkDateChange = false;
+    this.isOutWorkDateChange = false;
+    this.finalStartWorkDate = null;
+    this.finalOutWorkDate = null;
+    this.outsideWorkYn = 'N';
+    this.etcDescription = '';
+    this.workResultCode = null;
+  }
 }
 
 export default CommuteFormStore;

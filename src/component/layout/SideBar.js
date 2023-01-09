@@ -68,7 +68,10 @@ class SideBar extends Component {
         style={{ display: displaySideMenu ? '' : 'none' }}
       >
         <div id="mobile_nav">
-          <div class="nav_box">
+          <div
+            class="nav_box"
+            style={{ height: '85%', justifyContent: 'space-around' }}
+          >
             <div class="login_box">
               <div class="u_photo">
                 <img
@@ -85,7 +88,7 @@ class SideBar extends Component {
               </div>
             </div>
 
-            <nav>
+            <nav style={{ marginBottom: -20 }}>
               <div class="nav">
                 <ul class="m_nav">
                   <li
@@ -139,7 +142,7 @@ class SideBar extends Component {
                 </ul>
               </div>
             </nav>
-            <div class="logout_wrap">
+            <div class="logout_wrap" style={{ marginBottom: 36 }}>
               <a
                 href="javascript:void(0);"
                 class="m_btn_logout"

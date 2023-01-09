@@ -64,6 +64,11 @@ class CommuteForm extends Component {
     commuteFormStore.getCommuteDetailInfo(baseDateStr, userId);
   }
 
+  componentWillUnmount() {
+    const { commuteFormStore } = this.props;
+    commuteFormStore.clear();
+  }
+
   render() {
     let { commuteFormStore, uiStore } = this.props;
     let {
@@ -72,12 +77,13 @@ class CommuteForm extends Component {
       finalOutWorkDate,
       outsideWorkYn,
       etcDescription,
-      workResultCode,
-      startWorkIp,
-      outWorkIp
+      workResultCode
     } = commuteFormStore;
 
     commuteDetailInfo = commuteDetailInfo || {};
+
+    const { startWorkIp, outWorkIp, startWorkDeviceType, outWorkDeviceType } =
+      commuteDetailInfo;
 
     const { userName, positionTitle, workStatusCodeName, workResultCodeName } =
       commuteDetailInfo;
@@ -87,6 +93,22 @@ class CommuteForm extends Component {
 
     const outWorkDateCellResult =
       Helper.getOutWorkDateByDetailInfo(commuteDetailInfo);
+
+    let startWorkIpDisplayStr = '';
+    if (startWorkDeviceType) {
+      startWorkIpDisplayStr = '(' + startWorkDeviceType + ')';
+    }
+    if (startWorkIp) {
+      startWorkIpDisplayStr = startWorkIpDisplayStr + ' ' + startWorkIp;
+    }
+
+    let outWorkIpDisplayStr = '';
+    if (outWorkDeviceType) {
+      outWorkIpDisplayStr = '(' + outWorkDeviceType + ')';
+    }
+    if (outWorkIp) {
+      outWorkIpDisplayStr = outWorkIpDisplayStr + ' ' + outWorkIp;
+    }
 
     const ExampleCustomInput = React.forwardRef(({ value, onClick }, ref) => (
       <input
@@ -143,7 +165,12 @@ class CommuteForm extends Component {
                         <div class="date">
                           {' '}
                           {startWorkDateCellResult}{' '}
-                          <em class="block">~ {outWorkDateCellResult}</em>
+                          <em class="block">
+                            {!startWorkDateCellResult && !outWorkDateCellResult
+                              ? '-'
+                              : '~'}{' '}
+                            {outWorkDateCellResult}
+                          </em>
                         </div>
                         <div class="disc">
                           {workStatusCodeName}
@@ -155,11 +182,11 @@ class CommuteForm extends Component {
                       <ul class="work_info">
                         <li>
                           <span class="title">출근아이피</span>
-                          <span>(m)61.75.21.210</span>
+                          <span>{startWorkIpDisplayStr}</span>
                         </li>
                         <li>
                           <span class="title">퇴근아이피</span>
-                          <span>(m)61.75.21.210</span>
+                          <span>{outWorkIpDisplayStr}</span>
                         </li>
                         <li>
                           <span class="title">외근</span>
@@ -185,8 +212,8 @@ class CommuteForm extends Component {
                             </th>
                             <td>
                               <DatePicker
-                                selected={finalOutWorkDate}
-                                onChange={this.changeFinalOutWorkDate}
+                                selected={finalStartWorkDate}
+                                onChange={this.changeFinalStartWorkDate}
                                 showTimeSelect
                                 showTimeSelectOnly
                                 timeIntervals={5}
@@ -202,8 +229,8 @@ class CommuteForm extends Component {
                             </th>
                             <td>
                               <DatePicker
-                                selected={finalStartWorkDate}
-                                onChange={this.changeFinalStartWorkDate}
+                                selected={finalOutWorkDate}
+                                onChange={this.changeFinalOutWorkDate}
                                 showTimeSelect
                                 showTimeSelectOnly
                                 timeIntervals={5}

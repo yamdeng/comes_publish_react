@@ -32,7 +32,7 @@ class WorkReportFormStore {
       this.xfe = new XFE({
         basePath: Constant.EDITOR_BASE_PATH,
         width: '100%',
-        height: '400px',
+        height: '500px',
         onLoad: () => {}
       });
       this.xfe.render('reactEditor');
@@ -53,6 +53,9 @@ class WorkReportFormStore {
         if (this.xfe && this.xfe.setBodyValue) {
           this.xfe.setBodyValue(detailInfo.reportContent);
         }
+        if (detailInfo && detailInfo.issueYn) {
+          this.issueYn = detailInfo.issueYn;
+        }
       });
       ApiService.post('work-reports/comment/detail.do', {
         reportId: detailInfo.reportId
@@ -69,6 +72,22 @@ class WorkReportFormStore {
   @action
   changeIssueYn(issueYn) {
     this.issueYn = issueYn;
+    this.issueYn = issueYn;
+    const reportDetailInfo = this.reportDetailInfo;
+    if (reportDetailInfo) {
+      const apiParam = {};
+      apiParam.reportId = reportDetailInfo.reportId;
+      apiParam.issueYn = issueYn;
+      ApiService.put('work-reports/update-issue.do', apiParam).then(
+        (response) => {
+          Helper.toastMessage(`이슈가 ${issueYn} 상태가 되었습니다.`);
+          this.getReportDetailInfo(
+            reportDetailInfo.baseDateStr,
+            reportDetailInfo.deptId
+          );
+        }
+      );
+    }
   }
 
   // 저장
@@ -92,7 +111,11 @@ class WorkReportFormStore {
           runInAction(() => {
             this.reportDetailInfo = detailInfo;
           });
-          Helper.toastMessage('업무보고가 저장되었습니다.');
+          if (reportDetailInfo.reportDate) {
+            Helper.toastMessage('업무보고가 수정되었습니다.');
+          } else {
+            Helper.toastMessage('업무보고가 등록되었습니다.');
+          }
         });
       }
     });
