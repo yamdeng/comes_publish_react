@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import Constant from 'config/Constant';
 import { withRouter } from 'react-router-dom';
 import moment from 'moment';
+import Switch from 'react-switch';
 
 @withRouter
 @inject('appStore', 'uiStore', 'workReportFormStore')
@@ -16,8 +17,7 @@ class WorkReportForm extends Component {
     this.saveReport = this.saveReport.bind(this);
   }
 
-  changeIssueYn(event) {
-    let value = event.target.checked;
+  changeIssueYn(value) {
     const { workReportFormStore } = this.props;
     workReportFormStore.changeIssueYn(value ? 'Y' : 'N');
   }
@@ -38,13 +38,12 @@ class WorkReportForm extends Component {
 
   render() {
     let { workReportFormStore, uiStore } = this.props;
-    let { reportDetailInfo } = workReportFormStore;
+    let { reportDetailInfo, issueYn } = workReportFormStore;
     reportDetailInfo = reportDetailInfo || {};
     let {
       deptId,
       baseDateStr,
       reportContent,
-      issueYn,
       commentCount,
       reportDate,
       reportSubmitStatusCode
@@ -84,15 +83,12 @@ class WorkReportForm extends Component {
               <div class="right_area flex">
                 <p>이슈</p>
                 <div class="wrapper">
-                  <input
-                    type="checkbox"
-                    id="switch"
-                    checked2={issueYn === 'Y' ? false : true}
-                    onChange2={this.changeIssueYn}
+                  <Switch
+                    onChange={this.changeIssueYn}
+                    checked={issueYn === 'Y'}
+                    uncheckedIcon={false}
+                    checkedIcon={false}
                   />
-                  <label for="switch" class="switch_label">
-                    <span class="onf_btn"></span>
-                  </label>
                 </div>
                 {/* <a href="javascript:void(0);" class="btn_ico">
                   <img

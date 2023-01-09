@@ -129,7 +129,7 @@ class SideBar extends Component {
                   <li
                     data-id="con4"
                     class="nav_menu4"
-                    onClick={() => Helper.selectMenu('logout.do?mobileyn=Y')}
+                    onClick={() => Helper.goUrl('logout.do?mobileyn=Y')}
                   >
                     <div>
                       <i class="nav_ico"></i>
@@ -143,7 +143,7 @@ class SideBar extends Component {
               <a
                 href="javascript:void(0);"
                 class="m_btn_logout"
-                onClick={() => Helper.selectMenu('por/main/index.do')}
+                onClick={() => Helper.goUrl('por/main/index.do')}
               >
                 <i class="ico_pc"></i>PC 버전 보기
               </a>

@@ -19,7 +19,7 @@ class WorkReportFormStore {
 
   // 이슈여부 : Y/N
   @observable
-  issueYn = 'N';
+  issueYn = 'Y';
 
   constructor(rootStore) {
     this.rootStore = rootStore;

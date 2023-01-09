@@ -160,6 +160,10 @@ h1.login_logo img {width:75%;}
 .switch_label { position: relative; cursor: pointer; display: inline-block; width: 58px;  height: 28px;  background: #fff;  border: 2px solid #3b77f5;  border-radius: 20px;  transition: 0.2s;  }
 .switch_label:hover {  background: #efefef;  }
 .onf_btn { position: absolute;  top: 5px; left: 5px;  display: inline-block;  width:19px;  height:19px;  border-radius: 20px; background: #3b77f5;  transition: 0.2s;  }
+.onf_btn.onf_on,
+.onf_btn.onf_off { text-indent:-9999px;}
+.onf_btn.onf_off {display: inline-block;}
+.onf_btn.onf_on {display:none;}
 
 .btn_ico {display: inline-block; width:2rem; line-height:2rem; margin-left:1rem; }
 .btn_ico img {width:100%;}
@@ -168,6 +172,11 @@ h1.login_logo img {width:75%;}
 #switch:checked+.switch_label:hover {    background: #3b77f5;  }  
 /* move */
 #switch:checked+.switch_label .onf_btn {  left: 33px; background: #fff; box-shadow: 1px 2px 3px #00000020;  }
+#switch:checked+.switch_label .onf_off {display:none;}
+#switch:checked+.switch_label .onf_on {display:inline-block;}
+
+
+.onf_btn.onf_off {}
 
 .m_content_wrap { border-top:2px solid #303646; }
 .m_content_box {position:relative; width:1024px; height:100%; padding:40px 40px; margin:0 auto; background:#fff; box-sizing: border-box;}
