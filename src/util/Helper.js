@@ -500,6 +500,48 @@ const openApprovalDetail = function (a_doc_key, a_parser_key) {
   signView(a_doc_key, a_parser_key);
 };
 
+const getStartWorkDateByDetailInfo = function (detailInfo) {
+  const { startWorkDate, finalStartWorkDate } = detailInfo;
+  let startWorkDateCellResult = '';
+  if (!startWorkDate && !finalStartWorkDate) {
+    startWorkDateCellResult = '';
+  } else if (startWorkDate) {
+    if (finalStartWorkDate) {
+      startWorkDateCellResult =
+        moment(finalStartWorkDate).format('HH:mm') +
+        '(' +
+        moment(startWorkDate).format('HH:mm') +
+        ')';
+    } else {
+      startWorkDateCellResult = moment(startWorkDate).format('HH:mm');
+    }
+  } else if (finalStartWorkDate) {
+    startWorkDateCellResult = moment(finalStartWorkDate).format('HH:mm') + '()';
+  }
+  return startWorkDateCellResult;
+};
+
+const getOutWorkDateByDetailInfo = function (detailInfo) {
+  const { outWorkDate, finalOutWorkDate } = detailInfo;
+  let outWorkDateCellResult = '';
+  if (!outWorkDate && !finalOutWorkDate) {
+    outWorkDateCellResult = '';
+  } else if (outWorkDate) {
+    if (finalOutWorkDate) {
+      outWorkDateCellResult =
+        moment(finalOutWorkDate).format('HH:mm') +
+        '(' +
+        moment(outWorkDate).format('HH:mm') +
+        ')';
+    } else {
+      outWorkDateCellResult = moment(outWorkDate).format('HH:mm');
+    }
+  } else if (finalOutWorkDate) {
+    outWorkDateCellResult = moment(finalOutWorkDate).format('HH:mm') + '()';
+  }
+  return outWorkDateCellResult;
+};
+
 export default {
   saveInfoToLocalStorage,
   getByLocalStorage,
@@ -539,5 +581,7 @@ export default {
   convertMapToList,
   getIsAllDayVacation,
   openVacationApprovalPopup,
-  openApprovalDetail
+  openApprovalDetail,
+  getStartWorkDateByDetailInfo,
+  getOutWorkDateByDetailInfo
 };

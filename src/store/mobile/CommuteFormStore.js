@@ -1,6 +1,6 @@
 /* global */
 
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, computed } from 'mobx';
 import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
@@ -38,7 +38,7 @@ class CommuteFormStore {
 
   // 근태결과
   @observable
-  workResultcode = null;
+  workResultCode = null;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -50,6 +50,7 @@ class CommuteFormStore {
     this.baseDateStr = baseDateStr;
     this.userId = userId;
     const apiParam = { baseDateStr, userId };
+    this.getCommuteDeptDetailInfo();
     ApiService.post('commutes/detail.do', apiParam).then((response) => {
       const data = response.data;
       runInAction(() => {
@@ -90,17 +91,19 @@ class CommuteFormStore {
 
   // 퇴근시간 변경
   @action
-  changeFinalOuttWorkDate(finalOutWorkDate) {
+  changeFinalOutWorkDate(finalOutWorkDate) {
     this.isOutWorkDateChange = true;
     this.finalOutWorkDate = finalOutWorkDate;
   }
 
   // 외근여부 변경
+  @action
   changeOutsideWorkYn(outsideWorkYn) {
     this.outsideWorkYn = outsideWorkYn;
   }
 
   // 기타설명 변경
+  @action
   changeEtcDescription(etcDescription) {
     this.etcDescription = etcDescription;
   }
@@ -113,7 +116,11 @@ class CommuteFormStore {
 
   // 수정
   @action
-  updateBatch() {
+  save() {
+    if (!this.isUpdateAvailable) {
+      Helper.toastMessage('수정가능한 상태가 아닙니다.', '', 'warning');
+      return;
+    }
     const profile = this.rootStore.appStore.profile;
     const deptId = profile.dept_key;
     const baseDateStr = this.baseDateStr;
@@ -172,6 +179,31 @@ class CommuteFormStore {
         this.commuteDeptSubmitInfo = detailInfo;
       });
     });
+  }
+
+  // 수정 가능 여부
+  @computed
+  get isUpdateAvailable() {
+    let available = false;
+    const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
+    if (!commuteDeptSubmitInfo) {
+      // 출퇴근 정보가 존재하지 않으면 수정 가능
+      available = true;
+    } else {
+      const { commuteSubmitStatusCode } = commuteDeptSubmitInfo;
+      if (commuteSubmitStatusCode) {
+        // 상태가 존재하고 반려인 경우만 수정 가능
+        if (
+          commuteSubmitStatusCode === Constant.CODE_COMMUTE_DEPT_STATUS_REJECT
+        ) {
+          available = true;
+        }
+      } else {
+        // 상태 자체가 존재하지 않으면 수정 가능
+        available = true;
+      }
+    }
+    return available;
   }
 
   @action

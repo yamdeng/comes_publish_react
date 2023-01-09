@@ -1,6 +1,6 @@
 /* global */
 
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, computed } from 'mobx';
 import ApiService from 'service/ApiService';
 import Helper from 'util/Helper';
 import Constant from 'config/Constant';
@@ -20,6 +20,10 @@ class CommuteListStore {
   // 일 datepicker 오픈 여부
   @observable
   dayDatepickerOpend = false;
+
+  // 현재 부서_출퇴근 제출 정보
+  @observable
+  commuteDeptSubmitInfo = null;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -49,15 +53,18 @@ class CommuteListStore {
     this.dayDatepickerOpend = false;
   }
 
-  // 상세 페이지로 이동시키기
-  @action
-  goFormPage(commuteInfo) {
-    const { baesDateStr, userId } = commuteInfo;
-  }
-
   // 제출
   @action
   submit() {
+    // 제출가능여부 체크
+    if (!this.isSubmitAvailable) {
+      Helper.toastMessage('제출가능한 상태가 아닙니다.', '', 'warning');
+      return;
+    }
+    if (!this.list || !this.list.length) {
+      Helper.toastMessage('제출대상이 존재하지 않습니다.', '', 'warning');
+      return;
+    }
     // 제출 이후 다시 부서_출퇴근 정보 조회
     const profile = this.rootStore.appStore.profile;
     const apiParam = {};
@@ -73,7 +80,6 @@ class CommuteListStore {
             '',
             'warning'
           );
-          alert('출근시간 또는 퇴근시간 중 미제출 내역이 있습니다.');
         } else {
           ModalService.confirm({
             content: '출퇴근을 제출 하시겠습니까?',
@@ -121,6 +127,46 @@ class CommuteListStore {
         this.list = searchList;
       });
     });
+  }
+
+  // 부서_출퇴근 상세 정보 조회
+  @action
+  getCommuteDeptDetailInfo() {
+    const profile = this.rootStore.appStore.profile;
+    const apiParam = {};
+    apiParam.baseDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
+    apiParam.deptId = profile.dept_key;
+    ApiService.post('commute-depts/detail.do', apiParam).then((response) => {
+      let detailInfo = response.data;
+      runInAction(() => {
+        this.commuteDeptSubmitInfo = detailInfo;
+      });
+    });
+  }
+
+  // 제출 가능 여부
+  @computed
+  get isSubmitAvailable() {
+    let available = false;
+    const commuteDeptSubmitInfo = this.commuteDeptSubmitInfo;
+    if (!commuteDeptSubmitInfo) {
+      // 출퇴근 정보가 존재하지 않으면 제출 가능
+      available = true;
+    } else {
+      const { commuteSubmitStatusCode } = commuteDeptSubmitInfo;
+      if (commuteSubmitStatusCode) {
+        // 상태가 존재하고 반려인 경우만 제출 가능
+        if (
+          commuteSubmitStatusCode === Constant.CODE_COMMUTE_DEPT_STATUS_REJECT
+        ) {
+          available = true;
+        }
+      } else {
+        // 상태 자체가 존재하지 않으면 제출 가능
+        available = true;
+      }
+    }
+    return available;
   }
 }
 

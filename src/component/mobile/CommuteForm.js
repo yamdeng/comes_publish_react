@@ -2,51 +2,124 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import Constant from 'config/Constant';
 import { withRouter } from 'react-router-dom';
+import DatePicker from 'react-datepicker';
+import Code from 'config/Code';
+import Helper from 'util/Helper';
 
 @withRouter
-@inject('appStore', 'uiStore', 'homeStore')
+@inject('appStore', 'uiStore', 'commuteFormStore')
 @observer
 class CommuteForm extends Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.init = this.init.bind(this);
+    this.changeFinalStartWorkDate = this.changeFinalStartWorkDate.bind(this);
+    this.changeFinalOutWorkDate = this.changeFinalOutWorkDate.bind(this);
+    this.changeOutsideWorkYn = this.changeOutsideWorkYn.bind(this);
+    this.changeEtcDescription = this.changeEtcDescription.bind(this);
+    this.changeWorkResultCode = this.changeWorkResultCode.bind(this);
+    this.save = this.save.bind(this);
+  }
+
+  changeFinalStartWorkDate(finalStartWorkDate) {
+    const { commuteFormStore } = this.props;
+    commuteFormStore.changeFinalStartWorkDate(finalStartWorkDate);
+  }
+
+  changeFinalOutWorkDate(finalOutWorkDate) {
+    const { commuteFormStore } = this.props;
+    commuteFormStore.changeFinalOutWorkDate(finalOutWorkDate);
+  }
+
+  changeOutsideWorkYn(event) {
+    const value = event.target.value;
+    const { commuteFormStore } = this.props;
+    commuteFormStore.changeOutsideWorkYn(value);
+  }
+
+  changeEtcDescription(event) {
+    const value = event.target.value;
+    const { commuteFormStore } = this.props;
+    commuteFormStore.changeEtcDescription(value);
+  }
+
+  changeWorkResultCode(event) {
+    const value = event.target.value;
+    const { commuteFormStore } = this.props;
+    commuteFormStore.changeWorkResultCode(value);
+  }
+
+  save() {
+    const { commuteFormStore } = this.props;
+    commuteFormStore.save();
   }
 
   init() {}
 
+  componentDidMount() {
+    let baseDateStr = this.props.match.params.baseDateStr;
+    let userId = this.props.match.params.userId;
+    const { commuteFormStore } = this.props;
+    commuteFormStore.getCommuteDetailInfo(baseDateStr, userId);
+  }
+
   render() {
-    let { homeStore } = this.props;
+    let { commuteFormStore, uiStore } = this.props;
     let {
-      searchDateType,
-      searchMonth,
-      startDate,
-      endDate,
-      monthDatepickerOpend,
-      startDatepickerOpend,
-      endDatepickerOpend,
-      totalCount,
-      statsInfo,
-      datagridStore,
-      searchDashBoardKind
-    } = homeStore;
-    statsInfo = statsInfo || {};
+      commuteDetailInfo,
+      finalStartWorkDate,
+      finalOutWorkDate,
+      outsideWorkYn,
+      etcDescription,
+      workResultCode,
+      startWorkIp,
+      outWorkIp
+    } = commuteFormStore;
+
+    commuteDetailInfo = commuteDetailInfo || {};
+
+    const { userName, positionTitle, workStatusCodeName, workResultCodeName } =
+      commuteDetailInfo;
+
+    const startWorkDateCellResult =
+      Helper.getStartWorkDateByDetailInfo(commuteDetailInfo);
+
+    const outWorkDateCellResult =
+      Helper.getOutWorkDateByDetailInfo(commuteDetailInfo);
+
+    const ExampleCustomInput = React.forwardRef(({ value, onClick }, ref) => (
+      <input
+        type="text"
+        id="sel_workmor"
+        class="time"
+        value={value}
+        onClick={onClick}
+        ref={ref}
+      />
+    ));
+
     return (
       <div class="wrap">
         <div class="m_sub_wrap">
           <header>
-            <div id="m_header">
+            <div id="m_header" class="flex_sb">
               <h1 class="m_title">출퇴근 수정</h1>
-              <a class="back" href="javascript:void(0);"></a>
+              <a
+                class="hamburger_menu active black"
+                href="javascript:void(0);"
+                onClick={() => uiStore.back()}
+              >
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+              </a>
               <div class="right_area flex">
-                <p>이슈</p>
-                <div class="wrapper">
-                  <input type="checkbox" id="switch" />
-                  <label for="switch" class="switch_label">
-                    <span class="onf_btn"></span>
-                  </label>
-                </div>
-                <a href="javascript:void(0);" class="btn_ico">
+                <a
+                  href="javascript:void(0);"
+                  class="btn_ico"
+                  onClick={this.save}
+                >
                   <img
                     src={`${process.env.RESOURCE_URL}/images/btn_save.png`}
                     alt=""
@@ -63,14 +136,18 @@ class CommuteForm extends Component {
                     <ul class="work_result_list">
                       <li>
                         <div>
-                          <span class="bold">김소영 대리</span>
+                          <span class="bold">
+                            {userName} {positionTitle}
+                          </span>
                         </div>
                         <div class="date">
                           {' '}
-                          09:33 AM <em class="block">~ 18:03 PM</em>
+                          {startWorkDateCellResult}{' '}
+                          <em class="block">~ {outWorkDateCellResult}</em>
                         </div>
                         <div class="disc">
-                          업무종료<span class="block">지각</span>
+                          {workStatusCodeName}
+                          <span class="block">{workResultCodeName}</span>
                         </div>
                       </li>
                     </ul>
@@ -86,11 +163,11 @@ class CommuteForm extends Component {
                         </li>
                         <li>
                           <span class="title">외근</span>
-                          <span>N</span>
+                          <span>{commuteDetailInfo.outsideWorkYn}</span>
                         </li>
                         <li>
                           <span class="title">기타설명</span>
-                          <span></span>
+                          <span>{commuteDetailInfo.etcDescription}</span>
                         </li>
                       </ul>
                     </div>
@@ -107,10 +184,15 @@ class CommuteForm extends Component {
                               <label for="sel_workmor">출근시간</label>
                             </th>
                             <td>
-                              <input
-                                type="text"
-                                id="sel_workmor"
-                                class="time"
+                              <DatePicker
+                                selected={finalOutWorkDate}
+                                onChange={this.changeFinalOutWorkDate}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeIntervals={5}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa"
+                                customInput={<ExampleCustomInput />}
                               />
                             </td>
                           </tr>
@@ -119,7 +201,16 @@ class CommuteForm extends Component {
                               <label for="sel_workdi">퇴근시간</label>
                             </th>
                             <td>
-                              <input type="text" id="sel_workdi" class="time" />
+                              <DatePicker
+                                selected={finalStartWorkDate}
+                                onChange={this.changeFinalStartWorkDate}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeIntervals={5}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa"
+                                customInput={<ExampleCustomInput />}
+                              />
                             </td>
                           </tr>
                           <tr>
@@ -127,9 +218,18 @@ class CommuteForm extends Component {
                               <label for="sel_workop">외근여부</label>
                             </th>
                             <td>
-                              <select id="sel_workop" name="" class="w100">
-                                <option value="">N</option>
-                                <option value="">Y</option>
+                              <select
+                                id="sel_workop"
+                                name=""
+                                class="w100"
+                                onChange={this.changeOutsideWorkYn}
+                                value={outsideWorkYn}
+                              >
+                                {Code.outsideWorkYnCodeList.map((info) => (
+                                  <option value={info.value}>
+                                    {info.name}
+                                  </option>
+                                ))}
                               </select>
                             </td>
                           </tr>
@@ -138,7 +238,11 @@ class CommuteForm extends Component {
                               <label for="sel_workop">기타설명</label>
                             </th>
                             <td>
-                              <textarea maxlength="100"></textarea>
+                              <textarea
+                                maxlength="100"
+                                value={etcDescription}
+                                onChange={this.changeEtcDescription}
+                              ></textarea>
                             </td>
                           </tr>
                           <tr>
@@ -146,22 +250,18 @@ class CommuteForm extends Component {
                               <label for="sel_workop">근태결과</label>
                             </th>
                             <td>
-                              <select id="sel_workop" name="" class="w100">
-                                <option value="">정상출근</option>
-                                <option value="">정상출근(오전반차)</option>
-                                <option value="">정상출근(생일)</option>
-                                <option value="">지각</option>
-                                <option value="">지각(오후반차)</option>
-                                <option value="">연차</option>
-                                <option value="">경조휴가</option>
-                                <option value="">공가</option>
-                                <option value="">대체휴가</option>
-                                <option value="">출산휴가</option>
-                                <option value="">기타</option>
-                                <option value="">일반휴직</option>
-                                <option value="">육아휴직</option>
-                                <option value="">결근</option>
-                                <option value="">기타</option>
+                              <select
+                                id="sel_workop"
+                                name=""
+                                class="w100"
+                                value={workResultCode}
+                                onChange={this.changeWorkResultCode}
+                              >
+                                {Code.workResultCodeList.map((info) => (
+                                  <option value={info.value}>
+                                    {info.name}
+                                  </option>
+                                ))}
                               </select>
                             </td>
                           </tr>
