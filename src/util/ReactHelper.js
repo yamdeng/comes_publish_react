@@ -214,8 +214,9 @@ const finalStartWorkDateColumDisplayValue = function (rowData) {
 };
 
 // 퇴근일시 column display custom
-const finalOutWorkDateColumDisplayValue = function (rowData) {
-  const { baseDateStr, outWorkDate, finalOutWorkDate } = rowData;
+const finalOutWorkDateColumDisplayValue = function (columnInfo) {
+  const { data } = columnInfo;
+  const { baseDateStr, outWorkDate, finalOutWorkDate } = data;
   // 퇴근일시 정보가 시작일 다음날인 경우 format을 변경해줘야 함
   let outWorkDateFormat = 'HH:mm';
   let finalOutWorkDateFormat = 'HH:mm';
@@ -239,11 +240,15 @@ const finalOutWorkDateColumDisplayValue = function (rowData) {
     // 사용자 퇴근일시가 존재하고
     if (finalOutWorkDate) {
       // 수정 퇴근일시가 존재하는 경우
-      outWorkDateCellResult =
-        moment(finalOutWorkDate).format(finalOutWorkDateFormat) +
-        '(' +
-        moment(outWorkDate).format(outWorkDateFormat) +
-        ')';
+      outWorkDateCellResult = (
+        <>
+          <span>{moment(finalOutWorkDate).format(finalOutWorkDateFormat)}</span>
+          <br />
+          <span>
+            {'(' + moment(outWorkDate).format(outWorkDateFormat) + ')'}
+          </span>
+        </>
+      );
     } else {
       // 사용자 퇴근일시만 존재하는 경우
       outWorkDateCellResult = moment(outWorkDate).format(outWorkDateFormat);

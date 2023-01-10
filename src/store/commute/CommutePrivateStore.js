@@ -141,6 +141,7 @@ class CommutePrivateStore {
   @action
   changeSearchWorkResultCode(searchWorkResultCode) {
     this.searchWorkResultCode = searchWorkResultCode;
+    this.search();
   }
 
   @action

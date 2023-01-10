@@ -261,9 +261,7 @@ class CommuteDayModal extends Component {
                     format="HH:mm"
                     width={160}
                     allowSorting={false}
-                    calculateDisplayValue={
-                      ReactHelper.finalOutWorkDateColumDisplayValue
-                    }
+                    cellRender={ReactHelper.finalOutWorkDateColumDisplayValue}
                   />
                   {/* 외근여부 변경 */}
                   <Column

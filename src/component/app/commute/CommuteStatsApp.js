@@ -38,7 +38,7 @@ class CommuteStatsApp extends Component {
             &gt;
             <a
               href="javascript:void(0);"
-              onClick={() => Helper.goUrl('newoffice/view/commute-stats.do')}
+              onClick={() => Helper.goUrl('newoffice/view/commute.do')}
             >
               출퇴근
             </a>

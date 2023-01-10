@@ -384,7 +384,7 @@ class CommuteHeadApp extends Component {
             &gt;
             <a
               href="javascript:void(0);"
-              onClick={() => Helper.goUrl('newoffice/view/commute-head.do')}
+              onClick={() => Helper.goUrl('newoffice/view/commute.do')}
             >
               출퇴근
             </a>
@@ -869,9 +869,7 @@ class CommuteHeadApp extends Component {
                   caption="퇴근시간"
                   format="HH:mm"
                   allowSorting={false}
-                  calculateDisplayValue={
-                    ReactHelper.finalOutWorkDateColumDisplayValue
-                  }
+                  cellRender={ReactHelper.finalOutWorkDateColumDisplayValue}
                 />
                 <Column
                   dataField="workStatusCodeName"

@@ -11,6 +11,7 @@ import CommuteDayModal from './CommuteDayModal';
 import CommuteDaySubmitModal from './CommuteDaySubmitModal';
 import Code from 'config/Code';
 import ReactHelper from 'util/ReactHelper';
+import { throttle } from 'lodash';
 
 @inject(
   'appStore',
@@ -26,6 +27,7 @@ class CommuteDeptApp extends Component {
     this.state = {};
 
     this.dataGridRef = React.createRef();
+    this.scrollRef = React.createRef();
 
     this.init = this.init.bind(this);
     this.initSearch = this.initSearch.bind(this);
@@ -63,6 +65,11 @@ class CommuteDeptApp extends Component {
     this.changeSearchWorkResultCode =
       this.changeSearchWorkResultCode.bind(this);
     this.changeSearchUserName = this.changeSearchUserName.bind(this);
+
+    this.handleScrollEvent = this.handleScrollEvent.bind(this);
+    this.onScrollThrottled = throttle(this.handleScrollEvent, 300);
+    this.prevScroll = this.prevScroll.bind(this);
+    this.nextScroll = this.nextScroll.bind(this);
   }
 
   changeSearchHolidayYn(event) {
@@ -188,6 +195,28 @@ class CommuteDeptApp extends Component {
     commutePrivateStore.toggleVisibleGuideText();
   }
 
+  prevScroll() {
+    let scrollDom = this.scrollRef.current;
+    let scrollLeft = scrollDom.scrollLeft;
+    Helper.scrollLeftByDivId('commuteScrollDiv', scrollLeft - 500, 100);
+  }
+
+  nextScroll() {
+    let scrollDom = this.scrollRef.current;
+    let scrollLeft = scrollDom.scrollLeft;
+    Helper.scrollLeftByDivId('commuteScrollDiv', scrollLeft + 500, 100);
+  }
+
+  handleScrollEvent() {
+    try {
+      let scrollDom = this.scrollRef.current;
+      let scrollWidth = scrollDom.scrollWidth;
+      let offsetLeft = scrollDom.offsetLeft;
+      let offsetWidth = scrollDom.offsetWidth;
+      let scrollLeft = scrollDom.scrollLeft;
+    } catch (e) {}
+  }
+
   componentDidMount() {
     this.init();
   }
@@ -227,11 +256,18 @@ class CommuteDeptApp extends Component {
             style={{
               display: managerMonthStatsUserList.length > 7 ? '' : 'none'
             }}
+            onClick={this.prevScroll}
           >
             <span>이전</span>
           </a>
           <div class="flex_ul_box_container">
-            <ul class="flex_ul_box flex_sb">
+            <ul
+              class="flex_ul_box flex_sb scroll-minimum"
+              id="commuteScrollDiv"
+              style={{ overflowX: 'scroll' }}
+              ref={this.scrollRef}
+              onScroll={this.onScrollThrottled}
+            >
               {managerMonthStatsUserList.map((managerMonthStatsUserInfo) => {
                 const {
                   userName,
@@ -262,6 +298,7 @@ class CommuteDeptApp extends Component {
             style={{
               display: managerMonthStatsUserList.length > 7 ? '' : 'none'
             }}
+            onClick={this.nextScroll}
           >
             <span>다음</span>
           </a>
@@ -290,7 +327,7 @@ class CommuteDeptApp extends Component {
             &gt;
             <a
               href="javascript:void(0);"
-              onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}
+              onClick={() => Helper.goUrl('newoffice/view/commute.do')}
             >
               출퇴근
             </a>
@@ -799,9 +836,7 @@ class CommuteDeptApp extends Component {
                   caption="퇴근시간"
                   format="HH:mm"
                   allowSorting={false}
-                  calculateDisplayValue={
-                    ReactHelper.finalOutWorkDateColumDisplayValue
-                  }
+                  cellRender={ReactHelper.finalOutWorkDateColumDisplayValue}
                 />
                 <Column
                   dataField="workStatusCodeName"

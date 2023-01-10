@@ -622,9 +622,7 @@ class CommuteStatsTabDay extends Component {
                 caption="퇴근시간"
                 format="HH:mm"
                 allowSorting={false}
-                calculateDisplayValue={
-                  ReactHelper.finalOutWorkDateColumDisplayValue
-                }
+                cellRender={ReactHelper.finalOutWorkDateColumDisplayValue}
               />
               <Column
                 dataField="workedTimeValue"
