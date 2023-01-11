@@ -23,10 +23,10 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
 
   // 모달 오픈 : 조회 일 기준으로
   @action
-  openModal(searchDate) {
+  openModal(searchDate, rowClickDeptId) {
     this.searchDate = searchDate;
     this.visibleModal = true;
-    this.getTargetDeptList();
+    this.getTargetDeptList(rowClickDeptId);
   }
 
   @action
@@ -63,7 +63,7 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
 
   // 업무보고 대상 부서 목록 가져오기
   @action
-  getTargetDeptList() {
+  getTargetDeptList(rowClickDeptId) {
     const appStore = this.rootStore.appStore;
     const apiParam = {};
     apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
@@ -81,7 +81,7 @@ class WorkReportViewModalStore extends WorkReportFormModalStore {
         this.targetDeptList = data || [];
         if (data && data.length) {
           this.currentDeptIndex = 0;
-          this.currentDeptId = data[0].deptId;
+          this.currentDeptId = rowClickDeptId ? rowClickDeptId : data[0].deptId;
           this.getReportDetailInfo();
         } else {
           this.currentDeptIndex = 0;

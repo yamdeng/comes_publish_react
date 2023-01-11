@@ -102,10 +102,10 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
 
   // 모달 오픈 : 조회 일 기준으로
   @action
-  openModal(searchDate) {
+  openModal(searchDate, rowClickDeptId) {
     this.searchDate = searchDate;
     this.visibleModal = true;
-    this.getTargetDeptList();
+    this.getTargetDeptList(rowClickDeptId);
   }
 
   // [조회] 공통
@@ -240,7 +240,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
 
   // 부서_출퇴든 대상 부서 목록 가져오기
   @action
-  getTargetDeptList() {
+  getTargetDeptList(rowClickDeptId) {
     const apiParam = {};
     apiParam.searchDateStr = Helper.dateToString(this.searchDate, 'YYYYMMDD');
     ApiService.post('commute-depts/list.do', apiParam).then((response) => {
@@ -249,7 +249,7 @@ class CommuteDayAdminModalStore extends CommuteDayUpdateModalStore {
         this.targetDeptList = data || [];
         if (data && data.length) {
           this.currentDeptIndex = 0;
-          this.currentDeptId = data[0].deptId;
+          this.currentDeptId = rowClickDeptId ? rowClickDeptId : data[0].deptId;
           this.getCommuteDeptDetailInfo();
           this.search();
         } else {

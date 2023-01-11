@@ -153,7 +153,11 @@ class CommuteAdminApp extends Component {
     if (e.data) {
       const baseDateStr = e.data.baseDateStr;
       const { commuteDayAdminModalStore } = this.props;
-      commuteDayAdminModalStore.openModal(moment(baseDateStr).toDate());
+      const rowClickDeptId = e.data.deptId;
+      commuteDayAdminModalStore.openModal(
+        moment(baseDateStr).toDate(),
+        rowClickDeptId
+      );
     }
   }
 

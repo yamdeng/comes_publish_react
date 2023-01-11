@@ -73,23 +73,27 @@ class CommuteStatsTabMonth extends Component {
     const { commuteStatsMonthStore } = this.props;
     const { commuteStatsSearchType } = commuteStatsMonthStore;
     let dataGridRef = null;
+    let excelFilePostfixName = '';
 
     if (commuteStatsSearchType === Constant.COMMUTE_STATS_SEARCH_TYPE_WEEK) {
       dataGridRef = this.weekDataGridRef;
+      excelFilePostfixName = '주간';
     } else if (
       commuteStatsSearchType ===
       Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_WORKDAY
     ) {
       dataGridRef = this.monthWorkDatagridRef;
+      excelFilePostfixName = '월간(주별)';
     } else if (
       commuteStatsSearchType ===
       Constant.COMMUTE_STATS_SEARCH_TYPE_MONTH_HOLIDAY
     ) {
       dataGridRef = this.monthHolidyDatagridRef;
+      excelFilePostfixName = '월간(휴일)';
     }
 
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Main sheet');
+    const worksheet = workbook.addWorksheet(excelFilePostfixName);
 
     exportDataGrid({
       component: dataGridRef.current.instance,
@@ -98,7 +102,7 @@ class CommuteStatsTabMonth extends Component {
       workbook.xlsx.writeBuffer().then(function (buffer) {
         saveAs(
           new Blob([buffer], { type: 'application/octet-stream' }),
-          'DataGrid.xlsx'
+          '전체출퇴근통계-' + excelFilePostfixName + '.xlsx'
         );
       });
     });

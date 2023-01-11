@@ -29,7 +29,7 @@ class WorkReportStore {
 
   // 검색 기간 유형
   @observable
-  searchDateType = '';
+  searchDateType = Constant.SEARCH_DATE_TYPE_MONTH;
 
   // 검색 월
   @observable

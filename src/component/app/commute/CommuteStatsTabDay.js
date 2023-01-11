@@ -59,7 +59,7 @@ class CommuteStatsTabDay extends Component {
 
   downloadExcel() {
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Main sheet');
+    const worksheet = workbook.addWorksheet('일간');
 
     exportDataGrid({
       component: this.dataGridRef.current.instance,
@@ -68,7 +68,7 @@ class CommuteStatsTabDay extends Component {
       workbook.xlsx.writeBuffer().then(function (buffer) {
         saveAs(
           new Blob([buffer], { type: 'application/octet-stream' }),
-          'DataGrid.xlsx'
+          '전체출퇴근통계-일간.xlsx'
         );
       });
     });

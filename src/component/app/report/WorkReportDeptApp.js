@@ -51,7 +51,6 @@ class WorkReportDeptApp extends Component {
 
   init() {
     const { workReportStore } = this.props;
-    workReportStore.changeSearchDateType(Constant.SEARCH_DATE_TYPE_MONTH);
     workReportStore.initSearchDateAll();
     workReportStore.initDataGridComponent(this.dataGridRef);
     this.search();

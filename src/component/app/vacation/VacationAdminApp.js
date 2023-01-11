@@ -44,6 +44,9 @@ class VacationAdminApp extends Component {
   }
 
   downloadExcel() {
+    const { vacationStatsStore } = this.props;
+    const { searchYear } = vacationStatsStore;
+    const searchYearStr = Helper.dateToString(searchYear, 'YYYY');
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Main sheet');
 

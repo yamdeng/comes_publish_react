@@ -338,6 +338,7 @@ class CommuteDayAdminModal extends Component {
                     dataType="string"
                     caption="날짜"
                     width={100}
+                    allowEditing={false}
                     allowSorting={false}
                     cellRender={ReactHelper.baseDateStrColumDisplayValue}
                   />

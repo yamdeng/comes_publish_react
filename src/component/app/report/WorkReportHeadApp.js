@@ -159,8 +159,12 @@ class WorkReportHeadApp extends Component {
   handleRowClick(e) {
     if (e.data) {
       const baseDateStr = e.data.baseDateStr;
+      const rowClickDeptId = e.data.deptId;
       const { workReportViewModalStore } = this.props;
-      workReportViewModalStore.openModal(moment(baseDateStr).toDate());
+      workReportViewModalStore.openModal(
+        moment(baseDateStr).toDate(),
+        rowClickDeptId
+      );
     }
   }
 
