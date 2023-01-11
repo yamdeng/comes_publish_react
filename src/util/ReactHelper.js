@@ -331,6 +331,13 @@ const outWorkIpColumDisplayValue = function (rowData) {
   }
 };
 
+const vacationBaseYearColumDisplayValue = function (rowData) {
+  if (rowData && rowData.baseYear) {
+    return rowData.baseYear + '-01-01 ~ ' + rowData.baseYear + '-12-31';
+  }
+  return '';
+};
+
 export default {
   convertEnterStringToBrTag,
   handleInputOnChange,
@@ -351,5 +358,6 @@ export default {
   commentYnColumDisplayValue,
   reportNotSubmitColumDisplayValue,
   startWorkIpColumDisplayValue,
-  outWorkIpColumDisplayValue
+  outWorkIpColumDisplayValue,
+  vacationBaseYearColumDisplayValue
 };

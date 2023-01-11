@@ -13,6 +13,7 @@ import DataGrid, {
 } from 'devextreme-react/data-grid';
 import Helper from 'util/Helper';
 import moment from 'moment';
+import ReactHelper from 'util/ReactHelper';
 
 @inject('appStore', 'uiStore', 'vacationStore')
 @observer
@@ -263,17 +264,9 @@ class VacationHeadApp extends Component {
                   dataType="string"
                   caption="사용기간"
                   allowSorting={false}
-                  calculateCellValue={function (rowData) {
-                    if (rowData && rowData.baseYear) {
-                      return (
-                        rowData.baseYear +
-                        '01-01 ~ ' +
-                        rowData.baseYear +
-                        '-12-31'
-                      );
-                    }
-                    return '';
-                  }}
+                  calculateDisplayValue={
+                    ReactHelper.vacationBaseYearColumDisplayValue
+                  }
                 />
                 <Column
                   dataField="allAnnualCount"

@@ -120,6 +120,8 @@ table {
 
 .modal_box_1270 { max-width:1270px; }
 
+.modal_box_1370 { max-width:1370px; }
+
 
 .modal_box div.coment_write a.btn_blue {
     line-height: 100px;
@@ -147,4 +149,8 @@ table {
 .dx-datagrid-rowsview .dx-selection.dx-row:not(.dx-row-focused):not(.dx-row-removed) > td {
     background-color: rgb(65, 155, 228);
     color: unset;
+}
+
+.react-datepicker__year-text--today {
+    font-weight: initial;
 }

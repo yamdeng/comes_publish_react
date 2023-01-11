@@ -89,6 +89,9 @@ class CommuteDayUpdateModalStore {
   @action
   closeModal() {
     this.visibleModal = false;
+    if (this.rootStore.commutePrivateStore) {
+      this.rootStore.commutePrivateStore.search();
+    }
   }
 
   // 부서_출퇴근 상세 정보 조회

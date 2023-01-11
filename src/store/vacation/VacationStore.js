@@ -31,7 +31,7 @@ class VacationStore {
 
   // 검색 년
   @observable
-  searchYear = '';
+  searchYear = moment().toDate();
 
   // 년 datepicker 오픈 여부
   @observable

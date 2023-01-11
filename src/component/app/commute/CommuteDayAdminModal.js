@@ -168,7 +168,7 @@ class CommuteDayAdminModal extends Component {
     commuteDeptSubmitInfo = commuteDeptSubmitInfo || {};
     const { commuteSubmitStatusCode } = commuteDeptSubmitInfo;
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1370'}>
         <ModalHeader
           className="popup_head"
           close={
@@ -332,6 +332,16 @@ class CommuteDayAdminModal extends Component {
                     startEditAction={'click'}
                     changes={toJS(updateRows)}
                     onChangesChange={this.onChangesChange}
+                  />
+                  <Column
+                    dataField="baseDateStr"
+                    dataType="string"
+                    caption="날짜"
+                    width={100}
+                    allowSorting={false}
+                    calculateDisplayValue={
+                      ReactHelper.baseDateStrColumDisplayValue
+                    }
                   />
                   <Column
                     dataField="deptName"

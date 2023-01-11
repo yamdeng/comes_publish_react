@@ -91,7 +91,7 @@ class CommuteDaySubmitModal extends Component {
       isSubmitAvailable
     } = commuteDaySubmitModalStore;
     return (
-      <Modal isOpen={visibleModal} className={'modal_box modal_box_1270'}>
+      <Modal isOpen={visibleModal} className={'modal_box modal_box_1370'}>
         <ModalHeader
           className="popup_head"
           close={
@@ -167,6 +167,16 @@ class CommuteDaySubmitModal extends Component {
                   }}
                   onRowPrepared={ReactHelper.onRowPreparedCommuteDayUpdate}
                 >
+                  <Column
+                    dataField="baseDateStr"
+                    dataType="string"
+                    caption="날짜"
+                    width={100}
+                    allowSorting={false}
+                    calculateDisplayValue={
+                      ReactHelper.baseDateStrColumDisplayValue
+                    }
+                  />
                   <Column
                     dataField="deptName"
                     dataType="string"
