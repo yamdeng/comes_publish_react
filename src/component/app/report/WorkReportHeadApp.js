@@ -491,9 +491,7 @@ class WorkReportHeadApp extends Component {
                   dataType="string"
                   caption="날짜"
                   allowSorting={false}
-                  calculateDisplayValue={
-                    ReactHelper.baseDateStrColumDisplayValue
-                  }
+                  cellRender={ReactHelper.baseDateStrColumDisplayValue}
                 />
                 <Column
                   dataField="deptName"

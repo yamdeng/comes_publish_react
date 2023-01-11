@@ -274,9 +274,24 @@ const workResultcodeColumDisplayValue = function (rowData) {
 };
 
 // 기준일자 column display custom
-const baseDateStrColumDisplayValue = function (rowData) {
-  if (rowData && rowData.baseDateStr) {
-    return Helper.convertDate(rowData.baseDateStr, 'YYYYMMDD', 'YYYY-MM-DD');
+
+const baseDateStrColumDisplayValue = function (columnInfo) {
+  const { data } = columnInfo;
+  if (data && data.baseDateStr) {
+    const baseDateStr = Helper.convertDate(
+      data.baseDateStr,
+      'YYYYMMDD',
+      'YYYY-MM-DD'
+    );
+    const holidayYn = data.holidayYn;
+    const weekday = moment(data.baseDateStr).isoWeekday();
+    if (weekday === 6) {
+      return <span className="blue">{baseDateStr}</span>;
+    } else if (weekday === 7 || holidayYn === 'Y') {
+      return <span className="red">{baseDateStr}</span>;
+    } else {
+      return baseDateStr;
+    }
   }
   return '';
 };

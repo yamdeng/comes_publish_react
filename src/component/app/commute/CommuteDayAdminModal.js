@@ -339,9 +339,7 @@ class CommuteDayAdminModal extends Component {
                     caption="날짜"
                     width={100}
                     allowSorting={false}
-                    calculateDisplayValue={
-                      ReactHelper.baseDateStrColumDisplayValue
-                    }
+                    cellRender={ReactHelper.baseDateStrColumDisplayValue}
                   />
                   <Column
                     dataField="deptName"
