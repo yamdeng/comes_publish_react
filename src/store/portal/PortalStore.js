@@ -179,7 +179,7 @@ class PortalStore {
     const inWorkYn = this.inWorkYn;
 
     if (todayCommuteDayInfo && todayCommuteDayInfo.startWorkDate) {
-      Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
+      // Helper.toastMessage('이미 출근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
 
@@ -226,7 +226,7 @@ class PortalStore {
     }
 
     if (todayCommuteDayInfo && todayCommuteDayInfo.outWorkDate) {
-      Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
+      // Helper.toastMessage('이미 퇴근 체크를 진행하였습니다.', '', 'warning');
       return;
     }
     if (!todayCommuteDayInfo || !todayCommuteDayInfo.startWorkDate) {
