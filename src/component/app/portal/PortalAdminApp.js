@@ -242,11 +242,15 @@ class PortalAdminApp extends Component {
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
           <div class="row_item grid3">
-            <h3
-              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
-            >
+            <h3>
               <i class="ico1"></i>근무
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() =>
+                  Helper.goUrl('newoffice/view/commute-private.do')
+                }
+              >
                 더보기
               </a>
             </h3>
@@ -640,9 +644,13 @@ class PortalAdminApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3 onClick={() => Helper.goUrl('sch/center/index.do')}>
+            <h3>
               <i class="ico2"></i>회사 일정
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('sch/center/index.do')}
+              >
                 더보기
               </a>
             </h3>
@@ -792,16 +800,18 @@ class PortalAdminApp extends Component {
         </div>
         <div class="mf_to_row1 flex_sb mgtop40">
           <div class="row_item grid2">
-            <h3
-              onClick={() =>
-                Helper.goUrl(
-                  'bbs/comes/board/list.do?boardKey=' +
-                    Constant.NOTICE_BOARD_KEY
-                )
-              }
-            >
+            <h3>
               공지사항
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() =>
+                  Helper.goUrl(
+                    'bbs/comes/board/list.do?boardKey=' +
+                      Constant.NOTICE_BOARD_KEY
+                  )
+                }
+              >
                 더보기
               </a>
             </h3>
@@ -829,9 +839,13 @@ class PortalAdminApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3 onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}>
+            <h3>
               전체 출퇴근 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('newoffice/view/commute-admin.do')}
+              >
                 더보기
               </a>
             </h3>
@@ -857,11 +871,13 @@ class PortalAdminApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3
-              onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
-            >
+            <h3>
               전체 연차 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('newoffice/view/vacation-admin.do')}
+              >
                 더보기
               </a>
             </h3>

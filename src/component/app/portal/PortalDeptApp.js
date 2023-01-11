@@ -250,11 +250,15 @@ class PortalDeptApp extends Component {
       <div id="contents_main" class="">
         <div class="flex_sb mf_to_row1">
           <div class="row_item grid3">
-            <h3
-              onClick={() => Helper.goUrl('newoffice/view/commute-private.do')}
-            >
+            <h3>
               <i class="ico1"></i>근무
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() =>
+                  Helper.goUrl('newoffice/view/commute-private.do')
+                }
+              >
                 더보기
               </a>
             </h3>
@@ -364,11 +368,15 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3
-              onClick={() => Helper.goUrl('newoffice/view/vacation-private.do')}
-            >
+            <h3>
               <i class="ico2"></i>휴가/휴직 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() =>
+                  Helper.goUrl('newoffice/view/vacation-private.do')
+                }
+              >
                 더보기
               </a>
             </h3>
@@ -410,9 +418,13 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid3">
-            <h3 onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}>
+            <h3>
               <i class="ico3"></i>팀원 근무/출퇴근 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('newoffice/view/commute-dept.do')}
+              >
                 더보기
               </a>
             </h3>
@@ -442,16 +454,18 @@ class PortalDeptApp extends Component {
         </div>
         <div class="mf_to_row1 flex_sb mgtop40">
           <div class="row_item grid2">
-            <h3
-              onClick={() =>
-                Helper.goUrl(
-                  'bbs/comes/board/list.do?boardKey=' +
-                    Constant.NOTICE_BOARD_KEY
-                )
-              }
-            >
+            <h3>
               공지사항
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() =>
+                  Helper.goUrl(
+                    'bbs/comes/board/list.do?boardKey=' +
+                      Constant.NOTICE_BOARD_KEY
+                  )
+                }
+              >
                 더보기
               </a>
             </h3>
@@ -479,9 +493,13 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3 onClick={() => Helper.goUrl('gsign/docbox/index.do')}>
+            <h3>
               결재 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('gsign/docbox/index.do')}
+              >
                 더보기
               </a>{' '}
               <span>(요청/반려)</span>
@@ -510,9 +528,13 @@ class PortalDeptApp extends Component {
             </div>
           </div>
           <div class="row_item grid2">
-            <h3 onClick={() => Helper.goUrl('newoffice/view/report-dept.do')}>
+            <h3>
               업무 보고 현황
-              <a href="javascript:void(0);" class="btn_more">
+              <a
+                href="javascript:void(0);"
+                class="btn_more"
+                onClick={() => Helper.goUrl('newoffice/view/report-dept.do')}
+              >
                 더보기
               </a>
               <span>{workReport7RangeText}</span>
