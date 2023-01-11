@@ -350,7 +350,7 @@ class CommutePrivateApp extends Component {
                             {startWorkDate
                               ? Helper.convertDate(
                                   startWorkDate,
-                                  'YYYY-MM-DD Hhmmss',
+                                  'YYYY-MM-DD HH:mm:ss',
                                   'HH:mm'
                                 )
                               : '미체크'}
@@ -375,7 +375,7 @@ class CommutePrivateApp extends Component {
                             {startWorkDate
                               ? Helper.convertDate(
                                   outWorkDate,
-                                  'YYYY-MM-DD Hhmmss',
+                                  'YYYY-MM-DD HH:mm:ss',
                                   'HH:mm'
                                 )
                               : '미체크'}
